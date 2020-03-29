@@ -22,7 +22,7 @@
 #pragma once
 
 #define WS2812_DIN PB0
-#define WS2812_PIXELS 8
+#define WS2812_PIXELS 37
 #define WS2812_COLOR_ORDER BGR
 
 #define BRIGHTNESS_POT_ADMUX_MSK (1 << MUX1) // PB4 (Refer to table 17-4 in the ATtiny25/45/85 datasheet)

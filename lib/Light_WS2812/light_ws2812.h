@@ -22,4 +22,4 @@ typedef struct RGB {
         uint8_t r, g ,b;
 } RGB;
 
-void ws2812_sendrgb_mask(RGB rgb, uint16_t pixels, uint8_t maskhi);
+void ws2812_set_all(RGB rgb, uint16_t pixels, uint8_t maskhi);

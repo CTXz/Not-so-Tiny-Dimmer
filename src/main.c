@@ -131,8 +131,7 @@ RGB inline apply_brightness(RGB rgb, uint8_t brightness)
  */
 void set_ws2812(RGB rgb, uint8_t brightness)
 {
-        ws2812_sendrgb_mask(rgb, WS2812_PIXELS, WS2812_DIN_MSK);
-        _delay_us(ws2812_resettime);
+        ws2812_set_all(apply_brightness(rgb, brightness), WS2812_PIXELS, WS2812_DIN_MSK);
 }
 
 /* fade

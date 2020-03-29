@@ -150,7 +150,7 @@ void ws2812_transmit_byte(uint8_t data, uint8_t maskhi, uint8_t masklo)
 
 #pragma GCC pop_options
 
-void inline ws2812_sendrgb_mask(RGB rgb, uint16_t pixels, uint8_t maskhi)
+void inline ws2812_set_all(RGB rgb, uint16_t pixels, uint8_t maskhi)
 {
         uint8_t masklo;
         uint8_t sreg_prev;
@@ -181,7 +181,8 @@ void inline ws2812_sendrgb_mask(RGB rgb, uint16_t pixels, uint8_t maskhi)
 #else
         #error "No color order specified! Please set the WS2812_COLOR_ORDER directive in the config file!"
 #endif
-  }
+        }
 
-  SREG=sreg_prev;
+        SREG=sreg_prev;
+        _delay_us(ws2812_resettime);
 }
