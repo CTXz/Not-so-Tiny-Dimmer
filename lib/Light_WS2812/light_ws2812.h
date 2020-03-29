@@ -18,4 +18,8 @@
 #define ws2812_PORTREG PORTB
 #define ws2812_DDRREG DDRB
 
-void ws2812_sendarray_mask(uint8_t *data, uint16_t datlen, uint8_t maskhi);
+typedef struct RGB {
+        uint8_t r, g ,b;
+} RGB;
+
+void ws2812_sendrgb_mask(RGB rgb, uint16_t pixels, uint8_t maskhi);

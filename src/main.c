@@ -49,18 +49,6 @@
 #define TMR_COUNTS_PER_SEC 61 // F_CPU - 16Mhz | Prescaler - 1024 | Timer Overflow - 255
                               // Counts per sec = F_CPU/(Prescaler * Timeroverflow) ~= 61
 
-#define R_OFFSET 1
-#define G_OFFSET 0
-#define B_OFFSET 2
-
-////////////////////////
-// Structs
-////////////////////////
-
-typedef struct RGB {
-        uint8_t r, g ,b;
-} RGB;
-
 ////////////////////////
 // Globals
 ////////////////////////
@@ -81,9 +69,6 @@ RGB patches[] = {
 uint8_t selected_patch = 0;
 
 #define NUM_PACHES (sizeof(patches) / sizeof(RGB))
-
-// WS2812 Pixel Buffer
-uint8_t pxbuf[WS2812_PIXELS * 3];
 
 ////////////////////////
 // Functions
@@ -134,29 +119,6 @@ RGB inline apply_brightness(RGB rgb, uint8_t brightness)
         return ret;
 }
 
-/* fill_pxbuf
- * ----------
- * Arguments:
- *      pxbuf - Pointer to a pixel buffer 
- *      size - Size of the pixel buffer
- *      r - Red value
- *      g - Green value
- *      b - Blue value
- *      brigthess - Brightness value
- * Description:
- *      Fills all pixels in a pixel buffer with the provided RGB values at a given brightness between 0 and 255.
- */
-void inline fill_pxbuf(uint8_t *pxbuf, uint16_t size, RGB rgb, uint8_t brightness)
-{
-        rgb = apply_brightness(rgb, brightness);
-
-        for (uint16_t i = 0; i < size; i += 3) {
-                pxbuf[i + R_OFFSET] = rgb.r;
-                pxbuf[i + G_OFFSET] = rgb.g;
-                pxbuf[i + B_OFFSET] = rgb.b;
-        }
-}
-
 /* set_ws2812
  * ----------
  * Arguments:
@@ -169,8 +131,7 @@ void inline fill_pxbuf(uint8_t *pxbuf, uint16_t size, RGB rgb, uint8_t brightnes
  */
 void set_ws2812(RGB rgb, uint8_t brightness)
 {
-        fill_pxbuf(pxbuf, sizeof(pxbuf), rgb, brightness);
-        ws2812_sendarray_mask(pxbuf, sizeof(pxbuf), WS2812_DIN_MSK);
+        ws2812_sendrgb_mask(rgb, WS2812_PIXELS, WS2812_DIN_MSK);
         _delay_us(ws2812_resettime);
 }
 
