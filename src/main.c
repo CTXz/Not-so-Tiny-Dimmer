@@ -49,6 +49,18 @@
 #define TMR_COUNTS_PER_SEC 61 // F_CPU - 16Mhz | Prescaler - 1024 | Timer Overflow - 255
                               // Counts per sec = F_CPU/(Prescaler * Timeroverflow) ~= 61
 
+#define R_OFFSET 1
+#define G_OFFSET 0
+#define B_OFFSET 2
+
+////////////////////////
+// Structs
+////////////////////////
+
+typedef struct RGB {
+        uint8_t r, g ,b;
+} RGB;
+
 ////////////////////////
 // Globals
 ////////////////////////
@@ -58,7 +70,7 @@ volatile uint16_t timer_counter = 0; // Counts number of times TIMER0 has overfl
 volatile bool btn_pressed = false;
 
 // Patches
-uint8_t patches[][3] = {
+RGB patches[] = {
         {255, 255, 255}, // White
         {255, 74, 33},    // Beige
         {255, 52, 255},   // Purple
@@ -68,7 +80,7 @@ uint8_t patches[][3] = {
 
 uint8_t selected_patch = 0;
 
-#define NUM_PACHES (sizeof(patches) / 3)
+#define NUM_PACHES (sizeof(patches) / sizeof(RGB))
 
 // WS2812 Pixel Buffer
 uint8_t pxbuf[WS2812_PIXELS * 3];
@@ -113,9 +125,13 @@ uint16_t inline seconds_passed()
  * Description:
  *      Applies a brightness from 0 to 255 to a given 8-bit value 
  */
-uint8_t inline apply_brightness(uint8_t val, uint8_t brightness)
+RGB inline apply_brightness(RGB rgb, uint8_t brightness)
 {
-        return round(((double)brightness/MAX_BRIGHTNESS) * (double)val);
+        RGB ret;
+        ret.r = round(((double)brightness/MAX_BRIGHTNESS) * (double)rgb.r);
+        ret.g = round(((double)brightness/MAX_BRIGHTNESS) * (double)rgb.g);
+        ret.b = round(((double)brightness/MAX_BRIGHTNESS) * (double)rgb.b);
+        return ret;
 }
 
 /* fill_pxbuf
@@ -130,16 +146,14 @@ uint8_t inline apply_brightness(uint8_t val, uint8_t brightness)
  * Description:
  *      Fills all pixels in a pixel buffer with the provided RGB values at a given brightness between 0 and 255.
  */
-void inline fill_pxbuf(uint8_t *pxbuf, uint16_t size, uint8_t r, uint8_t g, uint8_t b, uint8_t brightness)
+void inline fill_pxbuf(uint8_t *pxbuf, uint16_t size, RGB rgb, uint8_t brightness)
 {
-        uint8_t _r = apply_brightness(r, brightness);
-        uint8_t _g = apply_brightness(g, brightness);
-        uint8_t _b = apply_brightness(b, brightness);
+        rgb = apply_brightness(rgb, brightness);
 
         for (uint16_t i = 0; i < size; i += 3) {
-                pxbuf[i + R_OFFSET] = _r;
-                pxbuf[i + G_OFFSET] = _g;
-                pxbuf[i + B_OFFSET] = _b;
+                pxbuf[i + R_OFFSET] = rgb.r;
+                pxbuf[i + G_OFFSET] = rgb.g;
+                pxbuf[i + B_OFFSET] = rgb.b;
         }
 }
 
@@ -153,9 +167,9 @@ void inline fill_pxbuf(uint8_t *pxbuf, uint16_t size, uint8_t r, uint8_t g, uint
  * Description:
  *      Set the color of the entire ws2812 strip to the provided RGB values at a given brightness between 0 and 255.
  */
-void set_ws2812(uint8_t r, uint8_t g, uint8_t b, uint8_t brightness)
+void set_ws2812(RGB rgb, uint8_t brightness)
 {
-        fill_pxbuf(pxbuf, sizeof(pxbuf), r, g, b, brightness);
+        fill_pxbuf(pxbuf, sizeof(pxbuf), rgb, brightness);
         ws2812_sendarray_mask(pxbuf, sizeof(pxbuf), WS2812_DIN_MSK);
         _delay_us(ws2812_resettime);
 }
@@ -166,26 +180,23 @@ void set_ws2812(uint8_t r, uint8_t g, uint8_t b, uint8_t brightness)
  *      Fades the ws2812 strip. This function must be called repeatedly  
  */
 void fade() {
-        static uint8_t r = 255;
-        static uint8_t g = 0;
-        static uint8_t b = 0;
-
+        static RGB rgb = {255, 0, 0};
         static bool r2g = true;
 
         if (r2g) {
-                r--;
-                g++;
-                r2g = (r > 0);
-        } else if (g > 0) {
-                g--;
-                b++;
+                rgb.r--;
+                rgb.g++;
+                r2g = (rgb.r > 0);
+        } else if (rgb.g > 0) {
+                rgb.g--;
+                rgb.b++;
         } else {
-                b--;
-                r++;
-                r2g = (r == 255);
+                rgb.b--;
+                rgb.r++;
+                r2g = (rgb.r == 255);
         }
 
-        set_ws2812(r, g, b, BRIGHTNESS_POT);
+        set_ws2812(rgb, BRIGHTNESS_POT);
 }
 
 // Patches
@@ -200,7 +211,7 @@ void fade() {
 void inline next_patch()
 {
         selected_patch = (selected_patch + 1) % NUM_PACHES;
-        set_ws2812(patches[selected_patch][0], patches[selected_patch][1], patches[selected_patch][2], BRIGHTNESS_POT);
+        set_ws2812(patches[selected_patch], BRIGHTNESS_POT);
 }
 
 ////////////////////////
@@ -296,7 +307,7 @@ int main()
                         fade();
                         _delay_ms(FADE_DELAY);
                 } else {
-                        set_ws2812(patches[selected_patch][0], patches[selected_patch][1], patches[selected_patch][2], BRIGHTNESS_POT);
+                        set_ws2812(patches[selected_patch], BRIGHTNESS_POT);
                 }
         }
 }
