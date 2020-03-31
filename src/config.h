@@ -31,3 +31,6 @@
 #define BTN_DEBOUNCE_TIME 50 // ms
 
 #define FADE_DELAY 10 // ms
+
+#define ADC_AVG_SAMPLES 255
+// #define POT_LOWER_BOUND  50

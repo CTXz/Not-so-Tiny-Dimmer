@@ -44,7 +44,6 @@
 #endif
 
 #define WS2812_DIN_MSK (1 << WS2812_DIN)
-#define BRIGHTNESS_POT ADCH
 #define MAX_BRIGHTNESS 255
 #define TMR_COUNTS_PER_SEC 61 // F_CPU - 16Mhz | Prescaler - 1024 | Timer Overflow - 255
                               // Counts per sec = F_CPU/(Prescaler * Timeroverflow) ~= 61
@@ -73,6 +72,44 @@ uint8_t selected_patch = 0;
 ////////////////////////
 // Functions
 ////////////////////////
+
+// Pots
+
+#if defined(ADC_AVG_SAMPLES) || ADC_AVG_SAMPLES > 1
+uint8_t inline adc_avg(uint8_t num_samples)
+{
+        ADCSRA &= ~(1 << ADATE);
+
+        uint16_t ret = 0;
+        for (uint8_t i = 0; i < num_samples; i++) {
+                ADCSRA |= (1 << ADSC);
+                loop_until_bit_is_clear(ADCSRA, ADSC);
+                ret += ADCH;
+        }
+
+        ADCSRA |= (1 << ADATE);
+
+        return round((double)ret/num_samples);
+}
+#endif
+
+uint8_t inline brightness()
+{
+        uint8_t ret;
+
+#if defined(ADC_AVG_SAMPLES) && ADC_AVG_SAMPLES > 1
+        ret = adc_avg(ADC_AVG_SAMPLES);
+#else
+        ret = ADCH;
+#endif
+
+#if defined(POT_LOWER_BOUND) && POT_LOWER_BOUND > 0
+        if (ret < POT_LOWER_BOUND)
+                return 0;
+#endif
+
+        return ret;
+}
 
 // Timing
 
@@ -156,7 +193,7 @@ void fade() {
                 r2g = (rgb.r == 255);
         }
 
-        set_ws2812(rgb, BRIGHTNESS_POT);
+        set_ws2812(rgb, brightness());
 }
 
 // Patches
@@ -171,7 +208,7 @@ void fade() {
 void inline next_patch()
 {
         selected_patch = (selected_patch + 1) % NUM_PACHES;
-        set_ws2812(patches[selected_patch], BRIGHTNESS_POT);
+        set_ws2812(patches[selected_patch], brightness());
 }
 
 ////////////////////////
@@ -267,7 +304,7 @@ int main()
                         fade();
                         _delay_ms(FADE_DELAY);
                 } else {
-                        set_ws2812(patches[selected_patch], BRIGHTNESS_POT);
+                        set_ws2812(patches[selected_patch], brightness());
                 }
         }
 }
