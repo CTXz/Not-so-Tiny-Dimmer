@@ -75,23 +75,45 @@ uint8_t selected_patch = 0;
 
 // Pots
 
+/* adc_avg
+ * -------
+ * Parameters:
+ *      num_samples - Number of ADC samples to be averaged (max 255)
+ * Returns:
+ *      Average 8-bit ADC reading
+ * Description:
+ *      Returns the average ADC reading from n samples
+ */
+
 #if defined(ADC_AVG_SAMPLES) || ADC_AVG_SAMPLES > 1
 uint8_t inline adc_avg(uint8_t num_samples)
 {
-        ADCSRA &= ~(1 << ADATE);
+        ADCSRA &= ~(1 << ADATE); // Temporarily disable auto triggering
 
         uint16_t ret = 0;
         for (uint8_t i = 0; i < num_samples; i++) {
-                ADCSRA |= (1 << ADSC);
+                ADCSRA |= (1 << ADSC); // Trigger ADC
                 loop_until_bit_is_clear(ADCSRA, ADSC);
                 ret += ADCH;
         }
 
-        ADCSRA |= (1 << ADATE);
+        ADCSRA |= (1 << ADATE); // Restore auto triggering
 
         return round((double)ret/num_samples);
 }
 #endif
+
+/* brightness
+ * ----------
+ * Returns:
+ *      The currently set brightness value (0 = 0%, 255 = 100%)
+ * Description:
+ *      Reads the current brightness value. Depending on the flags
+ *      configured in config, this function may be as simple as
+ *      simply returning the the current analog value of the pot
+ *      input, or as complex as to calculate the average pot
+ *      value.
+ */
 
 uint8_t inline brightness()
 {
