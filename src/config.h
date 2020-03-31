@@ -32,5 +32,5 @@
 
 #define FADE_DELAY 10 // ms
 
-#define ADC_AVG_SAMPLES 255
-// #define POT_LOWER_BOUND  50
+#define ADC_AVG_SAMPLES 50 // Max 255
+// #define POT_LOWER_BOUND
