@@ -184,5 +184,8 @@ void inline ws2812_set_all(RGB rgb, uint16_t pixels, uint8_t maskhi)
         }
 
         SREG=sreg_prev;
+
+#if defined(_ws2812_resettime) && ws2812_resettime > 0
         _delay_us(ws2812_resettime);
+#endif
 }

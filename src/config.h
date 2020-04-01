@@ -28,9 +28,12 @@
 #define BRIGHTNESS_POT_ADMUX_MSK (1 << MUX1) // PB4 (Refer to table 17-4 in the ATtiny25/45/85 datasheet)
 
 #define BTN PB2 // INT0 (Must be INT0! See https://bit.ly/3dxVLa5)
-#define BTN_DEBOUNCE_TIME 50 // ms
+#define BTN_DEBOUNCE_TIME 100 // ms
 
-#define FADE_DELAY 10 // ms
+#define FADE_BTN_HOLD 1 // s
+#define FADE_DELAY 0 // ms Delay added to each step during fading.
+                     // Note that this is added on top of the delay already caused
+                     // by the code
 
 #define ADC_AVG_SAMPLES 255 // Max 255
 // #define POT_LOWER_BOUND

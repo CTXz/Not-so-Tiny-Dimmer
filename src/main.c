@@ -248,23 +248,6 @@ ISR(TIMER0_OVF_vect)
         timer_counter++;
 }
 
-/* INT0_vect
- * ---------
- * Description:
- *      Interrupts upon button press (not release). Once interrupted,
- *      the timer is reset, a debouncing delay takes place and the global btn_pressed
- *      variable is set to true to signal the main routine that the button has been pressed.
- */
-ISR(INT0_vect)
-{
-        reset_timer();
-        cli();
-        _delay_ms(BTN_DEBOUNCE_TIME);
-        sei();
-        btn_pressed = true;
-}
-
-
 ////////////////////////
 // Main routine
 ////////////////////////
@@ -301,37 +284,38 @@ int main()
                 (1 << ADPS0);                 // set prescaler to 128, bit 0
 
         // Interrupts
-        GIMSK |= (1 << INT0);                 // Enable INT0
-        MCUCR |= (1 << ISC01) | (0 << ISC00); // Interrupt on button press (falling due to pull-up)
-        sei();                                // Enable interrups
+        sei();                                // Enable interrupts
 
         // Main loop
+        
+        bool prev_btn_state = PINB & (1 << BTN);
+
         while(1)
         {
                 static bool fade_mode = false;
+                
+                uint16_t s_passed = seconds_passed();
+                bool btn_state = PINB & (1 << BTN);
 
-                if (btn_pressed) {
-                        
-                        // Released
-                        if ((btn_pressed = !(PINB & (1 << BTN))) ) {
-                                cli();
-                                _delay_ms(BTN_DEBOUNCE_TIME);
-                                sei();
-                        }
-                        
-                        uint16_t secs_passed = seconds_passed();
-                        if (btn_pressed && secs_passed >= 3) {          // Button held for 3 seconds, enable fade mode!
-                                fade();
-                                fade_mode = true;
-                        } else if (!btn_pressed && secs_passed < 3) {   // Button released, load next patch!
-                                fade_mode = false;
-                                next_patch();
-                        }
+                // Button press
+                if (prev_btn_state && !btn_state) {
+                        reset_timer();
+                        _delay_ms(BTN_DEBOUNCE_TIME);
+                } else if (!btn_state && s_passed >= FADE_BTN_HOLD) {
+                        fade();
+                        fade_mode = true;
+                } else if (!prev_btn_state && btn_state && s_passed < FADE_BTN_HOLD) {
+                        fade_mode = false;
+                        next_patch();
                 }
+
+                prev_btn_state = btn_state;
 
                 if (fade_mode) {
                         fade();
+#if defined(FADE_DELAY) && FADE_DELAY > 0
                         _delay_ms(FADE_DELAY);
+#endif
                 } else {
                         set_ws2812(patches[selected_patch], brightness());
                 }
