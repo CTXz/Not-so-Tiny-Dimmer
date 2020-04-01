@@ -311,7 +311,14 @@ int main()
                 static bool fade_mode = false;
 
                 if (btn_pressed) {
-                        btn_pressed = !(PINB & (1 << BTN));
+                        
+                        // Released
+                        if ((btn_pressed = !(PINB & (1 << BTN))) ) {
+                                cli();
+                                _delay_ms(BTN_DEBOUNCE_TIME);
+                                sei();
+                        }
+                        
                         uint16_t secs_passed = seconds_passed();
                         if (btn_pressed && secs_passed >= 3) {          // Button held for 3 seconds, enable fade mode!
                                 fade();
