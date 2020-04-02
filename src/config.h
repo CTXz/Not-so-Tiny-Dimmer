@@ -27,7 +27,7 @@
 
 #define BRIGHTNESS_POT_ADMUX_MSK (1 << MUX1) // PB4 (Refer to table 17-4 in the ATtiny25/45/85 datasheet)
 
-#define BTN PB2 // INT0 (Must be INT0! See https://bit.ly/3dxVLa5)
+#define BTN PB2
 #define BTN_DEBOUNCE_TIME 100 // ms
 #define BTN_MIN_RELEASED_READS 300000 // Reduce the read of false releases when holding down noisy push buttons
 
