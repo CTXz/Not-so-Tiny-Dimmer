@@ -47,6 +47,7 @@
 #define MAX_BRIGHTNESS 255
 #define TMR_COUNTS_PER_SEC 61 // F_CPU - 16Mhz | Prescaler - 1024 | Timer Overflow - 255
                               // Counts per sec = F_CPU/(Prescaler * Timeroverflow) ~= 61
+#define BTN_STATE !(PINB & (1 << BTN))
 
 ////////////////////////
 // Globals
@@ -132,6 +133,39 @@ uint8_t inline brightness()
 
         return ret;
 }
+
+// Buttons
+
+/* btn
+ * ---
+ * Returns:
+ *      True - Button is being held down
+ *      False - Button is released
+ * Description:
+ *      Returns the current state of the push button.
+ *      If the BTN_MIN_RELEASED_READS has been defined
+ *      in the configuration header, the function
+ *      will only return false if the button state
+ *      has been read as released for the specified
+ *      ammount of times. This helps reduce the read of
+ *      false released when the button is being held.
+ */
+
+#if defined(BTN_MIN_RELEASED_READS) && BTN_MIN_RELEASED_READS > 1
+
+bool inline btn_min_reads(bool pressed, uint32_t min_reads)
+{
+        if (min_reads == 0)
+                return BTN_STATE;
+        
+        for (uint32_t i = 0; i < min_reads; i++)
+                if (BTN_STATE)
+                        return true;
+
+        return false;
+}
+
+#endif
 
 // Timing
 
@@ -324,22 +358,28 @@ int main()
         sei();                                // Enable interrupts
 
         // Main loop
-        
-        bool prev_btn_state = PINB & (1 << BTN);
+
         uint8_t fade_step_size;
+        bool prev_btn_state = BTN_STATE;
 
         while(1)
         {
                 static bool fade_mode = false;
                 
                 uint16_t s_passed = seconds_passed();
-                bool btn_state = PINB & (1 << BTN);
 
-                // Button press
-                if (prev_btn_state && !btn_state) {
+                #if defined(BTN_MIN_RELEASED_READS) && BTN_MIN_RELEASED_READS > 1
+                        bool btn_state = btn_min_reads(false, prev_btn_state ? BTN_MIN_RELEASED_READS : 0);
+                #else
+                        bool btn_state = BTN_STATE;
+                #endif
+
+                if (!prev_btn_state && btn_state) { // Button press
                         reset_timer();
+#if defined(BTN_DEBOUNCE_TIME) && BTN_DEBOUNCE_TIME > 0
                         _delay_ms(BTN_DEBOUNCE_TIME);
-                } else if (!btn_state) {
+#endif
+                } else if (btn_state) {             // Button Held
                         fade_mode = true;
                         if (s_passed >= FADE_BTN_HOLD_4)
                                 fade_step_size = FADE_STEP_SIZE_4;
@@ -351,8 +391,8 @@ int main()
                                 fade_step_size = FADE_STEP_SIZE_1;
                         else
                                 fade_mode = false;
-                                
-                } else if (!prev_btn_state && btn_state && s_passed < FADE_BTN_HOLD_1) {
+
+                } else if (prev_btn_state && !btn_state && s_passed < FADE_BTN_HOLD_1) { // Button Released
                         fade_mode = false;
                         next_patch();
                 }

@@ -29,6 +29,7 @@
 
 #define BTN PB2 // INT0 (Must be INT0! See https://bit.ly/3dxVLa5)
 #define BTN_DEBOUNCE_TIME 100 // ms
+#define BTN_MIN_RELEASED_READS 300000 // Reduce the read of false releases when holding down noisy push buttons
 
 #define FADE_STEP_SIZE_1 1
 #define FADE_STEP_SIZE_2 2
