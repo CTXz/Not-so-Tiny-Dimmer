@@ -59,9 +59,9 @@ volatile bool btn_pressed = false;
 // Patches
 RGB patches[] = {
         {255, 255, 255}, // White
-        {255, 74, 33},    // Beige
-        {255, 52, 255},   // Purple
-        {232, 255, 44},   // Lime
+        {255, 74,  33},  // Beige
+        {255, 52,  255}, // Purple
+        {232, 255, 44},  // Lime
         {106, 255, 255}  // Light Blue
 };
 
@@ -198,24 +198,61 @@ void set_ws2812(RGB rgb, uint8_t brightness)
  * Description:
  *      Fades the ws2812 strip. This function must be called repeatedly  
  */
-void fade() {
-        static RGB rgb = {255, 0, 0};
+void fade(uint8_t step_size) {
+
+        static uint8_t prev_step_size = 0;
+        static RGB rgb;
         static bool r2g = true;
 
-        if (r2g) {
-                rgb.r--;
-                rgb.g++;
-                r2g = (rgb.r > 0);
-        } else if (rgb.g > 0) {
-                rgb.g--;
-                rgb.b++;
-        } else {
-                rgb.b--;
-                rgb.r++;
-                r2g = (rgb.r == 255);
+        uint8_t tmp;
+
+        if (prev_step_size != step_size) {
+                rgb.r = 255;
+                rgb.g = 0;
+                rgb.b = 0;
         }
 
+        if (r2g) {
+                tmp = rgb.r;
+                tmp -= step_size;
+
+                if (tmp >= rgb.r) {
+                        rgb.r = 0;
+                        rgb.g = 255;
+                } else {
+                        rgb.r = tmp;
+                        rgb.g += step_size;
+                }
+
+                r2g = (rgb.r > 0);
+        } else if (rgb.g > 0) {
+                tmp = rgb.g;
+                tmp -= step_size;
+
+                if (tmp >= rgb.g) {
+                        rgb.g = 0;
+                        rgb.b = 255;
+                } else {
+                        rgb.g = tmp;
+                        rgb.b += step_size;
+                }
+        } else {
+                tmp = rgb.b;
+                tmp -= step_size;
+
+                if (tmp >= rgb.b) {
+                        rgb.b = 0;
+                        rgb.r = 255;
+                } else {
+                        rgb.b = tmp;
+                        rgb.r += step_size;
+                }
+
+                r2g = (rgb.r == 255);
+        }
+        
         set_ws2812(rgb, brightness());
+        prev_step_size = step_size;
 }
 
 // Patches
@@ -289,6 +326,7 @@ int main()
         // Main loop
         
         bool prev_btn_state = PINB & (1 << BTN);
+        uint8_t fade_step_size;
 
         while(1)
         {
@@ -301,10 +339,20 @@ int main()
                 if (prev_btn_state && !btn_state) {
                         reset_timer();
                         _delay_ms(BTN_DEBOUNCE_TIME);
-                } else if (!btn_state && s_passed >= FADE_BTN_HOLD) {
-                        fade();
+                } else if (!btn_state) {
                         fade_mode = true;
-                } else if (!prev_btn_state && btn_state && s_passed < FADE_BTN_HOLD) {
+                        if (s_passed >= FADE_BTN_HOLD_4)
+                                fade_step_size = FADE_STEP_SIZE_4;
+                        else if (s_passed >= FADE_BTN_HOLD_3)
+                                fade_step_size = FADE_STEP_SIZE_3;
+                        else if (s_passed >= FADE_BTN_HOLD_2)
+                                fade_step_size = FADE_STEP_SIZE_2;
+                        else if (s_passed >= FADE_BTN_HOLD_1)
+                                fade_step_size = FADE_STEP_SIZE_1;
+                        else
+                                fade_mode = false;
+                                
+                } else if (!prev_btn_state && btn_state && s_passed < FADE_BTN_HOLD_1) {
                         fade_mode = false;
                         next_patch();
                 }
@@ -312,7 +360,7 @@ int main()
                 prev_btn_state = btn_state;
 
                 if (fade_mode) {
-                        fade();
+                        fade(fade_step_size);
 #if defined(FADE_DELAY) && FADE_DELAY > 0
                         _delay_ms(FADE_DELAY);
 #endif

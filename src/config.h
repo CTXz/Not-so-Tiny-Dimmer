@@ -30,7 +30,14 @@
 #define BTN PB2 // INT0 (Must be INT0! See https://bit.ly/3dxVLa5)
 #define BTN_DEBOUNCE_TIME 100 // ms
 
-#define FADE_BTN_HOLD 1 // s
+#define FADE_STEP_SIZE_1 1
+#define FADE_STEP_SIZE_2 2
+#define FADE_STEP_SIZE_3 10
+#define FADE_STEP_SIZE_4 100
+#define FADE_BTN_HOLD_1 1 // s
+#define FADE_BTN_HOLD_2 3 // s
+#define FADE_BTN_HOLD_3 5 // s
+#define FADE_BTN_HOLD_4 7 // s
 #define FADE_DELAY 0 // ms Delay added to each step during fading.
                      // Note that this is added on top of the delay already caused
                      // by the code
