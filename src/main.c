@@ -358,6 +358,7 @@ int main()
         sei();                                // Enable interrupts
 
         // Main loop
+        _delay_ms(10);                         // Allow supply voltage to calm down 
 
         uint8_t fade_step_size;
         bool prev_btn_state = BTN_STATE;
