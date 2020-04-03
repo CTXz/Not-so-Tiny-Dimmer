@@ -11,8 +11,19 @@
 
 #include "stdint.h"
 
-typedef struct RGB {
-        uint8_t r, g ,b;
-} RGB;
+#define R 0
+#define G 1
+#define B 2
 
-void ws2812_set_all(RGB rgb, uint16_t pixels, uint8_t maskhi);
+#define RGB 0
+#define GRB 1
+#define BRG 2
+#define BGR 3
+
+typedef uint8_t RGB_t[3];
+
+typedef struct RGBA {
+        uint8_t r, g ,b, a;
+} RGBA;
+
+void ws2812_set_all(RGBA rgba, uint16_t pixels, uint8_t maskhi);

@@ -57,9 +57,18 @@
 volatile uint16_t timer_counter = 0; // Counts number of times TIMER0 has overflown
 volatile bool btn_pressed = false;
 
+// Patches
+RGB_t patches[] = {
+        {255, 255, 255}, // White
+        {255, 74,  33},  // Beige
+        {255, 52,  255}, // Purple
+        {232, 255, 44},  // Lime
+        {106, 255, 255}  // Light Blue
+};
+
 uint8_t selected_patch = 0;
 
-#define NUM_PACHES (sizeof(patches) / sizeof(RGB))
+#define NUM_PACHES (sizeof(patches) / sizeof(RGB_t))
 
 ////////////////////////
 // Functions
@@ -178,25 +187,6 @@ uint16_t inline seconds_passed()
 
 // LED Strip
 
-/* apply_brightness
- * ----------------
- * Arguments:
- *      val - Value to which the brightness should be applied to
- *      brightness - A value between 0 and 255, where 255 is 100% brightness
- * Returns:
- *      Val after applying the brightness value to it
- * Description:
- *      Applies a brightness from 0 to 255 to a given 8-bit value 
- */
-RGB inline apply_brightness(RGB rgb, uint8_t brightness)
-{
-        RGB ret;
-        ret.r = round(((double)brightness/MAX_BRIGHTNESS) * (double)rgb.r);
-        ret.g = round(((double)brightness/MAX_BRIGHTNESS) * (double)rgb.g);
-        ret.b = round(((double)brightness/MAX_BRIGHTNESS) * (double)rgb.b);
-        return ret;
-}
-
 /* set_ws2812
  * ----------
  * Arguments:
@@ -207,9 +197,10 @@ RGB inline apply_brightness(RGB rgb, uint8_t brightness)
  * Description:
  *      Set the color of the entire ws2812 strip to the provided RGB values at a given brightness between 0 and 255.
  */
-void set_ws2812(RGB rgb, uint8_t brightness)
+void set_ws2812(RGB_t rgb, uint8_t brightness)
 {
-        ws2812_set_all(apply_brightness(rgb, brightness), WS2812_PIXELS, WS2812_DIN_MSK);
+        RGBA rgba = {rgb[R], rgb[G], rgb[B], brightness};
+        ws2812_set_all(rgba, WS2812_PIXELS, WS2812_DIN_MSK);
 }
 
 /* fade
@@ -220,54 +211,54 @@ void set_ws2812(RGB rgb, uint8_t brightness)
 void fade(uint8_t step_size) {
 
         static uint8_t prev_step_size = 0;
-        static RGB rgb;
+        static RGB_t rgb;
         static bool r2g = true;
 
         uint8_t tmp;
 
         if (prev_step_size != step_size) {
-                rgb.r = 255;
-                rgb.g = 0;
-                rgb.b = 0;
+                rgb[R] = 255;
+                rgb[G] = 0;
+                rgb[B] = 0;
         }
 
         if (r2g) {
-                tmp = rgb.r;
+                tmp = rgb[R];
                 tmp -= step_size;
 
-                if (tmp >= rgb.r) {
-                        rgb.r = 0;
-                        rgb.g = 255;
+                if (tmp >= rgb[R]) {
+                        rgb[R] = 0;
+                        rgb[G] = 255;
                 } else {
-                        rgb.r = tmp;
-                        rgb.g += step_size;
+                        rgb[R] = tmp;
+                        rgb[G] += step_size;
                 }
 
-                r2g = (rgb.r > 0);
-        } else if (rgb.g > 0) {
-                tmp = rgb.g;
+                r2g = (rgb[R] > 0);
+        } else if (rgb[G] > 0) {
+                tmp = rgb[G];
                 tmp -= step_size;
 
-                if (tmp >= rgb.g) {
-                        rgb.g = 0;
-                        rgb.b = 255;
+                if (tmp >= rgb[G]) {
+                        rgb[G] = 0;
+                        rgb[B] = 255;
                 } else {
-                        rgb.g = tmp;
-                        rgb.b += step_size;
+                        rgb[G] = tmp;
+                        rgb[B] += step_size;
                 }
         } else {
-                tmp = rgb.b;
+                tmp = rgb[B];
                 tmp -= step_size;
 
-                if (tmp >= rgb.b) {
-                        rgb.b = 0;
-                        rgb.r = 255;
+                if (tmp >= rgb[B]) {
+                        rgb[B] = 0;
+                        rgb[R] = 255;
                 } else {
-                        rgb.b = tmp;
-                        rgb.r += step_size;
+                        rgb[B] = tmp;
+                        rgb[R] += step_size;
                 }
 
-                r2g = (rgb.r == 255);
+                r2g = (rgb[R] == 255);
         }
         
         set_ws2812(rgb, brightness());

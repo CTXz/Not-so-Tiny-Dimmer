@@ -23,20 +23,11 @@
 
 #include "ws2812.h"
 
-// Patches
-static const RGB patches[] = {
-        {255, 255, 255}, // White
-        {255, 74,  33},  // Beige
-        {255, 52,  255}, // Purple
-        {232, 255, 44},  // Lime
-        {106, 255, 255}  // Light Blue
-};
-
 // WS2812
 
 #define WS2812_DIN PB0                          // WS2812 DIN pin
 #define WS2812_PIXELS 36                        // !! UPDATE THIS !! Number of pixels on the WS2812 strip
-#define WS2812_COLOR_ORDER BGR                  // Order in which color should be parsed to the strip (Most WS2812 strips use BGR)
+#define WS2812_COLOR_ORDER GRB                  // Order in which color should be parsed to the strip (Most WS2812 strips use BGR)
 #define WS2812_RESET_TIME  0                    // Time required for the WS2812 to reset
                                                 // If runtime between strip writes exceeds the 
                                                 // necessary reset time, this may be set to 0

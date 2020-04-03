@@ -77,6 +77,33 @@
 #define w_nop8  w_nop4 w_nop4
 #define w_nop16 w_nop8 w_nop8
 
+void RGBA_to_RGB(RGBA rgba, RGB_t rgb)
+{
+        rgb[R] = round(((double)rgba.a/255) * (double)rgba.r);
+        rgb[G] = round(((double)rgba.a/255) * (double)rgba.g);
+        rgb[B] = round(((double)rgba.a/255) * (double)rgba.b);
+}
+
+#if WS2812_COLOR_ORDER == RGB
+        #define WS2812_WIRING_RGB_0 0
+        #define WS2812_WIRING_RGB_1 1
+        #define WS2812_WIRING_RGB_2 2
+#elif WS2812_COLOR_ORDER == GRB
+        #define WS2812_WIRING_RGB_0 1
+        #define WS2812_WIRING_RGB_1 0
+        #define WS2812_WIRING_RGB_2 2
+#elif WS2812_COLOR_ORDER == BRG
+        #define WS2812_WIRING_RGB_0 2
+        #define WS2812_WIRING_RGB_1 0
+        #define WS2812_WIRING_RGB_2 1
+#elif WS2812_COLOR_ORDER == BGR
+        #define WS2812_WIRING_RGB_0 2
+        #define WS2812_WIRING_RGB_1 1
+        #define WS2812_WIRING_RGB_2 0
+#else
+        #error "No color order specified! Please set the WS2812_COLOR_ORDER directive in the config file!"
+#endif
+
 #pragma GCC push_options
 #pragma GCC optimize ("O0")
 
@@ -149,10 +176,13 @@ void ws2812_transmit_byte(uint8_t data, uint8_t maskhi, uint8_t masklo)
 
 #pragma GCC pop_options
 
-void inline ws2812_set_all(RGB rgb, uint16_t pixels, uint8_t maskhi)
+void inline ws2812_set_all(RGBA rgba, uint16_t pixels, uint8_t maskhi)
 {
         uint8_t masklo;
         uint8_t sreg_prev;
+
+        RGB_t rgb;
+        RGBA_to_RGB(rgba, rgb);
 
         masklo = ~maskhi & PORTB;
         maskhi |= PORTB;
@@ -161,25 +191,9 @@ void inline ws2812_set_all(RGB rgb, uint16_t pixels, uint8_t maskhi)
         cli();  
   
         while (pixels--) {
-#if WS2812_COLOR_ORDER == GRB
-                ws2812_transmit_byte(rgb.g, maskhi, masklo);
-                ws2812_transmit_byte(rgb.r, maskhi, masklo);
-                ws2812_transmit_byte(rgb.b, maskhi, masklo);
-#elif WS2812_COLOR_ORDER == RGB
-                ws2812_transmit_byte(rgb.r, maskhi, masklo);
-                ws2812_transmit_byte(rgb.g, maskhi, masklo);
-                ws2812_transmit_byte(rgb.b, maskhi, masklo);
-#elif WS2812_COLOR_ORDER == BRG
-                ws2812_transmit_byte(rgb.b, maskhi, masklo);
-                ws2812_transmit_byte(rgb.r, maskhi, masklo);
-                ws2812_transmit_byte(rgb.g, maskhi, masklo);
-#elif WS2812_COLOR_ORDER == BGR
-                ws2812_transmit_byte(rgb.b, maskhi, masklo);
-                ws2812_transmit_byte(rgb.g, maskhi, masklo);
-                ws2812_transmit_byte(rgb.r, maskhi, masklo);
-#else
-        #error "No color order specified! Please set the WS2812_COLOR_ORDER directive in the config file!"
-#endif
+                ws2812_transmit_byte(rgb[WS2812_WIRING_RGB_0], maskhi, masklo);
+                ws2812_transmit_byte(rgb[WS2812_WIRING_RGB_1], maskhi, masklo);
+                ws2812_transmit_byte(rgb[WS2812_WIRING_RGB_2], maskhi, masklo);
         }
 
         SREG=sreg_prev;
