@@ -21,7 +21,7 @@
 
 #pragma once
 
-#include "light_ws2812.h"
+#include "ws2812.h"
 
 // Patches
 static const RGB patches[] = {

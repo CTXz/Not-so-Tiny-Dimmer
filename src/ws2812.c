@@ -1,21 +1,20 @@
 /*
-* light weight WS2812 lib V2.0b
-*
-* Controls WS2811/WS2812/WS2812B RGB-LEDs
-* Author: Tim (cpldcpu@gmail.com)
-*
-* Jan 18th, 2014  v2.0b Initial Version
-* Nov 29th, 2015  v2.3  Added SK6812RGBW support
-*
-* License: GNU GPL v2+ (see License.txt)
-*/
+ * A stripped down and modified version of cpldcpu's light_ws2812 library
+ * 
+ * Author: Tim (cpldcpu@gmail.com), Patrick Pedersen (ctx.xda@gmail.com)
+ *
+ * Jan 18th, 2014  v2.0b Initial Version
+ * Nov 29th, 2015  v2.3  Added SK6812RGBW support
+ *
+ * License: GNU GPL v2+ (see License.txt)
+ */
 
 #include <avr/interrupt.h>
 #include <avr/io.h>
 #include <util/delay.h>
 
 #include "config.h"
-#include "light_ws2812.h"
+#include "ws2812.h"
  
 /*
   This routine writes an array of bytes with RGB values to the Dataout pin

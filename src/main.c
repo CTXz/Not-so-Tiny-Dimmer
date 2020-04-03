@@ -31,7 +31,7 @@
 #include <avr/interrupt.h>
 #include <util/delay.h>
 
-#include "light_ws2812.h"
+#include "ws2812.h"
 
 #include "config.h"
 

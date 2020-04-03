@@ -1,7 +1,4 @@
 /*
- * light weight WS2812 lib include
- *
- * Version 2.3  - Nev 29th 2015
  * Author: Tim (cpldcpu@gmail.com), Patrick Pederse (ctx.xda@gmail.com)
  *
  * A stripped down and slightly altered version of cpldcpu's light_ws2812.h header
