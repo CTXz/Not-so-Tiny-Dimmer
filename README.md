@@ -1,6 +1,17 @@
+<!-- omit in toc -->
 # Tiny Dimmer
 
 A cool little ATtiny 25/45/85 based dimmer for WS2812 RGB strips.
+
+## Contents
+- [Contents](#contents)
+- [Features](#features)
+- [Hardware](#hardware)
+  - [Schematic](#schematic)
+  - [Perfboard](#perfboard)
+  - [Showcase](#showcase)
+- [Flashing the firmware](#flashing-the-firmware)
+- [Project log](#project-log)
 
 ## Features
 
@@ -30,16 +41,16 @@ The dimmer can also be easily be built with a digispark board.
 
 The price for the components can range anywhere between 5 to 15 EUR, depending from where you purchase the components, and what their quality is.
 
-### Schematic:
+### Schematic
 
 ![Schematic.png](Schematic.png)
 
-### Perfboard:
+### Perfboard
 
 Top view:
 ![](TinyDimmerTop.png)
 
-### Showcase:
+### Showcase
 
 Perfboard:
 ![](PCBShowcase.jpg)
