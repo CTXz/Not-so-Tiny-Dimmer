@@ -86,7 +86,6 @@ uint8_t selected_patch = 0;
  *      Returns the average ADC reading from n samples
  */
 
-#if defined(ADC_AVG_SAMPLES) || ADC_AVG_SAMPLES > 1
 uint8_t inline adc_avg(uint8_t num_samples)
 {
         ADCSRA &= ~(1 << ADATE); // Temporarily disable auto triggering
@@ -102,7 +101,6 @@ uint8_t inline adc_avg(uint8_t num_samples)
 
         return round((double)ret/num_samples);
 }
-#endif
 
 /* brightness
  * ----------
@@ -151,8 +149,6 @@ uint8_t inline brightness()
  *      false released when the button is being held.
  */
 
-#if defined(BTN_MIN_RELEASED_READS) && BTN_MIN_RELEASED_READS > 1
-
 bool inline btn_min_reads(bool pressed, uint32_t min_reads)
 {
         if (min_reads == 0)
@@ -164,8 +160,6 @@ bool inline btn_min_reads(bool pressed, uint32_t min_reads)
 
         return false;
 }
-
-#endif
 
 // Timing
 
