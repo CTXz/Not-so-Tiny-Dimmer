@@ -30,7 +30,7 @@ The following components are required to build a tiny dimmer:
 |Component|Quantity|Description|
 |---------|--------|-----------|
 |WS2812 strip|1|The dimmer drives addressable WS2812 RGB strips, as those are simply very common and are what I had at home.|
-|ATtiny 85/45/25|1|The chip to run the fimrware, hence the name "TinyDimmer". Altough the firmware will barely fit on a ATtiny25, it is highly recommended to use an ATiny45 or ATiny85 if additional features are to be added to the software later.|
+|ATtiny 85/45/25|1|The chip that runs the firmware, hence the name "TinyDimmer". Although the firmware will barely fit on a ATtiny25, it is highly recommended to use an ATiny45 or ATiny85 if additional features are to be added to the software later.|
 |1K resistor|1|Used to limit the current to prevent the brightness pot from burning trough.|
 |10k linear potentiometer|1|Used to set the brightness. 10k linear pots are recommended, but any linear pot between 1k and 100k should do the job.|
 |10uF Capacitor|1|Optional, but helps decoupling power supply noise.|
@@ -72,7 +72,7 @@ In addition to that, the [PlatformIO configuration file](platformio.ini) also ex
 
 Once everything is set in PlatformIO, make sure the parameters in the [configuration header](src/config.h) match your needs and simply click the upload button. The firmware should be flashed onto your TinyDimmer in no time. 
 
-If you're planning to flash the firmware without the PlatformIO IDE, **make sure to program the ATtinys fuses for it to run at 16Mhz!**
+If you're planning to flash the firmware without the PlatformIO IDE, **make sure to program the ATtiny's fuses for it to run at 16Mhz!**
 
 ## Project log
 
