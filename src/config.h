@@ -37,6 +37,9 @@ static const RGB patches[] = {
 #define WS2812_DIN PB0                          // WS2812 DIN pin
 #define WS2812_PIXELS 36                        // !! UPDATE THIS !! Number of pixels on the WS2812 strip
 #define WS2812_COLOR_ORDER BGR                  // Order in which color should be parsed to the strip (Most WS2812 strips use BGR)
+#define WS2812_RESET_TIME  0                    // Time required for the WS2812 to reset
+                                                // If runtime between strip writes exceeds the 
+                                                // necessary reset time, this may be set to 0
 
         // Pots
 #define BRIGHTNESS_POT_ADMUX_MSK (1 << MUX1)    // PB4 (Refer to table 17-4 in the ATtiny25/45/85 datasheet)

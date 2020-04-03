@@ -143,7 +143,7 @@ void ws2812_transmit_byte(uint8_t data, uint8_t maskhi, uint8_t masklo)
                 "       dec   %0    \n\t"    //  '1' [+4] '0' [+3]
                 "       brne  loop%=\n\t"    //  '1' [+5] '0' [+4]
                 :	"=&d" (ctr)
-                :	"r" (data), "x" ((uint8_t *) &ws2812_PORTREG), "r" (maskhi), "r" (masklo)
+                :	"r" (data), "x" ((uint8_t *) &PORTB), "r" (maskhi), "r" (masklo)
         );
 }
 
@@ -154,8 +154,8 @@ void inline ws2812_set_all(RGB rgb, uint16_t pixels, uint8_t maskhi)
         uint8_t masklo;
         uint8_t sreg_prev;
 
-        masklo = ~maskhi & ws2812_PORTREG;
-        maskhi |= ws2812_PORTREG;
+        masklo = ~maskhi & PORTB;
+        maskhi |= PORTB;
 
         sreg_prev=SREG;
         cli();  
@@ -184,7 +184,7 @@ void inline ws2812_set_all(RGB rgb, uint16_t pixels, uint8_t maskhi)
 
         SREG=sreg_prev;
 
-#if defined(_ws2812_resettime) && ws2812_resettime > 0
-        _delay_us(ws2812_resettime);
+#if defined(WS2812_RESET_TIME) && WS2812_RESET_TIME > 0
+        _delay_us(WS2812_RESET_TIME);
 #endif
 }
