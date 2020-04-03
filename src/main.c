@@ -369,11 +369,11 @@ int main()
                 
                 uint16_t s_passed = seconds_passed();
 
-                #if defined(BTN_MIN_RELEASED_READS) && BTN_MIN_RELEASED_READS > 1
+#if defined(BTN_MIN_RELEASED_READS) && BTN_MIN_RELEASED_READS > 1
                         bool btn_state = btn_min_reads(false, prev_btn_state ? BTN_MIN_RELEASED_READS : 0);
-                #else
+#else
                         bool btn_state = BTN_STATE;
-                #endif
+#endif
 
                 if (!prev_btn_state && btn_state) { // Button press
                         reset_timer();
