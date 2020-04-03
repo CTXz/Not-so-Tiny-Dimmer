@@ -57,15 +57,6 @@
 volatile uint16_t timer_counter = 0; // Counts number of times TIMER0 has overflown
 volatile bool btn_pressed = false;
 
-// Patches
-RGB patches[] = {
-        {255, 255, 255}, // White
-        {255, 74,  33},  // Beige
-        {255, 52,  255}, // Purple
-        {232, 255, 44},  // Lime
-        {106, 255, 255}  // Light Blue
-};
-
 uint8_t selected_patch = 0;
 
 #define NUM_PACHES (sizeof(patches) / sizeof(RGB))
@@ -292,7 +283,7 @@ void fade(uint8_t step_size) {
  *      Once the end of the array has been reached, the
  *      first element is loaded again.
  */
-void inline next_patch()
+void next_patch()
 {
         selected_patch = (selected_patch + 1) % NUM_PACHES;
         set_ws2812(patches[selected_patch], brightness());

@@ -21,6 +21,17 @@
 
 #pragma once
 
+#include "light_ws2812.h"
+
+// Patches
+static const RGB patches[] = {
+        {255, 255, 255}, // White
+        {255, 74,  33},  // Beige
+        {255, 52,  255}, // Purple
+        {232, 255, 44},  // Lime
+        {106, 255, 255}  // Light Blue
+};
+
 // WS2812
 
 #define WS2812_DIN PB0                          // WS2812 DIN pin
