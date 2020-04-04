@@ -9,6 +9,9 @@
  * License: GNU GPL v2+ (see License.txt)
  */
 
+#include <string.h>
+#include <stdlib.h>
+
 #include <avr/interrupt.h>
 #include <avr/io.h>
 #include <util/delay.h>
@@ -77,13 +80,6 @@
 #define w_nop8  w_nop4 w_nop4
 #define w_nop16 w_nop8 w_nop8
 
-void RGBA_to_RGB(RGBA rgba, RGB_t rgb)
-{
-        rgb[R] = round(((double)rgba.a/255) * (double)rgba.r);
-        rgb[G] = round(((double)rgba.a/255) * (double)rgba.g);
-        rgb[B] = round(((double)rgba.a/255) * (double)rgba.b);
-}
-
 #if WS2812_COLOR_ORDER == RGB
         #define WS2812_WIRING_RGB_0 0
         #define WS2812_WIRING_RGB_1 1
@@ -103,6 +99,31 @@ void RGBA_to_RGB(RGBA rgba, RGB_t rgb)
 #else
         #error "No color order specified! Please set the WS2812_COLOR_ORDER directive in the config file!"
 #endif
+
+void inline strip_cpy(strip *dst, strip *src)
+{
+        dst->substrips = malloc(sizeof(substrip) * src->n_substrips);
+        dst->n_substrips = src->n_substrips;
+        memcpy(dst->substrips, src->substrips, sizeof(substrip) * dst->n_substrips);
+}
+
+void inline free_strip(strip *strp)
+{
+        free(strp->substrips);
+}
+
+void inline rgb_apply_brightness(RGB_t rgb, uint8_t brightness)
+{
+        rgb[R] = round(((double)brightness/255) * (double)rgb[R]);
+        rgb[G] = round(((double)brightness/255) * (double)rgb[G]);
+        rgb[B] = round(((double)brightness/255) * (double)rgb[B]);
+}
+
+void inline strip_apply_brightness(strip *strp, uint8_t brightness)
+{
+        for (uint16_t i = 0; i < strp->n_substrips; i++) 
+                rgb_apply_brightness(strp->substrips[i].rgb, brightness);
+}
 
 #pragma GCC push_options
 #pragma GCC optimize ("O0")
@@ -176,13 +197,14 @@ void ws2812_transmit_byte(uint8_t data, uint8_t maskhi, uint8_t masklo)
 
 #pragma GCC pop_options
 
-void inline ws2812_set_all(RGBA rgba, uint16_t pixels, uint8_t maskhi)
+void inline ws2812_set_all(RGB_ptr_t rgb, uint8_t brightness, uint16_t pixels, uint8_t maskhi)
 {
         uint8_t masklo;
         uint8_t sreg_prev;
 
-        RGB_t rgb;
-        RGBA_to_RGB(rgba, rgb);
+        RGB_t rgb_cpy;
+        memcpy(&rgb_cpy, rgb, sizeof(RGB_t));
+        rgb_apply_brightness(rgb_cpy, brightness);
 
         masklo = ~maskhi & PORTB;
         maskhi |= PORTB;
@@ -191,12 +213,45 @@ void inline ws2812_set_all(RGBA rgba, uint16_t pixels, uint8_t maskhi)
         cli();  
   
         while (pixels--) {
-                ws2812_transmit_byte(rgb[WS2812_WIRING_RGB_0], maskhi, masklo);
-                ws2812_transmit_byte(rgb[WS2812_WIRING_RGB_1], maskhi, masklo);
-                ws2812_transmit_byte(rgb[WS2812_WIRING_RGB_2], maskhi, masklo);
+                ws2812_transmit_byte(rgb_cpy[WS2812_WIRING_RGB_0], maskhi, masklo);
+                ws2812_transmit_byte(rgb_cpy[WS2812_WIRING_RGB_1], maskhi, masklo);
+                ws2812_transmit_byte(rgb_cpy[WS2812_WIRING_RGB_2], maskhi, masklo);
         }
 
         SREG=sreg_prev;
+
+#if defined(WS2812_RESET_TIME) && WS2812_RESET_TIME > 0
+        _delay_us(WS2812_RESET_TIME);
+#endif
+}
+
+void inline ws2812_set_strip(strip strp, uint8_t brightness, uint8_t maskhi)
+{
+        uint8_t masklo;
+        uint8_t sreg_prev;
+
+        strip strp_cpy;
+        strip_cpy(&strp_cpy, &strp);
+
+        strip_apply_brightness(&strp_cpy, brightness);
+
+        masklo = ~maskhi & PORTB;
+        maskhi |= PORTB;
+
+        sreg_prev=SREG;
+        cli();  
+  
+        for (uint16_t i = 0; i < strp_cpy.n_substrips; i++) {
+                for (uint16_t j = 0; j < strp_cpy.substrips[i].length; j++) {
+                        ws2812_transmit_byte(strp_cpy.substrips[i].rgb[WS2812_WIRING_RGB_0], maskhi, masklo);
+                        ws2812_transmit_byte(strp_cpy.substrips[i].rgb[WS2812_WIRING_RGB_1], maskhi, masklo);
+                        ws2812_transmit_byte(strp_cpy.substrips[i].rgb[WS2812_WIRING_RGB_2], maskhi, masklo);
+                }
+        }
+
+        SREG=sreg_prev;
+
+        free_strip(&strp_cpy);
 
 #if defined(WS2812_RESET_TIME) && WS2812_RESET_TIME > 0
         _delay_us(WS2812_RESET_TIME);

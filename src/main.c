@@ -24,8 +24,10 @@
 #error "Only ATtiny25/45/85 boards are supported!"
 #endif
 
-#include <math.h>
+#include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
+#include <math.h>
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
@@ -53,22 +55,71 @@
 // Globals
 ////////////////////////
 
+strip patch_full(uint16_t pixels, RGB_ptr_t rgb)
+{
+        strip ret;
+        
+        ret.n_substrips = 1;
+        ret.substrips = malloc(sizeof(substrip));
+
+        ret.substrips[0].length = pixels;
+        memcpy(&ret.substrips[0].rgb, rgb, sizeof(RGB_t));
+
+        return ret;
+}
+
+strip patch_half(uint16_t pixels, RGB_ptr_t fhalf, RGB_ptr_t shalf)
+{
+        strip ret;
+
+        ret.n_substrips = 2;
+        ret.substrips = malloc(sizeof(substrip) * 2);
+
+        ret.substrips[0].length = pixels/2;
+        memcpy(&ret.substrips[0].rgb, fhalf, sizeof(RGB_t));
+
+        ret.substrips[1].length = pixels - (pixels/2);
+        memcpy(&ret.substrips[1].rgb, shalf, sizeof(RGB_t));
+
+        return ret;
+}
+
 // Interrupt controlled
 volatile uint16_t timer_counter = 0; // Counts number of times TIMER0 has overflown
 volatile bool btn_pressed = false;
 
-// Patches
-RGB_t patches[] = {
-        {255, 255, 255}, // White
-        {255, 74,  33},  // Beige
-        {255, 52,  255}, // Purple
-        {232, 255, 44},  // Lime
-        {106, 255, 255}  // Light Blue
-};
+// // Patches
+// RGB_t patches[] = {
+//         {255, 255, 255}, // White
+//         {255, 74,  33},  // Beige
+//         {255, 52,  255}, // Purple
+//         {232, 255, 44},  // Lime
+//         {106, 255, 255}  // Light Blue
+// };
+
+RGB_t off   = {0, 0, 0};       // Off/Black
+RGB_t white = {255, 255, 255}; // White
+
+
+strip patches[7];
+
+void init_patches()
+{
+        // Initialize Patches
+        patches[0] = patch_full(WS2812_PIXELS, white);
+        patches[1] = patch_half(WS2812_PIXELS, white, off);
+        patches[2] = patch_half(WS2812_PIXELS, off, white);
+        patches[3] = patch_half(WS2812_PIXELS, (RGB_t){10, 255, 202}, (RGB_t){255, 20, 127});
+        patches[4] = patch_half(WS2812_PIXELS, (RGB_t){255, 20, 127}, (RGB_t){10, 255, 202});
+        patches[5] = patch_half(WS2812_PIXELS, (RGB_t){151, 0, 255}, (RGB_t){255, 74,  33});
+        patches[6] = patch_half(WS2812_PIXELS, (RGB_t){255, 74,  33}, (RGB_t){151, 0, 255});
+
+
+}
 
 uint8_t selected_patch = 0;
 
-#define NUM_PACHES (sizeof(patches) / sizeof(RGB_t))
+#define NUM_PACHES (sizeof(patches) / sizeof(strip))
 
 ////////////////////////
 // Functions
@@ -199,8 +250,7 @@ uint16_t inline seconds_passed()
  */
 void set_ws2812(RGB_t rgb, uint8_t brightness)
 {
-        RGBA rgba = {rgb[R], rgb[G], rgb[B], brightness};
-        ws2812_set_all(rgba, WS2812_PIXELS, WS2812_DIN_MSK);
+        ws2812_set_all(rgb, brightness, WS2812_PIXELS, WS2812_DIN_MSK);
 }
 
 /* fade
@@ -277,7 +327,7 @@ void fade(uint8_t step_size) {
 void next_patch()
 {
         selected_patch = (selected_patch + 1) % NUM_PACHES;
-        set_ws2812(patches[selected_patch], brightness());
+        ws2812_set_strip(patches[selected_patch], brightness(), WS2812_DIN_MSK);
 }
 
 ////////////////////////
@@ -333,8 +383,31 @@ int main()
         // Interrupts
         sei();                                // Enable interrupts
 
+        // Patches
+        init_patches();
+
         // Main loop
         _delay_ms(10);                         // Allow supply voltage to calm down 
+
+        // substrip right = {
+        //         {255, 255, 255},
+        //         WS2812_PIXELS / 2
+        // };
+
+        // substrip left = {
+        //         {0, 0 , 0},
+        //         WS2812_PIXELS - (WS2812_PIXELS / 2)
+        // };
+
+        // strip strip;
+        // strip.substrips = malloc(sizeof(substrip) * 2);
+        // strip.substrips[0] = right;
+        // strip.substrips[1] = left;
+        // strip.n_substrips = 2;
+
+        // while(1) {
+        //         ws2812_set_strip(strip, brightness(), WS2812_DIN_MSK);
+        // }
 
         uint8_t fade_step_size;
         bool prev_btn_state = BTN_STATE;
@@ -382,7 +455,7 @@ int main()
                         _delay_ms(FADE_DELAY);
 #endif
                 } else {
-                        set_ws2812(patches[selected_patch], brightness());
+                        ws2812_set_strip(patches[selected_patch], brightness(), WS2812_DIN_MSK);
                 }
         }
 }

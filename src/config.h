@@ -47,7 +47,7 @@
 
 #define BTN PB2                                 // Push button pin
 
-#define BTN_DEBOUNCE_TIME 100                   // ms - Time to wait for button to debounce. Increasing this will reduce false trigger due to
+#define BTN_DEBOUNCE_TIME 50                   // ms - Time to wait for button to debounce. Increasing this will reduce false trigger due to
                                                 // bouncing, but add a slight delay to color toggling.
                                                 // Set to 0 or comment out to disable
                                                 

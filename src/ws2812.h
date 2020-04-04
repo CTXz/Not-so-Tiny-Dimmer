@@ -21,9 +21,19 @@
 #define BGR 3
 
 typedef uint8_t RGB_t[3];
+typedef uint8_t* RGB_ptr_t;
 
-typedef struct RGBA {
-        uint8_t r, g ,b, a;
-} RGBA;
+typedef struct substrip {
+        uint16_t length;
+        RGB_t rgb;
+} substrip;
 
-void ws2812_set_all(RGBA rgba, uint16_t pixels, uint8_t maskhi);
+typedef struct strip {
+        uint16_t n_substrips;
+        substrip *substrips;
+} strip;
+
+// void init
+
+void ws2812_set_all(RGB_t rgb, uint8_t brightness, uint16_t pixels, uint8_t maskhi);
+void ws2812_set_strip(strip strp, uint8_t brightness, uint8_t maskhi);
