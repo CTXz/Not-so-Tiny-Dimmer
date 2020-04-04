@@ -23,8 +23,11 @@
 
 #include "ws2812.h"
 
-// WS2812
+// Patches
+// #define DISABLE_FULL_PATCHES
+// #define DISABLE_STRIP_PATCHES
 
+// WS2812
 #define WS2812_DIN PB0                          // WS2812 DIN pin
 #define WS2812_PIXELS 36                        // !! UPDATE THIS !! Number of pixels on the WS2812 strip
 #define WS2812_COLOR_ORDER GRB                  // Order in which color should be parsed to the strip (Most WS2812 strips use BGR)
@@ -32,7 +35,7 @@
                                                 // If runtime between strip writes exceeds the 
                                                 // necessary reset time, this may be set to 0
 
-        // Pots
+// Pots
 #define BRIGHTNESS_POT_ADMUX_MSK (1 << MUX1)    // PB4 (Refer to table 17-4 in the ATtiny25/45/85 datasheet)
 
 #define ADC_AVG_SAMPLES 255                     // Max 255 - Number of samples used to determine the average potentiometer value.
@@ -47,7 +50,7 @@
 
 #define BTN PB2                                 // Push button pin
 
-#define BTN_DEBOUNCE_TIME 50                   // ms - Time to wait for button to debounce. Increasing this will reduce false trigger due to
+#define BTN_DEBOUNCE_TIME 100                   // ms - Time to wait for button to debounce. Increasing this will reduce false trigger due to
                                                 // bouncing, but add a slight delay to color toggling.
                                                 // Set to 0 or comment out to disable
                                                 
