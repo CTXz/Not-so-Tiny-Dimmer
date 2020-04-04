@@ -206,21 +206,6 @@ uint16_t inline seconds_passed()
 
 // LED Strip
 
-/* set_ws2812
- * ----------
- * Arguments:
- *      r - Red value
- *      g - Green value
- *      b - Blue value
- *      brightness - Brightness value
- * Description:
- *      Set the color of the entire ws2812 strip to the provided RGB values at a given brightness between 0 and 255.
- */
-void set_ws2812(RGB_t rgb, uint8_t brightness)
-{
-        ws2812_set_all(rgb, brightness, WS2812_PIXELS, WS2812_DIN_MSK);
-}
-
 /* fade
  * ----
  * Description:
@@ -279,7 +264,7 @@ void fade(uint8_t step_size) {
                 r2g = (rgb[R] == 255);
         }
         
-        set_ws2812(rgb, brightness());
+        ws2812_set_all(rgb, brightness(), WS2812_PIXELS, WS2812_DIN_MSK);
         prev_step_size = step_size;
 }
 
@@ -340,7 +325,7 @@ void update_strip(uint8_t patch)
 
 #ifndef DISABLE_FULL_PATCHES
         if ((set = (patch < NUM_FULL_PATCHES)))
-                set_ws2812(full_patches[patch], brightness());
+                ws2812_set_all(full_patches[patch], brightness(), WS2812_PIXELS, WS2812_DIN_MSK);
 #endif
 #ifndef DISABLE_STRIP_PATCHES
         if ((set = (!set && (patch - NUM_FULL_PATCHES)  < NUM_STRIP_PATCHES)))
