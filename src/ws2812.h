@@ -20,6 +20,9 @@
 #define BRG 2
 #define BGR 3
 
+#define WS2812_DIN_MSK (1 << WS2812_DIN)
+#define WS2812_DIN_MSK_INV 
+
 typedef uint8_t RGB_t[3];
 typedef uint8_t* RGB_ptr_t;
 
@@ -35,5 +38,7 @@ typedef struct strip {
 
 // void init
 
-void ws2812_set_all(RGB_t rgb, uint8_t brightness, uint16_t pixels, uint8_t maskhi);
-void ws2812_set_strip(strip strp, uint8_t brightness, uint8_t maskhi);
+void ws2812_prep_tx();
+void ws2812_end_tx();
+void ws2812_set_all(RGB_t rgb, uint8_t brightness, uint16_t pixels);
+void ws2812_set_strip(strip strp, uint8_t brightness);

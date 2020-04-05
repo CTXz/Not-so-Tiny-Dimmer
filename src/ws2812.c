@@ -100,6 +100,8 @@
         #error "No color order specified! Please set the WS2812_COLOR_ORDER directive in the config file!"
 #endif
 
+static uint8_t _sreg_prev, _maskhi, _masklo;
+
 void inline strip_cpy(strip *dst, strip *src)
 {
         dst->substrips = malloc(sizeof(substrip) * src->n_substrips);
@@ -125,10 +127,32 @@ void inline strip_apply_brightness(strip *strp, uint8_t brightness)
                 rgb_apply_brightness(strp->substrips[i].rgb, brightness);
 }
 
+void inline ws2812_prep_tx()
+{
+        _masklo = ~WS2812_DIN_MSK & PORTB;
+        _maskhi = WS2812_DIN_MSK | PORTB;
+
+        _sreg_prev=SREG;
+        cli();  
+}
+
+void inline ws2812_wait_rst()
+{
+#if defined(WS2812_RESET_TIME) && WS2812_RESET_TIME > 0
+        _delay_us(WS2812_RESET_TIME);
+#endif
+}
+
+void inline ws2812_end_tx()
+{
+        SREG=_sreg_prev;
+        ws2812_wait_rst();
+}
+
 #pragma GCC push_options
 #pragma GCC optimize ("O0")
 
-void ws2812_transmit_byte(uint8_t data, uint8_t maskhi, uint8_t masklo)
+void ws2812_tx_byte(uint8_t data)
 {
         uint8_t ctr;
 
@@ -191,69 +215,42 @@ void ws2812_transmit_byte(uint8_t data, uint8_t maskhi, uint8_t masklo)
                 "       dec   %0    \n\t"    //  '1' [+4] '0' [+3]
                 "       brne  loop%=\n\t"    //  '1' [+5] '0' [+4]
                 :	"=&d" (ctr)
-                :	"r" (data), "x" ((uint8_t *) &PORTB), "r" (maskhi), "r" (masklo)
+                :	"r" (data), "x" ((uint8_t *) &PORTB), "r" (_maskhi), "r" (_masklo)
         );
 }
 
 #pragma GCC pop_options
 
-void inline ws2812_set_all(RGB_ptr_t rgb, uint8_t brightness, uint16_t pixels, uint8_t maskhi)
+void inline ws2812_set_all(RGB_ptr_t rgb, uint8_t brightness, uint16_t pixels)
 {
-        uint8_t masklo;
-        uint8_t sreg_prev;
-
         RGB_t rgb_cpy;
         memcpy(&rgb_cpy, rgb, sizeof(RGB_t));
         rgb_apply_brightness(rgb_cpy, brightness);
-
-        masklo = ~maskhi & PORTB;
-        maskhi |= PORTB;
-
-        sreg_prev=SREG;
-        cli();  
   
+        ws2812_prep_tx();
         while (pixels--) {
-                ws2812_transmit_byte(rgb_cpy[WS2812_WIRING_RGB_0], maskhi, masklo);
-                ws2812_transmit_byte(rgb_cpy[WS2812_WIRING_RGB_1], maskhi, masklo);
-                ws2812_transmit_byte(rgb_cpy[WS2812_WIRING_RGB_2], maskhi, masklo);
+                ws2812_tx_byte(rgb_cpy[WS2812_WIRING_RGB_0]);
+                ws2812_tx_byte(rgb_cpy[WS2812_WIRING_RGB_1]);
+                ws2812_tx_byte(rgb_cpy[WS2812_WIRING_RGB_2]);
         }
-
-        SREG=sreg_prev;
-
-#if defined(WS2812_RESET_TIME) && WS2812_RESET_TIME > 0
-        _delay_us(WS2812_RESET_TIME);
-#endif
+        ws2812_end_tx();
 }
 
-void inline ws2812_set_strip(strip strp, uint8_t brightness, uint8_t maskhi)
+void inline ws2812_set_strip(strip strp, uint8_t brightness)
 {
-        uint8_t masklo;
-        uint8_t sreg_prev;
-
         strip strp_cpy;
         strip_cpy(&strp_cpy, &strp);
-
         strip_apply_brightness(&strp_cpy, brightness);
 
-        masklo = ~maskhi & PORTB;
-        maskhi |= PORTB;
-
-        sreg_prev=SREG;
-        cli();  
-  
+        ws2812_prep_tx();
         for (uint16_t i = 0; i < strp_cpy.n_substrips; i++) {
                 for (uint16_t j = 0; j < strp_cpy.substrips[i].length; j++) {
-                        ws2812_transmit_byte(strp_cpy.substrips[i].rgb[WS2812_WIRING_RGB_0], maskhi, masklo);
-                        ws2812_transmit_byte(strp_cpy.substrips[i].rgb[WS2812_WIRING_RGB_1], maskhi, masklo);
-                        ws2812_transmit_byte(strp_cpy.substrips[i].rgb[WS2812_WIRING_RGB_2], maskhi, masklo);
+                        ws2812_tx_byte(strp_cpy.substrips[i].rgb[WS2812_WIRING_RGB_0]);
+                        ws2812_tx_byte(strp_cpy.substrips[i].rgb[WS2812_WIRING_RGB_1]);
+                        ws2812_tx_byte(strp_cpy.substrips[i].rgb[WS2812_WIRING_RGB_2]);
                 }
         }
-
-        SREG=sreg_prev;
+        ws2812_end_tx();
 
         free_strip(&strp_cpy);
-
-#if defined(WS2812_RESET_TIME) && WS2812_RESET_TIME > 0
-        _delay_us(WS2812_RESET_TIME);
-#endif
 }
