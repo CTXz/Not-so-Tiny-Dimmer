@@ -67,4 +67,5 @@ typedef struct strip {
 
 void strip_set_all(RGB_ptr_t rgb, uint8_t brightness, uint16_t pixels);
 void strip_set(strip strp, uint8_t brightness);
-
+void strip_distribute_rgb(RGB_t rgb[], uint16_t size, uint8_t brightness, uint16_t pixels);
+void strip_fade_rgb(uint8_t step_size, uint8_t brightness, uint16_t pixels);

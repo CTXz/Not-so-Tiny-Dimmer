@@ -21,6 +21,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include <math.h>
 
 #include "ws2812.h"
@@ -83,4 +84,72 @@ void inline strip_set(strip strp, uint8_t brightness)
         ws2812_end_tx();
 
         strip_free(&strp_cpy);
+}
+
+void inline strip_distribute_rgb(RGB_t rgb[], uint16_t size, uint8_t brightness, uint16_t pixels)
+{
+        strip strp;
+        strp.n_substrips = size;
+        strp.substrips = malloc(sizeof(substrip) * size);
+
+        for (uint16_t i = 0; i < size; i++) {
+                strp.substrips[i].length = pixels/size;
+
+                if (i == size - 1)
+                        strp.substrips[i].length += pixels % size;
+
+                memcpy(&strp.substrips[i].rgb, &rgb[i], sizeof(RGB_t));
+        }
+
+        strip_set(strp, brightness);
+        strip_free(&strp);
+}
+
+void strip_fade_rgb(uint8_t step_size, uint8_t brightness, uint16_t pixels)
+{
+        static RGB_t rgb;
+        static bool r2g = true;
+
+        uint8_t tmp;
+
+        if (r2g) {
+                tmp = rgb[R];
+                tmp -= step_size;
+
+                if (tmp > rgb[R]) {
+                        rgb[R] = 0;
+                        rgb[G] = 255;
+                } else {
+                        rgb[R] = tmp;
+                        rgb[G] += step_size;
+                }
+
+                r2g = (rgb[R] > 0);
+        } else if (rgb[G] > 0) {
+                tmp = rgb[G];
+                tmp -= step_size;
+
+                if (tmp > rgb[G]) {
+                        rgb[G] = 0;
+                        rgb[B] = 255;
+                } else {
+                        rgb[G] = tmp;
+                        rgb[B] += step_size;
+                }
+        } else {
+                tmp = rgb[B];
+                tmp -= step_size;
+
+                if (tmp > rgb[B]) {
+                        rgb[B] = 0;
+                        rgb[R] = 255;
+                } else {
+                        rgb[B] = tmp;
+                        rgb[R] += step_size;
+                }
+
+                r2g = (rgb[R] == 255);
+        }
+        
+        strip_set_all(rgb, brightness, pixels);
 }

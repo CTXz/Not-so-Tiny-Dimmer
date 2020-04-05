@@ -21,11 +21,64 @@
 
 #pragma once
 
+#include <stdlib.h>
+
 #include "ws2812.h"
+#include "strip.h"
+#include "patch_macros.h"
 
 // Patches
 // #define DISABLE_FULL_PATCHES
 // #define DISABLE_STRIP_PATCHES
+#define NUM_PATCHES 9
+
+#define PATCH_0 PATCH_SET_ALL(255, 255, 255)
+
+#define PATCH_1 PATCH_DISTRIBUTE ( \
+        RGB_ARRAY (                \
+                {255, 255, 255},   \
+                {0, 0, 0}          \
+        )                          \
+)
+
+#define PATCH_2 PATCH_DISTRIBUTE ( \
+        RGB_ARRAY (                \
+                {0, 0, 0},         \
+                {255, 255, 255}    \
+        )                          \
+)
+
+#define PATCH_3 PATCH_DISTRIBUTE ( \
+        RGB_ARRAY (                \
+                {10, 255, 202},    \
+                {255, 20, 127}     \
+        )                          \
+)
+
+#define PATCH_4 PATCH_DISTRIBUTE ( \
+        RGB_ARRAY (                \
+                {255, 20, 127},    \
+                {10, 255, 202}     \
+        )                          \
+)
+
+#define PATCH_5 PATCH_DISTRIBUTE ( \
+        RGB_ARRAY (                \
+                {151, 0, 255},     \
+                {255, 74,  33}     \
+        )                          \
+)
+
+#define PATCH_6 PATCH_DISTRIBUTE ( \
+        RGB_ARRAY (                \
+                {255, 74,  33},    \
+                {151, 0, 255}      \
+        )                          \
+)
+
+#define PATCH_7 PATCH_ANIMATION_FADE_RGB_POT_CTRL
+
+#define PATCH_8 PATCH_ANIMATION_SWAP_POT_CTRL(rand() % 255, rand() % 255, rand() % 255, 0, 0, 0);
 
 // WS2812
 #define WS2812_DIN PB0                          // WS2812 DIN pin
