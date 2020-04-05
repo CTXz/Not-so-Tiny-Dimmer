@@ -56,10 +56,10 @@ void inline strip_free(strip *strp)
         free(strp->substrips);
 }
 
-void inline strip_set_all(RGB_ptr_t rgb, uint16_t pixels)
+void inline strip_set_all(RGB_ptr_t rgb)
 {
         ws2812_prep_tx();
-        while (pixels--) {
+        for (uint16_t i = 0; i < WS2812_PIXELS; i++) {
                 ws2812_tx_byte(rgb[WS2812_WIRING_RGB_0]);
                 ws2812_tx_byte(rgb[WS2812_WIRING_RGB_1]);
                 ws2812_tx_byte(rgb[WS2812_WIRING_RGB_2]);
@@ -91,17 +91,17 @@ void inline strip_set_pxbuf(pixel_buffer_ptr pxbuf)
         ws2812_end_tx();
 }
 
-void inline strip_distribute_rgb(RGB_t rgb[], uint16_t size, uint16_t pixels)
+void inline strip_distribute_rgb(RGB_t rgb[], uint16_t size)
 {
         strip strp;
         strp.n_substrips = size;
         strp.substrips = malloc(sizeof(substrip) * size);
 
         for (uint16_t i = 0; i < size; i++) {
-                strp.substrips[i].length = pixels/size;
+                strp.substrips[i].length = WS2812_PIXELS/size;
 
                 if (i == size - 1)
-                        strp.substrips[i].length += pixels % size;
+                        strp.substrips[i].length += WS2812_PIXELS % size;
 
                 memcpy(&strp.substrips[i].rgb, &rgb[i], sizeof(RGB_t));
         }
@@ -110,7 +110,7 @@ void inline strip_distribute_rgb(RGB_t rgb[], uint16_t size, uint16_t pixels)
         strip_free(&strp);
 }
 
-void strip_fade_rgb(uint8_t step_size, uint8_t brightness, uint16_t pixels)
+void strip_fade_rgb(uint8_t step_size, uint8_t brightness)
 {
         static RGB_t rgb;
         static bool r2g = true;
@@ -164,9 +164,9 @@ void strip_fade_rgb(uint8_t step_size, uint8_t brightness, uint16_t pixels)
                 RGB_t rgb_cpy;
                 memcpy(&rgb_cpy, &rgb, sizeof(RGB_t));
                 rgb_apply_brightness(rgb_cpy, brightness);
-                strip_set_all(rgb_cpy, pixels);
+                strip_set_all(rgb_cpy);
         } else {
-                strip_set_all(rgb, pixels);
+                strip_set_all(rgb);
         }
 
 }

@@ -8,7 +8,7 @@
 #define PATCH_SET_ALL(R, G, B) \
         RGB_t rgb = {R, G, B}; \
         rgb_apply_brightness(rgb, pot()); \
-        strip_set_all(rgb, WS2812_PIXELS);
+        strip_set_all(rgb);
 
 #define PATCH_DISTRIBUTE(RGB_ARR) \
         RGB_t rgb[] = { \
@@ -17,10 +17,10 @@
         uint8_t brightness = pot(); \
         for (uint16_t i = 0; i < sizeof(rgb)/sizeof(RGB_t); i++) \
                 rgb_apply_brightness(rgb[i], brightness); \
-        strip_distribute_rgb(rgb, sizeof(rgb)/sizeof(RGB_t), WS2812_PIXELS);
+        strip_distribute_rgb(rgb, sizeof(rgb)/sizeof(RGB_t));
 
-#define PATCH_ANIMATION_FADE_RGB(STEP_SIZE) strip_fade_rgb(STEP_SIZE, pot(), WS2812_PIXELS)
-#define PATCH_ANIMATION_FADE_RGB_POT_CTRL strip_fade_rgb(pot(), 255, WS2812_PIXELS)
+#define PATCH_ANIMATION_FADE_RGB(STEP_SIZE) strip_fade_rgb(STEP_SIZE, pot())
+#define PATCH_ANIMATION_FADE_RGB_POT_CTRL strip_fade_rgb(pot(), 255)
 
 #define PATCH_ANIMATION_SWAP(RFH, GFH, BFH, RSH, GSH, BSH, SWAP_TIME) \
         static bool swap = false; \
@@ -41,12 +41,12 @@
                         RGB_t rgb[] = { \
                                 {RFH, GFH, BFH}, {RSH, GSH, BSH} \
                         }; \
-                        strip_distribute_rgb(rgb, sizeof(rgb)/sizeof(RGB_t), WS2812_PIXELS); \
+                        strip_distribute_rgb(rgb, sizeof(rgb)/sizeof(RGB_t)); \
                 } else { \
                         RGB_t rgb[] = { \
                                 {RSH, GSH, BSH}, {RFH, GFH, BFH} \
                         }; \
-                        strip_distribute_rgb(rgb, sizeof(rgb)/sizeof(RGB_t), WS2812_PIXELS); \
+                        strip_distribute_rgb(rgb, sizeof(rgb)/sizeof(RGB_t)); \
                 } \
                 swap = !swap; \
                 reset_timer(); \
