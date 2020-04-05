@@ -19,8 +19,6 @@
    * 
    */
 
-#pragma once
-
 #include <stdlib.h>
 
 #include "ws2812.h"

@@ -88,6 +88,17 @@ void inline strip_set(strip strp, uint8_t brightness)
         strip_free(&strp_cpy);
 }
 
+void inline strip_set_pxbuf(pixel_buffer_ptr pxbuf)
+{
+        ws2812_prep_tx();
+        for (uint8_t i = 0; i < WS2812_PIXELS; i++) {
+                ws2812_tx_byte(pxbuf[i][WS2812_WIRING_RGB_0]);
+                ws2812_tx_byte(pxbuf[i][WS2812_WIRING_RGB_1]);
+                ws2812_tx_byte(pxbuf[i][WS2812_WIRING_RGB_2]);
+        }
+        ws2812_end_tx();
+}
+
 void inline strip_distribute_rgb(RGB_t rgb[], uint16_t size, uint8_t brightness, uint16_t pixels)
 {
         strip strp;

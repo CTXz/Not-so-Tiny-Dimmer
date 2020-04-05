@@ -55,6 +55,9 @@
 typedef uint8_t RGB_t[3];
 typedef uint8_t* RGB_ptr_t;
 
+typedef RGB_t pixel_buffer[WS2812_PIXELS];
+typedef RGB_t* pixel_buffer_ptr;
+
 typedef struct substrip {
         uint16_t length;
         RGB_t rgb;
@@ -67,5 +70,6 @@ typedef struct strip {
 
 void strip_set_all(RGB_ptr_t rgb, uint8_t brightness, uint16_t pixels);
 void strip_set(strip strp, uint8_t brightness);
+void strip_set_pxbuf(pixel_buffer_ptr pxbuf);
 void strip_distribute_rgb(RGB_t rgb[], uint16_t size, uint8_t brightness, uint16_t pixels);
 void strip_fade_rgb(uint8_t step_size, uint8_t brightness, uint16_t pixels);

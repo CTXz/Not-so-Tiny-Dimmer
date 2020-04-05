@@ -328,8 +328,7 @@ int main()
 
         bool prev_btn_state = BTN_STATE;
 
-        while(true)
-        {
+        while(true) {
 #if defined(BTN_MIN_RELEASED_READS) && BTN_MIN_RELEASED_READS > 1
                         bool btn_state = btn_min_reads(false, prev_btn_state ? BTN_MIN_RELEASED_READS : 0);
 #else
