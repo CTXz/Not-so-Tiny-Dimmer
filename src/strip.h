@@ -68,8 +68,14 @@ typedef struct strip {
         substrip *substrips;
 } strip;
 
-void strip_set_all(RGB_ptr_t rgb, uint8_t brightness, uint16_t pixels);
-void strip_set(strip strp, uint8_t brightness);
+void rgb_apply_brightness(RGB_t rgb, uint8_t brightness);
+void strip_apply_brightness(strip *strp, uint8_t brightness);
+
+void strip_cpy(strip *dst, strip *src);
+void strip_free(strip *strp);
+
+void strip_set_all(RGB_ptr_t rgb, uint16_t pixels);
+void strip_set(strip strp);
 void strip_set_pxbuf(pixel_buffer_ptr pxbuf);
-void strip_distribute_rgb(RGB_t rgb[], uint16_t size, uint8_t brightness, uint16_t pixels);
+void strip_distribute_rgb(RGB_t rgb[], uint16_t size, uint16_t pixels);
 void strip_fade_rgb(uint8_t step_size, uint8_t brightness, uint16_t pixels);
