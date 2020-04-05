@@ -27,6 +27,10 @@
 #include "ws2812.h"
 #include "strip.h"
 
+void inline init_pxbuf(pixel_buffer_ptr pxbuf) {
+        pxbuf = malloc(sizeof(pixel_buffer) * WS2812_PIXELS);
+}
+
 void inline rgb_apply_brightness(RGB_ptr_t rgb, uint8_t brightness)
 {
         if (brightness < 255) {
@@ -110,8 +114,14 @@ void inline strip_distribute_rgb(RGB_t rgb[], uint16_t size)
         strip_free(&strp);
 }
 
-void strip_fade_rgb(RGB_ptr_t glob_rgb, uint8_t step_size, uint8_t brightness)
+void strip_fade(RGB_ptr_t glob_rgb, uint8_t step_size)
 {
+        
+}
+
+void strip_fade_rgb(uint8_t step_size, uint8_t brightness)
+{
+        static RGB_t rgb;
         static bool r2g = true;
 
         uint8_t tmp;
@@ -121,51 +131,51 @@ void strip_fade_rgb(RGB_ptr_t glob_rgb, uint8_t step_size, uint8_t brightness)
         }
 
         if (r2g) {
-                tmp = glob_rgb[R];
+                tmp = rgb[R];
                 tmp -= step_size;
 
-                if (tmp > glob_rgb[R]) {
-                        glob_rgb[R] = 0;
-                        glob_rgb[G] = 255;
+                if (tmp > rgb[R]) {
+                        rgb[R] = 0;
+                        rgb[G] = 255;
                 } else {
-                        glob_rgb[R] = tmp;
-                        glob_rgb[G] += step_size;
+                        rgb[R] = tmp;
+                        rgb[G] += step_size;
                 }
 
-                r2g = (glob_rgb[R] > 0);
-        } else if (glob_rgb[G] > 0) {
-                tmp = glob_rgb[G];
+                r2g = (rgb[R] > 0);
+        } else if (rgb[G] > 0) {
+                tmp = rgb[G];
                 tmp -= step_size;
 
-                if (tmp > glob_rgb[G]) {
-                        glob_rgb[G] = 0;
-                        glob_rgb[B] = 255;
+                if (tmp > rgb[G]) {
+                        rgb[G] = 0;
+                        rgb[B] = 255;
                 } else {
-                        glob_rgb[G] = tmp;
-                        glob_rgb[B] += step_size;
+                        rgb[G] = tmp;
+                        rgb[B] += step_size;
                 }
         } else {
-                tmp = glob_rgb[B];
+                tmp = rgb[B];
                 tmp -= step_size;
 
-                if (tmp > glob_rgb[B]) {
-                        glob_rgb[B] = 0;
-                        glob_rgb[R] = 255;
+                if (tmp > rgb[B]) {
+                        rgb[B] = 0;
+                        rgb[R] = 255;
                 } else {
-                        glob_rgb[B] = tmp;
-                        glob_rgb[R] += step_size;
+                        rgb[B] = tmp;
+                        rgb[R] += step_size;
                 }
 
-                r2g = (glob_rgb[R] == 255);
+                r2g = (rgb[R] == 255);
         }
         
         if (brightness < 255) {
                 RGB_t rgb_cpy;
-                memcpy(&rgb_cpy, glob_rgb, sizeof(RGB_t));
+                memcpy(&rgb_cpy, &rgb, sizeof(RGB_t));
                 rgb_apply_brightness(rgb_cpy, brightness);
                 strip_set_all(rgb_cpy);
         } else {
-                strip_set_all(glob_rgb);
+                strip_set_all(rgb);
         }
 
 }
