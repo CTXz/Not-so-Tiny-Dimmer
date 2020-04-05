@@ -21,6 +21,8 @@
 
 #pragma once
 
+#include "config.h"
+
 #define R 0
 #define G 1
 #define B 2
