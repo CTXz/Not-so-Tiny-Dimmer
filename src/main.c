@@ -33,8 +33,7 @@
 #include <avr/interrupt.h>
 #include <util/delay.h>
 
-#include "ws2812.h"
-
+#include "strip.h"
 #include "config.h"
 
 ////////////////////////
@@ -263,7 +262,7 @@ void fade(uint8_t step_size) {
                 r2g = (rgb[R] == 255);
         }
         
-        ws2812_set_all(rgb, brightness(), WS2812_PIXELS);
+        strip_set_all(rgb, brightness(), WS2812_PIXELS);
         prev_step_size = step_size;
 }
 
@@ -324,11 +323,11 @@ void update_strip(uint8_t patch)
 
 #ifndef DISABLE_FULL_PATCHES
         if ((set = (patch < NUM_FULL_PATCHES)))
-                ws2812_set_all(full_patches[patch], brightness(), WS2812_PIXELS);
+                strip_set_all(full_patches[patch], brightness(), WS2812_PIXELS);
 #endif
 #ifndef DISABLE_STRIP_PATCHES
         if ((set = (!set && (patch - NUM_FULL_PATCHES)  < NUM_STRIP_PATCHES)))
-                ws2812_set_strip(strip_patches[patch - NUM_FULL_PATCHES], brightness());
+                strip_set(strip_patches[patch - NUM_FULL_PATCHES], brightness());
 #endif
 }
 

@@ -1,16 +1,11 @@
 /*
- * A stripped down and modified version of cpldcpu's light_ws2812 library
+ * Core driver routines for WS2812 LED strips 
+ * This is a stripped down and modified version of cpldcpu's light_ws2812 library
  * 
  * Author: Tim (cpldcpu@gmail.com), Patrick Pedersen (ctx.xda@gmail.com)
  *
- * Jan 18th, 2014  v2.0b Initial Version
- * Nov 29th, 2015  v2.3  Added SK6812RGBW support
- *
  * License: GNU GPL v2+ (see License.txt)
  */
-
-#include <string.h>
-#include <stdlib.h>
 
 #include <avr/interrupt.h>
 #include <avr/io.h>
@@ -80,52 +75,7 @@
 #define w_nop8  w_nop4 w_nop4
 #define w_nop16 w_nop8 w_nop8
 
-#if WS2812_COLOR_ORDER == RGB
-        #define WS2812_WIRING_RGB_0 0
-        #define WS2812_WIRING_RGB_1 1
-        #define WS2812_WIRING_RGB_2 2
-#elif WS2812_COLOR_ORDER == GRB
-        #define WS2812_WIRING_RGB_0 1
-        #define WS2812_WIRING_RGB_1 0
-        #define WS2812_WIRING_RGB_2 2
-#elif WS2812_COLOR_ORDER == BRG
-        #define WS2812_WIRING_RGB_0 2
-        #define WS2812_WIRING_RGB_1 0
-        #define WS2812_WIRING_RGB_2 1
-#elif WS2812_COLOR_ORDER == BGR
-        #define WS2812_WIRING_RGB_0 2
-        #define WS2812_WIRING_RGB_1 1
-        #define WS2812_WIRING_RGB_2 0
-#else
-        #error "No color order specified! Please set the WS2812_COLOR_ORDER directive in the config file!"
-#endif
-
 static uint8_t _sreg_prev, _maskhi, _masklo;
-
-void inline strip_cpy(strip *dst, strip *src)
-{
-        dst->substrips = malloc(sizeof(substrip) * src->n_substrips);
-        dst->n_substrips = src->n_substrips;
-        memcpy(dst->substrips, src->substrips, sizeof(substrip) * dst->n_substrips);
-}
-
-void inline free_strip(strip *strp)
-{
-        free(strp->substrips);
-}
-
-void inline rgb_apply_brightness(RGB_t rgb, uint8_t brightness)
-{
-        rgb[R] = round(((double)brightness/255) * (double)rgb[R]);
-        rgb[G] = round(((double)brightness/255) * (double)rgb[G]);
-        rgb[B] = round(((double)brightness/255) * (double)rgb[B]);
-}
-
-void inline strip_apply_brightness(strip *strp, uint8_t brightness)
-{
-        for (uint16_t i = 0; i < strp->n_substrips; i++) 
-                rgb_apply_brightness(strp->substrips[i].rgb, brightness);
-}
 
 void inline ws2812_prep_tx()
 {
@@ -220,37 +170,3 @@ void ws2812_tx_byte(uint8_t data)
 }
 
 #pragma GCC pop_options
-
-void inline ws2812_set_all(RGB_ptr_t rgb, uint8_t brightness, uint16_t pixels)
-{
-        RGB_t rgb_cpy;
-        memcpy(&rgb_cpy, rgb, sizeof(RGB_t));
-        rgb_apply_brightness(rgb_cpy, brightness);
-  
-        ws2812_prep_tx();
-        while (pixels--) {
-                ws2812_tx_byte(rgb_cpy[WS2812_WIRING_RGB_0]);
-                ws2812_tx_byte(rgb_cpy[WS2812_WIRING_RGB_1]);
-                ws2812_tx_byte(rgb_cpy[WS2812_WIRING_RGB_2]);
-        }
-        ws2812_end_tx();
-}
-
-void inline ws2812_set_strip(strip strp, uint8_t brightness)
-{
-        strip strp_cpy;
-        strip_cpy(&strp_cpy, &strp);
-        strip_apply_brightness(&strp_cpy, brightness);
-
-        ws2812_prep_tx();
-        for (uint16_t i = 0; i < strp_cpy.n_substrips; i++) {
-                for (uint16_t j = 0; j < strp_cpy.substrips[i].length; j++) {
-                        ws2812_tx_byte(strp_cpy.substrips[i].rgb[WS2812_WIRING_RGB_0]);
-                        ws2812_tx_byte(strp_cpy.substrips[i].rgb[WS2812_WIRING_RGB_1]);
-                        ws2812_tx_byte(strp_cpy.substrips[i].rgb[WS2812_WIRING_RGB_2]);
-                }
-        }
-        ws2812_end_tx();
-
-        free_strip(&strp_cpy);
-}
