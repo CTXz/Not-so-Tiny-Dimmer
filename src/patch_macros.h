@@ -20,7 +20,7 @@
         strip_distribute_rgb(rgb, sizeof(rgb)/sizeof(RGB_t));
 
 #define PATCH_ANIMATION_FADE_RGB(STEP_SIZE) strip_fade_rgb(STEP_SIZE, pot())
-#define PATCH_ANIMATION_FADE_RGB_POT_CTRL strip_fade_rgb(pot(), 255)
+#define PATCH_ANIMATION_FADE_RGB_POT_CTRL strip_fade_rgb(glob_rgb, pot(), 255)
 
 #define PATCH_ANIMATION_SWAP(RFH, GFH, BFH, RSH, GSH, BSH, SWAP_TIME) \
         static bool swap = false; \

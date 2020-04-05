@@ -87,6 +87,11 @@
 volatile static uint16_t timer_counter = 0; // Counts number of times TIMER0 has overflown
 volatile bool btn_pressed = false;
 
+RGB_t glob_rgb;
+
+bool glob_pxbuf_init = false;
+pixel_buffer_ptr glob_pxbuf;
+
 // Patches
 
 uint8_t selected_patch;
