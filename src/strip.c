@@ -29,9 +29,11 @@
 
 void inline rgb_apply_brightness(RGB_t rgb, uint8_t brightness)
 {
-        rgb[R] = round(((double)brightness/255) * (double)rgb[R]);
-        rgb[G] = round(((double)brightness/255) * (double)rgb[G]);
-        rgb[B] = round(((double)brightness/255) * (double)rgb[B]);
+        if (brightness < 255) {
+                rgb[R] = round(((double)brightness/255) * (double)rgb[R]);
+                rgb[G] = round(((double)brightness/255) * (double)rgb[G]);
+                rgb[B] = round(((double)brightness/255) * (double)rgb[B]);
+        }
 }
 
 void inline strip_apply_brightness(strip *strp, uint8_t brightness)
