@@ -114,6 +114,10 @@ void strip_fade_rgb(uint8_t step_size, uint8_t brightness, uint16_t pixels)
 
         uint8_t tmp;
 
+        if (step_size == 0) {
+                step_size = 1;
+        }
+
         if (r2g) {
                 tmp = rgb[R];
                 tmp -= step_size;
