@@ -1,6 +1,6 @@
 /*
  * Core driver routines for WS2812 LED strips 
- * This is a stripped down and modified version of cpldcpu's light_ws2812 library
+ * This is a stripped down and modified version of cpldcpu's light_ws2812 library.
  * 
  * Author: Tim (cpldcpu@gmail.com), Patrick Pedersen (ctx.xda@gmail.com)
  *
@@ -77,6 +77,12 @@
 
 static uint8_t _sreg_prev, _maskhi, _masklo;
 
+/* ws2812_prep_tx
+ * --------------
+ * Description:
+ *      Prepares for a data transmission to the WS2812 strip.
+ *      Always call this function before calling ws2812_tx_byte()!
+ */
 void inline ws2812_prep_tx()
 {
         _masklo = ~WS2812_DIN_MSK & PORTB;
@@ -86,6 +92,11 @@ void inline ws2812_prep_tx()
         cli();  
 }
 
+/* ws2812_wait_rst
+ * ---------------
+ * Description:
+ *      Waits for the WS2812 to reset.
+ */
 void inline ws2812_wait_rst()
 {
 #if defined(WS2812_RESET_TIME) && WS2812_RESET_TIME > 0
@@ -93,11 +104,31 @@ void inline ws2812_wait_rst()
 #endif
 }
 
+/* ws2812_end_tx
+ * -------------
+ * Description:
+ *      Ends data transmission with the WS2812 by 
+ *      restoring the status register to its previous state
+ *      and re-enabling interrupts. Always call this function
+ *      after data transmission is complete!
+ */
 void inline ws2812_end_tx()
 {
         SREG=_sreg_prev;
         ws2812_wait_rst();
+        sei();
 }
+
+/* ws2812_tx_byte
+ * --------------
+ * Description:
+ *      Transmitts a byte of data to the WS2812.
+ *      Toggling this function three times consecutively, sets a pixel.
+ *      After every third consecutive transmission, the next pixel is
+ *      written to. Transmissions MUST take place consecutively, else
+ *      there's a risk that the timing fails and the strip will either
+ *      be written to incorrectly, or not be written to at all.
+ */
 
 #pragma GCC push_options
 #pragma GCC optimize ("O0")

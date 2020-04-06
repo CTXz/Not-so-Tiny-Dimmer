@@ -1,15 +1,57 @@
+  /*
+   * Copyright (C) 2020  Patrick Pedersen
+
+   * This program is free software: you can redistribute it and/or modify
+   * it under the terms of the GNU General Public License as published by
+   * the Free Software Foundation, either version 3 of the License, or
+   * (at your option) any later version.
+
+   * This program is distributed in the hope that it will be useful,
+   * but WITHOUT ANY WARRANTY; without even the implied warranty of
+   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   * GNU General Public License for more details.
+
+   * You should have received a copy of the GNU General Public License
+   * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+   * 
+   * Author: Patrick Pedersen <ctx.xda@gmail.com>
+   * Description: Exposes macros to easily create and select patches.
+   * 
+   */
+
 #pragma once
 
 #include "config.h"
 #include "strip.h"
+#include "time.h"
 
 #define RGB_ARRAY(...) __VA_ARGS__ 
 
+// Static
+
+/* PATCH_SET_ALL
+ * -------------
+ * Parameters:
+ *      R - Red value (0 - 255)
+ *      G - Green value (0 - 255)
+ *      B - Blue value (0 - 255)
+ * Description:
+ *      Sets the entire LED strip to one color.
+ *      This patch only consumes little program flash.
+ */
 #define PATCH_SET_ALL(R, G, B) \
         RGB_t rgb = {R, G, B}; \
         rgb_apply_brightness(rgb, pot()); \
         strip_set_all(rgb);
 
+/* PATCH_SET_ALL
+ * -------------
+ * Parameters:
+ *      RGB_ARR - An RGB_ARRAY() enclosed array of literal RGB arrays.
+ *                Ex. RGB_ARRAY({255, 255, 255}, {0, 1, 2}, ...)
+ * Description:
+ *      Distributes the provided array of RGB values evenly accross the entire LED strip.
+ */
 #define PATCH_DISTRIBUTE(RGB_ARR) \
         RGB_t rgb[] = { \
                 RGB_ARR \
@@ -19,8 +61,40 @@
                 rgb_apply_brightness(rgb[i], brightness); \
         strip_distribute_rgb(rgb, sizeof(rgb)/sizeof(RGB_t));
 
+// Animations
+
+/* PATCH_ANIMATION_BREATH_POT_CTRL
+ * -------------------------------
+ * Parameters:
+ *      R - Red value (0 - 255)
+ *      G - Green value (0 - 255)
+ *      B - Blue value (0 - 255)
+ * Description:
+ *      "Breathes" the provided RGB value across the entire strip.
+ *      The speed of the "breath" can be altered by the potentiometer.
+ */
 #define PATCH_ANIMATION_BREATH_POT_CTRL(R, G, B) strip_breath((RGB_t){R, G, B}, pot())
+
+/* PATCH_ANIMATION_BREATH_RAND_POT_CTRL
+ * ------------------------------------
+ * Description:
+ *      "Breathes" random RGB values across the entire strip.
+ *      The speed of the "breath" can be altered by the potentiometer.
+ *      Due to the rather poor randomness of rand(), the outcomes tend
+ *      to be similar.
+ */
 #define PATCH_ANIMATION_BREATH_RAND_POT_CTRL strip_breath_random(pot())
+
+/* PATCH_ANIMATION_BREATH_RGB_POT_CTRL
+ * -----------------------------------
+ * Parameters:
+ *      RGB_STEP_SIZE - Color steps after every "breath".
+ *                      A greater step size means the color difference 
+ *                      between each breath becomes more noticeable. 
+ * Description:
+ *      Gradiently "Breathes" trough red, green and blue.
+ *      The speed of the "breath" can be altered by the potentiometer.
+ */
 #define PATCH_ANIMATION_BREATH_RGB_POT_CTRL(RGB_STEP_SIZE) strip_breath_rgb(pot(), RGB_STEP_SIZE)
 #define PATCH_ANIMATION_BREATH_ARR_POT_CTRL(RGB_ARR) \
         RGB_t rgb[] = { \
@@ -28,9 +102,37 @@
         }; \
         strip_breath_array(rgb, sizeof(rgb)/sizeof(RGB_t), pot());
 
+/* PATCH_ANIMATION_FADE_RGB
+ * ------------------------
+ * Parameters:
+ *      STEP_SIZE - Color steps (0 - 255) between each call.
+ *                  A greater value results in faster fading.
+ * Description:
+ *      Gradiently fades the LED strip torugh red, green and blue.
+ */
 #define PATCH_ANIMATION_FADE_RGB(STEP_SIZE) strip_fade_rgb(STEP_SIZE, pot())
+
+/* PATCH_ANIMATION_FADE_RGB_POT_CTRL
+ * ---------------------------------
+ * Description:
+ *      Gradiently fades the LED strip torugh red, green and blue.
+ *      The step size, and thus speed, can be altered by the potentiometer.
+ */
 #define PATCH_ANIMATION_FADE_RGB_POT_CTRL strip_fade_rgb(pot(), 255)
 
+/* PATCH_ANIMATION_SWAP
+ * --------------------
+ * Parameters:
+ *      RFH - Red value (0 - 255) of first strip half
+ *      GFH - Green value (0 - 255) of first strip half
+ *      BFH - Blue value (0 - 255) of first strip half
+ *      RFH - Red value (0 - 255) of second strip half
+ *      GFH - Green value (0 - 255) of second strip half
+ *      BFH - Blue value (0 - 255) of second strip half
+ *      SWAP_TIME - Time (ms) after which the halves get swapped
+ * Description:
+ *      Splits the strip in two halves and continiously swaps their colors.
+ */
 #define PATCH_ANIMATION_SWAP(RFH, GFH, BFH, RSH, GSH, BSH, SWAP_TIME) \
         static bool swap = false; \
         if (ms_passed() >= SWAP_TIME) { \
@@ -43,6 +145,19 @@
                 reset_timer(); \
         }
 
+/* PATCH_ANIMATION_SWAP_POT_CTRL
+ * -----------------------------
+ * Parameters:
+ *      RFH - Red value (0 - 255) of first strip half
+ *      GFH - Green value (0 - 255) of first strip half
+ *      BFH - Blue value (0 - 255) of first strip half
+ *      RFH - Red value (0 - 255) of second strip half
+ *      GFH - Green value (0 - 255) of second strip half
+ *      BFH - Blue value (0 - 255) of second strip half
+ * Description:
+ *      Splits the strip in two halves and continiously swaps their colors.
+ *      The swap time can be altered by the potentiometer.
+ */
 #define PATCH_ANIMATION_SWAP_POT_CTRL(RFH, GFH, BFH, RSH, GSH, BSH) \
         static bool swap = false; \
         if (ms_passed() >= (1020 - (pot() << 2))) { \

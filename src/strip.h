@@ -15,7 +15,7 @@
    * along with this program.  If not, see <https://www.gnu.org/licenses/>.
    * 
    * Author: Patrick Pedersen <ctx.xda@gmail.com>
-   * Description: Exposes hardware abstraction routines for the LED strip
+   * Description: Exposes hardware abstraction routines for the LED strip.
    * 
    */
 

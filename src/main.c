@@ -15,7 +15,7 @@
    * along with this program.  If not, see <https://www.gnu.org/licenses/>.
    * 
    * Author: Patrick Pedersen <ctx.xda@gmail.com>
-   * Description: Main firmware routines for the Tiny Dimmer
+   * Description: Main firmware routines for the Tiny Dimmer.
    * 
    */
 
@@ -35,6 +35,7 @@
 
 #include "strip.h"
 #include "config.h"
+#include "time.h"
 
 ////////////////////////
 // Preprocessors
@@ -45,7 +46,6 @@
 #endif
 
 #define MAX_BRIGHTNESS 255
-#define TMR_COUNTS_PER_MS 63 // F_CPU - 16Mhz | Prescaler - None
 #define BTN_STATE !(PINB & (1 << BTN))
 
 #ifndef PATCH_0
@@ -82,10 +82,6 @@
 ////////////////////////
 // Globals
 ////////////////////////
-
-// Interrupt controlled
-volatile static unsigned long timer_counter = 0; // Counts number of times TIMER0 has overflown
-volatile bool btn_pressed = false;
 
 bool glob_pxbuf_init = false;
 pixel_buffer_ptr glob_pxbuf;
@@ -185,30 +181,6 @@ bool inline btn_min_reads(bool pressed, uint32_t min_reads)
         return false;
 }
 
-// Timing
-
-/* reset_timer
- * -----------
- * Description:
- *      Resets the the timer to 0
- */
-void reset_timer()
-{
-        TCNT0 = 0;
-        timer_counter = 0;
-}
-
-/* ms_passed
- * --------------
- * Description:
- *      Returns the number of miliseconds that have passed 
- *      since the timer has been reset
- */
-unsigned long ms_passed()
-{
-        return timer_counter / TMR_COUNTS_PER_MS;
-}
-
 // LED Strip
 
 /* update_strip
@@ -265,21 +237,6 @@ void update_strip(uint8_t patch)
                         break;
                 }
         }
-}
-
-////////////////////////
-// Interrups
-////////////////////////
-
-/* TIMER0_OVF_vect
- * ---------------
- * Description:
- *      Increases the timer counter every time the
- *      timer overflows.
- */
-ISR(TIMER0_OVF_vect)
-{
-        timer_counter++;
 }
 
 ////////////////////////

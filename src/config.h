@@ -15,7 +15,7 @@
    * along with this program.  If not, see <https://www.gnu.org/licenses/>.
    * 
    * Author: Patrick Pedersen <ctx.xda@gmail.com>
-   * Description: Configuration file for the tiny dimmer firmware
+   * Description: Configuration file for the Tiny Dimmer firmware.
    * 
    */
 
@@ -25,66 +25,20 @@
 #include "strip.h"
 #include "patch_macros.h"
 
-// Patches
-#define NUM_PATCHES 10
-
-#define PATCH_0 PATCH_SET_ALL(255, 255, 255)
-
-#define PATCH_1 PATCH_DISTRIBUTE ( \
-        RGB_ARRAY (                \
-                {255, 255, 255},   \
-                {0, 0, 0}          \
-        )                          \
-)
-
-#define PATCH_2 PATCH_DISTRIBUTE ( \
-        RGB_ARRAY (                \
-                {0, 0, 0},         \
-                {255, 255, 255}    \
-        )                          \
-)
-
-#define PATCH_3 PATCH_DISTRIBUTE ( \
-        RGB_ARRAY (                \
-                {10, 255, 202},    \
-                {255, 20, 127}     \
-        )                          \
-)
-
-#define PATCH_4 PATCH_DISTRIBUTE ( \
-        RGB_ARRAY (                \
-                {255, 20, 127},    \
-                {10, 255, 202}     \
-        )                          \
-)
-
-#define PATCH_5 PATCH_DISTRIBUTE ( \
-        RGB_ARRAY (                \
-                {151, 0, 255},     \
-                {255, 74,  33}     \
-        )                          \
-)
-
-#define PATCH_6 PATCH_DISTRIBUTE ( \
-        RGB_ARRAY (                \
-                {255, 74,  33},    \
-                {151, 0, 255}      \
-        )                          \
-)
-
-#define PATCH_7 PATCH_ANIMATION_FADE_RGB_POT_CTRL
-#define PATCH_8 PATCH_ANIMATION_SWAP_POT_CTRL(rand() % 256, rand() % 256, rand() % 256, 0, 0, 0);
-#define PATCH_9 PATCH_ANIMATION_BREATH_RGB_POT_CTRL(10)
-
+////////////////////////
 // WS2812
+////////////////////////
+
 #define WS2812_DIN PB0                          // WS2812 DIN pin
 #define WS2812_PIXELS 36                        // !! UPDATE THIS !! Number of pixels on the WS2812 strip
 #define WS2812_COLOR_ORDER GRB                  // Order in which color should be parsed to the strip (Most WS2812 strips use BGR)
 #define WS2812_RESET_TIME  0                    // Time required for the WS2812 to reset
                                                 // If runtime between strip writes exceeds the 
                                                 // necessary reset time, this may be set to 0
-
+////////////////////////
 // Pots
+////////////////////////
+
 #define BRIGHTNESS_POT_ADMUX_MSK (1 << MUX1)    // PB4 (Refer to table 17-4 in the ATtiny25/45/85 datasheet)
 
 #define ADC_AVG_SAMPLES 255                     // Max 255 - Number of samples used to determine the average potentiometer value.
@@ -95,7 +49,9 @@
 // #define POT_LOWER_BOUND 5                    // Max 255 - Any potentiometer value lower or equal to the lower bound will disable the strip
                                                 // Set to 0 or comment out to disable
 
+////////////////////////
 // Push Button
+////////////////////////
 
 #define BTN PB2                                 // Push button pin
 
@@ -107,21 +63,71 @@
                                                 // toggles while holding the button, set this value higher. Increasing this will add a delay to
                                                 // button releases. Set to <= 1 or comment out to disable. 
 
-// Fading
+////////////////////////
+// Patches
+////////////////////////
 
-// Steps sizes for all four fade settings
-// A greater step size means faster toggling
-#define FADE_STEP_SIZE_1 1                      // First setting
-#define FADE_STEP_SIZE_2 2                      
-#define FADE_STEP_SIZE_3 10
-#define FADE_STEP_SIZE_4 100                    // Last setting
+// For a list of available patches, please refer to the
+// patch_macros.h header
 
-// Button hold duration for all four fade settings 
-#define FADE_BTN_HOLD_1 1 // s                  // First setting
-#define FADE_BTN_HOLD_2 3 // s
-#define FADE_BTN_HOLD_3 5 // s
-#define FADE_BTN_HOLD_4 7 // s                  // Last setting
+#define NUM_PATCHES 10 // Max 10 (To increase, add cases to update_strip() in main.c)
 
-#define FADE_DELAY 0 // ms Delay added to each step during fading.
-                     // Note that this is added on top of the delay already caused
-                     // by the code
+// Plain white
+#define PATCH_0 PATCH_SET_ALL(255, 255, 255)
+
+// First strip half white, second off 
+#define PATCH_1 PATCH_DISTRIBUTE ( \           
+        RGB_ARRAY (                \
+                {255, 255, 255},   \
+                {0, 0, 0}          \
+        )                          \
+)
+
+// First strip half off, second white 
+#define PATCH_2 PATCH_DISTRIBUTE ( \
+        RGB_ARRAY (                \
+                {0, 0, 0},         \
+                {255, 255, 255}    \
+        )                          \
+)
+
+// First strip half pink, second cyan
+#define PATCH_3 PATCH_DISTRIBUTE ( \
+        RGB_ARRAY (                \
+                {10, 255, 202},    \
+                {255, 20, 127}     \
+        )                          \
+)
+
+// First strip half cyan, second pink
+#define PATCH_4 PATCH_DISTRIBUTE ( \
+        RGB_ARRAY (                \
+                {255, 20, 127},    \
+                {10, 255, 202}     \
+        )                          \
+)
+
+// First strip half purple, second beige
+#define PATCH_5 PATCH_DISTRIBUTE ( \
+        RGB_ARRAY (                \
+                {151, 0, 255},     \
+                {255, 74,  33}     \
+        )                          \
+)
+
+// First strip half beige, second purple
+#define PATCH_6 PATCH_DISTRIBUTE ( \
+        RGB_ARRAY (                \
+                {255, 74,  33},    \
+                {151, 0, 255}      \
+        )                          \
+)
+
+// RGB Fading with potentiometer speed control 
+#define PATCH_7 PATCH_ANIMATION_FADE_RGB_POT_CTRL
+
+// Halves swapping with potentiometer speed control
+#define PATCH_8 PATCH_ANIMATION_SWAP_POT_CTRL(rand() % 256, rand() % 256, rand() % 256, 0, 0, 0);
+
+// Breath animation with potetionmeter breath length control
+#define PATCH_9 PATCH_ANIMATION_BREATH_RGB_POT_CTRL(10)

@@ -15,13 +15,11 @@ A cool little ATtiny 25/45/85 based dimmer for WS2812 RGB strips.
 
 ## Features
 
-The Tiny dimmer is a minimal WS2812 dimmer that exposes a potentiometer to control the strips brightness, and a button to toggle between different colors stored inside the program flash. By holding the push button, a fading mode is activated, where the color of the strip fades between red, green and blue. The fading animation offers 4 speed settings, where the intensity discretely increases by holding down the button longer. The WS2812 strip size, colors, button durations, fading speeds and other hardware and firmware parameters can be configured in the [configuration header](src/config.h).
+The Tiny dimmer is a minimal WS2812 dimmer that exposes a potentiometer to control the strips brightness, and a button to toggle between different colors stored inside the program flash. The WS2812 strip size, patches (colors and animations), other hardware and firmware parameters can be configured in the [configuration header](src/config.h).
 
 The dimmer also comes with potentiometer and push button noise reduction to reduce LED flicker and false color toggling. These features can compensate for sloppy hardware jobs but cost program cycles. The noise potentiometer and button noise reduction can be adjusted or disabled in the [configuration header](src/config.h)
 
-The dimmer firmware will barely fit onto a ATiny25 chip, and currently compiles to an executable that occupies 99.5% (2038 bytes from 2048 bytes) of its program flash. The size of the software may be reduced by disabling certain configurations in the [configuration header](src/config.h), setting inline functions to non-inline, reducing 16 or 32 bit integers to 8 bit integers where its possible etc. however, it is really recommended to simply use an ATiny45 or ATiny85 instead if more program memory is desired for additional features.
-
-Currently, the dimmer only supports WS2812 strips (as those are the only ones that I have lying around at home), however adding support for non-addressable strips should not be very difficult if desired (a substitute for the `ws2812_set_all` function would have to be written). 
+The dimmer firmware has been written for ATtiny45 and ATtiny85 chips, but will tightly fit onto a ATtiny25 chip with fewer and more simple patches (ex. no animations). The size of the software may be reduced by disabling certain software parameters in the [configuration header](src/config.h), reducing 16 or 32 bit integers to 8 bit integers where its possible etc. however, it is really recommended to simply use an ATiny45 or ATiny85 instead if one wants make full use of all features.
 
 ## Hardware
 
@@ -36,6 +34,7 @@ The following components are required to build a tiny dimmer:
 |10uF Capacitor|1|Optional, but helps decoupling power supply noise.|
 |Push Button|1|Used to toggle between colors and to activate fading.|
 |1x6 2.54mm Female header|1|Exposes a SPI header to program the MCU.|
+|Proto Perfboard|1|In the perfboard layout below I've used a 10x24 Perfboard, however much less is required.|
 
 The dimmer can also be easily be built with a digispark board.
 
@@ -88,3 +87,7 @@ From here, implementing the firmware was rather straight forward. Initially I pl
 Adding the fade animation was a little tricky in that its maximum speed, provided its best resolution, was heavily limited by the speed of the `ws2812_set_all` function. Hence, for faster fading speeds, I was forced to increase the step size for the colors, meaning faster fading speeds come at the cost of smoothness/resolution.
 
 All in all, this was a fun project to kill some quarantine time and most importantly, I'm more than happy with the way the result turned out and it was nice to put my AVR C skills to use again. Sure, I could've bought a cheap chinese LED strip controller, but where's the fun in that. This controller is all about open source and allows me to extend its features by reprogramming it. If I ever plan on discarding it, I can simply pop out and desolder all components are reuse them for another project.
+
+--- Update ---
+
+I have since reworked the software quite a bit. The ws2812 functions have been reduced to a set of 4 core functions, `ws2812_prep_tx()`, `ws2812_wait_rst()`, `ws2812_tx_byte()`, `ws2812_end_tx()`. With these functions I have then implemented a hardware abstraction layer in the [strip.c](src/strip.c) file, which defines various routines to control the LED strip. Patches have been completely reworked and are now defined in the [configuration header](src/config.h) using macros provided by the [patch_macros.h](src/patch_macros.h) header file. Using macros allows for very flexible patches that aren't limited to a single function or some sort of array of a specific data type. This made room for the easy implementation of animations.
