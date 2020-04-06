@@ -19,6 +19,15 @@
                 rgb_apply_brightness(rgb[i], brightness); \
         strip_distribute_rgb(rgb, sizeof(rgb)/sizeof(RGB_t));
 
+#define PATCH_ANIMATION_BREATH_POT_CTRL(R, G, B) strip_breath((RGB_t){R, G, B}, pot())
+#define PATCH_ANIMATION_BREATH_RAND_POT_CTRL strip_breath_random(pot())
+#define PATCH_ANIMATION_BREATH_RGB_POT_CTRL(RGB_STEP_SIZE) strip_breath_rgb(pot(), RGB_STEP_SIZE)
+#define PATCH_ANIMATION_BREATH_ARR_POT_CTRL(RGB_ARR) \
+        RGB_t rgb[] = { \
+                RGB_ARR \
+        }; \
+        strip_breath_array(rgb, sizeof(rgb)/sizeof(RGB_t), pot());
+
 #define PATCH_ANIMATION_FADE_RGB(STEP_SIZE) strip_fade_rgb(STEP_SIZE, pot())
 #define PATCH_ANIMATION_FADE_RGB_POT_CTRL strip_fade_rgb(pot(), 255)
 
@@ -51,4 +60,4 @@
                 swap = !swap; \
                 reset_timer(); \
         }
-
+        

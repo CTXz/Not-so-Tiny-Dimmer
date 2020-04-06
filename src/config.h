@@ -26,9 +26,7 @@
 #include "patch_macros.h"
 
 // Patches
-// #define DISABLE_FULL_PATCHES
-// #define DISABLE_STRIP_PATCHES
-#define NUM_PATCHES 9
+#define NUM_PATCHES 10
 
 #define PATCH_0 PATCH_SET_ALL(255, 255, 255)
 
@@ -75,8 +73,8 @@
 )
 
 #define PATCH_7 PATCH_ANIMATION_FADE_RGB_POT_CTRL
-
-#define PATCH_8 PATCH_ANIMATION_SWAP_POT_CTRL(rand() % 255, rand() % 255, rand() % 255, 0, 0, 0);
+#define PATCH_8 PATCH_ANIMATION_SWAP_POT_CTRL(rand() % 256, rand() % 256, rand() % 256, 0, 0, 0);
+#define PATCH_9 PATCH_ANIMATION_BREATH_RGB_POT_CTRL(10)
 
 // WS2812
 #define WS2812_DIN PB0                          // WS2812 DIN pin

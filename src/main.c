@@ -84,7 +84,7 @@
 ////////////////////////
 
 // Interrupt controlled
-volatile static uint16_t timer_counter = 0; // Counts number of times TIMER0 has overflown
+volatile static unsigned long timer_counter = 0; // Counts number of times TIMER0 has overflown
 volatile bool btn_pressed = false;
 
 bool glob_pxbuf_init = false;

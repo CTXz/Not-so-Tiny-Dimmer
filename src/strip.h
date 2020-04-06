@@ -21,6 +21,8 @@
 
 #pragma once
 
+#include <stdbool.h>
+
 #include "config.h"
 
 #define R 0
@@ -81,4 +83,8 @@ void strip_set_all(RGB_ptr_t rgb);
 void strip_set(strip strp);
 void strip_set_pxbuf(pixel_buffer_ptr pxbuf);
 void strip_distribute_rgb(RGB_t rgb[], uint16_t size);
+bool strip_breath(RGB_ptr_t rgb, uint8_t step_size);
+void strip_breath_array(RGB_t rgb[], uint8_t size, uint8_t step_size);
+void strip_breath_random(uint8_t step_size);
+void strip_breath_rgb(uint8_t breath_step_size, uint8_t rgb_step_size);
 void strip_fade_rgb(uint8_t step_size, uint8_t brightness);

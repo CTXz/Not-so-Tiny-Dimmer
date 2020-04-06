@@ -24,8 +24,13 @@
 #include <stdbool.h>
 #include <math.h>
 
+#include <avr/io.h>
+
 #include "ws2812.h"
 #include "strip.h"
+
+unsigned long ms_passed();
+void reset_timer();
 
 void inline init_pxbuf(pixel_buffer_ptr pxbuf) {
         pxbuf = malloc(sizeof(pixel_buffer) * WS2812_PIXELS);
@@ -114,21 +119,61 @@ void inline strip_distribute_rgb(RGB_t rgb[], uint16_t size)
         strip_free(&strp);
 }
 
-void strip_fade(RGB_ptr_t glob_rgb, uint8_t step_size)
+bool inline strip_breath(RGB_ptr_t rgb, uint8_t step_size)
 {
+        static bool inc = true;
+        static uint8_t brightness = 0;
+
+        if (step_size == 0)
+                step_size = 1;
+
+        RGB_t rgb_cpy;
+        memcpy(&rgb_cpy, rgb, sizeof(RGB_t));
+        rgb_apply_brightness(rgb_cpy, brightness);
+        strip_set_all(rgb_cpy);
         
+        if (brightness == 0 && ms_passed() < 2000)
+                return false;
+
+        uint8_t prev_brightness = brightness;
+
+        if (inc) {
+                brightness += step_size;
+                
+                if (prev_brightness > brightness)
+                        brightness = 255;
+                
+                inc = (brightness < 255);
+        } else {
+                brightness -= step_size;
+
+                if (prev_brightness < brightness)
+                        brightness = 0;
+        }
+        
+        if (brightness == 0) {
+                reset_timer();
+                inc = true;
+                return true;
+        }
+
+        return false;
 }
 
-void strip_fade_rgb(uint8_t step_size, uint8_t brightness)
+void inline strip_breath_array(RGB_t rgb[], uint8_t size, uint8_t step_size)
 {
-        static RGB_t rgb;
-        static bool r2g = true;
+        static uint8_t i = 0;
 
+        if(strip_breath(rgb[i], step_size))
+                i = (i + 1) % size;
+}
+
+bool inline apply_fade(RGB_ptr_t rgb, uint8_t step_size, bool r2g)
+{
         uint8_t tmp;
 
-        if (step_size == 0) {
+        if (step_size == 0)
                 step_size = 1;
-        }
 
         if (r2g) {
                 tmp = rgb[R];
@@ -142,7 +187,7 @@ void strip_fade_rgb(uint8_t step_size, uint8_t brightness)
                         rgb[G] += step_size;
                 }
 
-                r2g = (rgb[R] > 0);
+                return (rgb[R] > 0);
         } else if (rgb[G] > 0) {
                 tmp = rgb[G];
                 tmp -= step_size;
@@ -154,6 +199,8 @@ void strip_fade_rgb(uint8_t step_size, uint8_t brightness)
                         rgb[G] = tmp;
                         rgb[B] += step_size;
                 }
+
+                return false;
         } else {
                 tmp = rgb[B];
                 tmp -= step_size;
@@ -166,8 +213,16 @@ void strip_fade_rgb(uint8_t step_size, uint8_t brightness)
                         rgb[R] += step_size;
                 }
 
-                r2g = (rgb[R] == 255);
+                return (rgb[R] == 255);
         }
+}
+
+void inline strip_fade_rgb(uint8_t step_size, uint8_t brightness)
+{
+        static RGB_t rgb = {255, 0, 0};
+        static bool r2g = true;
+        
+        r2g = apply_fade(rgb, step_size, r2g);
         
         if (brightness < 255) {
                 RGB_t rgb_cpy;
@@ -177,5 +232,30 @@ void strip_fade_rgb(uint8_t step_size, uint8_t brightness)
         } else {
                 strip_set_all(rgb);
         }
+}
 
+void inline strip_breath_random(uint8_t step_size)
+{
+        static RGB_t rgb;
+
+        if (rgb[R] == 0 && rgb[G] == 0 && rgb[B] == 0) {
+                rgb[R] = 255;
+                rgb[G] = 255;
+                rgb[B] = 255;
+        }
+        
+        if (strip_breath(rgb, step_size)) {
+                rgb[R] = (rand() % 256);
+                rgb[G] = (rand() % 256);
+                rgb[B] = (rand() % 256);
+        }
+}
+
+void inline strip_breath_rgb(uint8_t breath_step_size, uint8_t rgb_step_size)
+{
+        static RGB_t rgb = {255, 0, 0};
+        static bool r2g = true;
+
+        if (strip_breath(rgb, breath_step_size))
+                r2g = apply_fade(rgb, rgb_step_size, r2g);
 }
