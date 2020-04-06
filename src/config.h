@@ -76,7 +76,7 @@
 #define PATCH_0 PATCH_SET_ALL(255, 255, 255)
 
 // First strip half white, second off 
-#define PATCH_1 PATCH_DISTRIBUTE ( \           
+#define PATCH_1 PATCH_DISTRIBUTE ( \
         RGB_ARRAY (                \
                 {255, 255, 255},   \
                 {0, 0, 0}          \

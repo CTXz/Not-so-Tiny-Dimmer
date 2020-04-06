@@ -65,7 +65,7 @@ typedef struct substrip {
         RGB_t rgb;
 } substrip;
 
-typedef struct strip {
+typedef struct substrip_buffer {
         uint16_t n_substrips;
         substrip *substrips;
 } strip;
