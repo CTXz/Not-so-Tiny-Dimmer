@@ -71,8 +71,8 @@ void inline rgb_apply_brightness(RGB_ptr_t rgb, uint8_t brightness)
 void inline strip_apply_brightness(strip *strp, uint8_t brightness)
 {
         if (brightness < 255) {
-                for (uint16_t i = 0; i < strp->n_substrips; i++) 
-                        rgb_apply_brightness(strp->substrips[i].rgb, brightness);
+                for (uint16_t i = 0; i < strp->n_substrps; i++) 
+                        rgb_apply_brightness(strp->substrps[i].rgb, brightness);
         }
 }
 
@@ -86,9 +86,9 @@ void inline strip_apply_brightness(strip *strp, uint8_t brightness)
  */
 void inline strip_cpy(strip *dst, strip *src)
 {
-        dst->substrips = malloc(sizeof(substrip) * src->n_substrips);
-        dst->n_substrips = src->n_substrips;
-        memcpy(dst->substrips, src->substrips, sizeof(substrip) * dst->n_substrips);
+        dst->substrps = malloc(sizeof(substrp) * src->n_substrps);
+        dst->n_substrps = src->n_substrps;
+        memcpy(dst->substrps, src->substrps, sizeof(substrp) * dst->n_substrps);
 }
 
 /* strip_free
@@ -100,7 +100,7 @@ void inline strip_cpy(strip *dst, strip *src)
  */
 void inline strip_free(strip *strp)
 {
-        free(strp->substrips);
+        free(strp->substrps);
 }
 
 /* strip_set_all
@@ -131,11 +131,11 @@ void inline strip_set_all(RGB_ptr_t rgb)
 void inline strip_set(strip strp)
 {
         ws2812_prep_tx();
-        for (uint16_t i = 0; i < strp.n_substrips; i++) {
-                for (uint16_t j = 0; j < strp.substrips[i].length; j++) {
-                        ws2812_tx_byte(strp.substrips[i].rgb[WS2812_WIRING_RGB_0]);
-                        ws2812_tx_byte(strp.substrips[i].rgb[WS2812_WIRING_RGB_1]);
-                        ws2812_tx_byte(strp.substrips[i].rgb[WS2812_WIRING_RGB_2]);
+        for (uint16_t i = 0; i < strp.n_substrps; i++) {
+                for (uint16_t j = 0; j < strp.substrps[i].length; j++) {
+                        ws2812_tx_byte(strp.substrps[i].rgb[WS2812_WIRING_RGB_0]);
+                        ws2812_tx_byte(strp.substrps[i].rgb[WS2812_WIRING_RGB_1]);
+                        ws2812_tx_byte(strp.substrps[i].rgb[WS2812_WIRING_RGB_2]);
                 }
         }
         ws2812_end_tx();
@@ -170,16 +170,16 @@ void inline strip_set_pxbuf(pxbuf_ptr pxbuf)
 void inline strip_distribute_rgb(RGB_t rgb[], uint16_t size)
 {
         strip strp;
-        strp.n_substrips = size;
-        strp.substrips = malloc(sizeof(substrip) * size);
+        strp.n_substrps = size;
+        strp.substrps = malloc(sizeof(substrp) * size);
 
         for (uint16_t i = 0; i < size; i++) {
-                strp.substrips[i].length = WS2812_PIXELS/size;
+                strp.substrps[i].length = WS2812_PIXELS/size;
 
                 if (i == size - 1)
-                        strp.substrips[i].length += WS2812_PIXELS % size;
+                        strp.substrps[i].length += WS2812_PIXELS % size;
 
-                memcpy(&strp.substrips[i].rgb, &rgb[i], sizeof(RGB_t));
+                memcpy(&strp.substrps[i].rgb, &rgb[i], sizeof(RGB_t));
         }
 
         strip_set(strp);

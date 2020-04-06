@@ -60,14 +60,14 @@ typedef uint8_t* RGB_ptr_t;
 typedef RGB_t pxbuf[WS2812_PIXELS];
 typedef RGB_t* pxbuf_ptr;
 
-typedef struct substrip {
+typedef struct substrp {
         uint16_t length;
         RGB_t rgb;
-} substrip;
+} substrp;
 
-typedef struct substrip_buffer {
-        uint16_t n_substrips;
-        substrip *substrips;
+typedef struct strip {
+        uint16_t n_substrps;
+        substrp *substrps;
 } strip;
 
 
