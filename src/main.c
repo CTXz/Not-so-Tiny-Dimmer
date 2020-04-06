@@ -84,7 +84,7 @@
 ////////////////////////
 
 bool glob_pxbuf_init = false;
-pixel_buffer_ptr glob_pxbuf;
+pxbuf glob_pxbuf;
 
 // Patches
 

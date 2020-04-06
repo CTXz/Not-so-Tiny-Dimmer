@@ -37,8 +37,8 @@
  * Description:
  *      Initializes an empty pixel buffer.
  */
-void inline init_pxbuf(pixel_buffer_ptr pxbuf) {
-        pxbuf = malloc(sizeof(pixel_buffer) * WS2812_PIXELS);
+void inline init_pxbuf(pxbuf_ptr pxbuf) {
+        pxbuf = malloc(sizeof(pxbuf) * WS2812_PIXELS);
 }
 
 /* rgb_apply_brightness
@@ -148,7 +148,7 @@ void inline strip_set(strip strp)
  * Description:
  *      Applies a pixel buffer accross the LED strip.
  */
-void inline strip_set_pxbuf(pixel_buffer_ptr pxbuf)
+void inline strip_set_pxbuf(pxbuf_ptr pxbuf)
 {
         ws2812_prep_tx();
         for (uint8_t i = 0; i < WS2812_PIXELS; i++) {
