@@ -30,15 +30,15 @@
 #include "strip.h"
 #include "time.h"
 
-/* init_pxbuf
+/* init_RGBbuf
  * ----------
  * Parameters:
- *      pxbuf - Pointer to a pixel buffer
+ *      RGBbuf - Pointer to a pixel buffer
  * Description:
  *      Initializes an empty pixel buffer.
  */
-void inline init_pxbuf(pxbuf_ptr pxbuf) {
-        pxbuf = malloc(sizeof(pxbuf) * WS2812_PIXELS);
+void inline init_RGBbuf(RGBbuf_ptr RGBbuf) {
+        RGBbuf = malloc(sizeof(RGBbuf) * WS2812_PIXELS);
 }
 
 /* rgb_apply_brightness
@@ -62,17 +62,17 @@ void inline rgb_apply_brightness(RGB_ptr_t rgb, uint8_t brightness)
 /* strip_apply_brightness
  * ----------------------
  * Parameters:
- *      strp - A pointer to an strip object
+ *      substrpbuf - A pointer to an substrip buffer object
  *      brightness - Brightness to be applied to the RGB object
  * Description:
  *      Applies a brightness (0 - 0%, 255 - 100%) to the provided
  *      strip object.
  */
-void inline strip_apply_brightness(strip *strp, uint8_t brightness)
+void inline strip_apply_brightness(substrpbuf *substrpbuf, uint8_t brightness)
 {
         if (brightness < 255) {
-                for (uint16_t i = 0; i < strp->n_substrps; i++) 
-                        rgb_apply_brightness(strp->substrps[i].rgb, brightness);
+                for (uint16_t i = 0; i < substrpbuf->n_substrps; i++) 
+                        rgb_apply_brightness(substrpbuf->substrps[i].rgb, brightness);
         }
 }
 
@@ -84,7 +84,7 @@ void inline strip_apply_brightness(strip *strp, uint8_t brightness)
  * Description:
  *      Creates a deep copy of a strip object.
  */
-void inline strip_cpy(strip *dst, strip *src)
+void inline strip_cpy(substrpbuf *dst, substrpbuf *src)
 {
         dst->substrps = malloc(sizeof(substrp) * src->n_substrps);
         dst->n_substrps = src->n_substrps;
@@ -98,9 +98,9 @@ void inline strip_cpy(strip *dst, strip *src)
  * Description:
  *      Frees a strip object.
  */
-void inline strip_free(strip *strp)
+void inline strip_free(substrpbuf *substrpbuf)
 {
-        free(strp->substrps);
+        free(substrpbuf->substrps);
 }
 
 /* strip_set_all
@@ -124,43 +124,43 @@ void inline strip_set_all(RGB_ptr_t rgb)
 /* strip_set
  * ---------
  * Parameters:
- *      strp - Strip object to be applied accross the LED strip
+ *      substrpbuf - Strip object to be applied accross the LED strip
  * Description:
  *      Applies a strip object accross the LED strip.
  */
-void inline strip_set(strip strp)
+void inline strip_set_substrpbuf(substrpbuf substrpbuf)
 {
         ws2812_prep_tx();
-        for (uint16_t i = 0; i < strp.n_substrps; i++) {
-                for (uint16_t j = 0; j < strp.substrps[i].length; j++) {
-                        ws2812_tx_byte(strp.substrps[i].rgb[WS2812_WIRING_RGB_0]);
-                        ws2812_tx_byte(strp.substrps[i].rgb[WS2812_WIRING_RGB_1]);
-                        ws2812_tx_byte(strp.substrps[i].rgb[WS2812_WIRING_RGB_2]);
+        for (uint16_t i = 0; i < substrpbuf.n_substrps; i++) {
+                for (uint16_t j = 0; j < substrpbuf.substrps[i].length; j++) {
+                        ws2812_tx_byte(substrpbuf.substrps[i].rgb[WS2812_WIRING_RGB_0]);
+                        ws2812_tx_byte(substrpbuf.substrps[i].rgb[WS2812_WIRING_RGB_1]);
+                        ws2812_tx_byte(substrpbuf.substrps[i].rgb[WS2812_WIRING_RGB_2]);
                 }
         }
         ws2812_end_tx();
 }
 
-/* strip_set_pxbuf
+/* strip_set_RGBbuf
  * ---------------
  * Parameters:
- *      pxbuf - Pixel buffer to be applied accross the LED strip
+ *      RGBbuf - Pixel buffer to be applied accross the LED strip
  * Description:
  *      Applies a pixel buffer accross the LED strip.
  */
-void inline strip_set_pxbuf(pxbuf_ptr pxbuf)
+void inline strip_set_RGBbuf(RGBbuf_ptr RGBbuf)
 {
         ws2812_prep_tx();
         for (uint8_t i = 0; i < WS2812_PIXELS; i++) {
-                ws2812_tx_byte(pxbuf[i][WS2812_WIRING_RGB_0]);
-                ws2812_tx_byte(pxbuf[i][WS2812_WIRING_RGB_1]);
-                ws2812_tx_byte(pxbuf[i][WS2812_WIRING_RGB_2]);
+                ws2812_tx_byte(RGBbuf[i][WS2812_WIRING_RGB_0]);
+                ws2812_tx_byte(RGBbuf[i][WS2812_WIRING_RGB_1]);
+                ws2812_tx_byte(RGBbuf[i][WS2812_WIRING_RGB_2]);
         }
         ws2812_end_tx();
 }
 
-/* strip_set_pxbuf
- * ---------------
+/* strip_distribute_rgb
+ * --------------------
  * Parameters:
  *      rgb - Array of rgb objects to be distributed
  *      size - Size of the rgb array
@@ -169,21 +169,21 @@ void inline strip_set_pxbuf(pxbuf_ptr pxbuf)
  */
 void inline strip_distribute_rgb(RGB_t rgb[], uint16_t size)
 {
-        strip strp;
-        strp.n_substrps = size;
-        strp.substrps = malloc(sizeof(substrp) * size);
+        substrpbuf substrpbuf;
+        substrpbuf.n_substrps = size;
+        substrpbuf.substrps = malloc(sizeof(substrp) * size);
 
         for (uint16_t i = 0; i < size; i++) {
-                strp.substrps[i].length = WS2812_PIXELS/size;
+                substrpbuf.substrps[i].length = WS2812_PIXELS/size;
 
                 if (i == size - 1)
-                        strp.substrps[i].length += WS2812_PIXELS % size;
+                        substrpbuf.substrps[i].length += WS2812_PIXELS % size;
 
-                memcpy(&strp.substrps[i].rgb, &rgb[i], sizeof(RGB_t));
+                memcpy(&substrpbuf.substrps[i].rgb, &rgb[i], sizeof(RGB_t));
         }
 
-        strip_set(strp);
-        strip_free(&strp);
+        strip_set_substrpbuf(substrpbuf);
+        strip_free(&substrpbuf);
 }
 
 /* strip_breath

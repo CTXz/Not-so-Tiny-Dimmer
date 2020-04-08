@@ -83,8 +83,8 @@
 // Globals
 ////////////////////////
 
-bool glob_pxbuf_init = false;
-pxbuf glob_pxbuf;
+bool glob_RGBbuf_init = false;
+RGBbuf glob_RGBbuf;
 
 // Patches
 

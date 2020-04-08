@@ -57,31 +57,30 @@
 typedef uint8_t RGB_t[3];
 typedef uint8_t* RGB_ptr_t;
 
-typedef RGB_t pxbuf[WS2812_PIXELS];
-typedef RGB_t* pxbuf_ptr;
+typedef RGB_t RGBbuf[WS2812_PIXELS];
+typedef RGB_t* RGBbuf_ptr;
 
 typedef struct substrp {
         uint16_t length;
         RGB_t rgb;
 } substrp;
 
-typedef struct strip {
+typedef struct substrpbuf {
         uint16_t n_substrps;
         substrp *substrps;
-} strip;
+} substrpbuf;
 
-
-void init_pxbuf(pxbuf_ptr pxbuf);
+void init_RGBbuf(RGBbuf_ptr RGBbuf);
 
 void rgb_apply_brightness(RGB_t rgb, uint8_t brightness);
-void strip_apply_brightness(strip *strp, uint8_t brightness);
+void strip_apply_brightness(substrpbuf *strp, uint8_t brightness);
 
-void strip_cpy(strip *dst, strip *src);
-void strip_free(strip *strp);
+void strip_cpy(substrpbuf *dst, substrpbuf *src);
+void strip_free(substrpbuf *strp);
 
 void strip_set_all(RGB_ptr_t rgb);
-void strip_set(strip strp);
-void strip_set_pxbuf(pxbuf pxbuf);
+void strip_set_substrpbuf(substrpbuf strp);
+void strip_set_RGBbuf(RGBbuf RGBbuf);
 void strip_distribute_rgb(RGB_t rgb[], uint16_t size);
 bool strip_breath(RGB_ptr_t rgb, uint8_t step_size);
 void strip_breath_array(RGB_t rgb[], uint8_t size, uint8_t step_size);
