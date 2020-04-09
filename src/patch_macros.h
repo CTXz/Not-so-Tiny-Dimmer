@@ -85,40 +85,51 @@
  */
 #define PATCH_ANIMATION_BREATH_RAND_POT_CTRL strip_breath_random(pot())
 
-/* PATCH_ANIMATION_BREATH_RGB_POT_CTRL
+/* PATCH_ANIMATION_BREATH_RAINBOW_POT_CTRL
  * -----------------------------------
  * Parameters:
  *      RGB_STEP_SIZE - Color steps after every "breath".
  *                      A greater step size means the color difference 
  *                      between each breath becomes more noticeable. 
  * Description:
- *      Gradiently "Breathes" trough red, green and blue.
+ *      Gradiently "Breathes" trough the rgb spectrum.
  *      The speed of the "breath" can be altered by the potentiometer.
  */
-#define PATCH_ANIMATION_BREATH_RGB_POT_CTRL(RGB_STEP_SIZE) strip_breath_rgb(pot(), RGB_STEP_SIZE)
+#define PATCH_ANIMATION_BREATH_RAINBOW_POT_CTRL(RGB_STEP_SIZE) strip_breath_rainbow(pot(), RGB_STEP_SIZE)
+
+/* PATCH_ANIMATION_BREATH_ARR_POT_CTRL
+ * -----------------------------------
+ * Parameters:
+ *      RGB_STEP_SIZE - Color steps after every "breath".
+ *                      A greater step size means the color difference 
+ *                      between each breath becomes more noticeable. 
+ * Description:
+ *      Gradiently "Breathes" trough the RGB array.
+ *      The speed of the "breath" can be altered by the potentiometer.
+ */
 #define PATCH_ANIMATION_BREATH_ARR_POT_CTRL(RGB_ARR) \
         RGB_t rgb[] = { \
                 RGB_ARR \
         }; \
         strip_breath_array(rgb, sizeof(rgb)/sizeof(RGB_t), pot());
 
-/* PATCH_ANIMATION_FADE_RGB
+/* PATCH_ANIMATION_RAINBOW
  * ------------------------
  * Parameters:
  *      STEP_SIZE - Color steps (0 - 255) between each call.
  *                  A greater value results in faster fading.
  * Description:
- *      Gradiently fades the LED strip torugh red, green and blue.
+ *      Gradiently fades all LEDs simultaneously trough the RGB spectrum.
  */
-#define PATCH_ANIMATION_FADE_RGB(STEP_SIZE) strip_fade_rgb(STEP_SIZE, pot())
+#define PATCH_ANIMATION_RAINBOW(STEP_SIZE) strip_rainbow(STEP_SIZE, pot())
 
-/* PATCH_ANIMATION_FADE_RGB_POT_CTRL
+/* PATCH_ANIMATION_RAINBOW_POT_CTRL
  * ---------------------------------
  * Description:
- *      Gradiently fades the LED strip torugh red, green and blue.
+ *      Gradiently fades all LEDs simultaneously trough the RGB spectrum.
  *      The step size, and thus speed, can be altered by the potentiometer.
  */
-#define PATCH_ANIMATION_FADE_RGB_POT_CTRL strip_fade_rgb(pot(), 255)
+#define PATCH_ANIMATION_RAINBOW_POT_CTRL strip_rainbow(pot(), 255)
 
 /* PATCH_ANIMATION_SWAP
  * --------------------
@@ -176,5 +187,10 @@
                 reset_timer(); \
         }
 
-#define PATCH_ANIMATION_ROTATE_RGB_FADE strip_rotate_rgb_fade();
+/* PATCH_ANIMATION_ROTATE_RAINBOW
+ * ------------------------------
+ * Description:
+ *      Rotates the rgb spectrum accross the strip.
+ */
+#define PATCH_ANIMATION_ROTATE_RAINBOW strip_rotate_rainbow();
         

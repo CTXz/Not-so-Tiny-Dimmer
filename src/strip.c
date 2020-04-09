@@ -316,16 +316,16 @@ bool inline apply_rgb_fade(RGB_ptr_t rgb, uint8_t step_size, bool r2g)
                 return (rgb[R] == 255);
         }
 }
-/* strip_fade_rgb
- * --------------
+/* strip_rainbow
+ * -------------
  * Parameters:
  *      step_size - Color steps between each call.
  *                  A greater value results in faster fading.
  *      brightness - Brightness value (0 - 0%, 255 - 100%) of the fade
  * Description:
- *      Gradiently fades the LED strip torugh red, green and blue.
+ *      Gradiently fades all LEDs simultaneously trough the RGB spectrum.
  */
-void inline strip_fade_rgb(uint8_t step_size, uint8_t brightness)
+void inline strip_rainbow(uint8_t step_size, uint8_t brightness)
 {
         static RGB_t rgb = {255, 0, 0};
         static bool r2g = true;
@@ -368,15 +368,15 @@ void inline strip_breath_random(uint8_t step_size)
         }
 }
 
-/* strip_breath_rgb
- * ----------------
+/* strip_breath_rainbow
+ * ---------------------
  * Parameters:
  *      breath_step_size - Brightness steps during breath.
  *      rgb_step_size - Color steps.
  * Description:
- *      Gradiently "Breathes" trough red, green and blue.
+ *      Gradiently "Breathes" trough the rgb spectrum
  */
-void inline strip_breath_rgb(uint8_t breath_step_size, uint8_t rgb_step_size)
+void inline strip_breath_rainbow(uint8_t breath_step_size, uint8_t rgb_step_size)
 {
         static RGB_t rgb = {255, 0, 0};
         static bool r2g = true;
@@ -385,16 +385,16 @@ void inline strip_breath_rgb(uint8_t breath_step_size, uint8_t rgb_step_size)
                 r2g = apply_rgb_fade(rgb, rgb_step_size, r2g);
 }
 
-/* strip_rotate_rgb_fade
+/* strip_rotate_rainbow
  * ---------------------
  * Description:
- *      Rotates a RGB fade. Unlike other RGB fade effects,
- *      this one doesn't allow for changes in speed, as
- *      the addition of delays, changes in step size, and
- *      even just additional code can easily lead to uncomfortable
- *      lag.
+ *      Rotates the rgb spectrum accross the strip.
+ *      Unlike other RGB fade effects, this one doesn't 
+ *      allow for changes in speed, as the addition of delays, 
+ *      changes in step size, and even just additional code can
+ *      easily lead to uncomfortable lag.
  */
-void strip_rotate_rgb_fade()
+void strip_rotate_rainbow()
 {
         static uint16_t offset = 0;
         uint8_t offset_mod;
