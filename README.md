@@ -1,6 +1,8 @@
 <!-- omit in toc -->
 # Tiny Dimmer
 
+![](MainShowcase.gif)
+
 A cool little ATtiny 25/45/85 based dimmer for WS2812 RGB strips.
 
 ## Contents
