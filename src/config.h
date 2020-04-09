@@ -15,7 +15,7 @@
    * along with this program.  If not, see <https://www.gnu.org/licenses/>.
    * 
    * Author: Patrick Pedersen <ctx.xda@gmail.com>
-   * Description: Configuration file for the Tiny Dimmer firmware.
+   * Description: Configuration file for the Not-so-Tiny dimmer firmware.
    * 
    */
 

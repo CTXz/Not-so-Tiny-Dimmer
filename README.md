@@ -1,14 +1,16 @@
 <!-- omit in toc -->
-# Tiny Dimmer
+# Not-so-Tiny Dimmer 
 
 ![](MainShowcase.gif)
 
-A cool little ATtiny 25/45/85 based dimmer for WS2812 RGB strips.
+What initaly just started as minimalist ATtiny based WS2812 LED strip dimmer, quickly turned into a cheap and feature rich ATtiny based WS2812 strip controller with single color, multi color and animation support.
 
 ## Contents
 - [Contents](#contents)
 - [Features](#features)
-- [Hardware](#hardware)
+  - [Patch bank](#patch-bank)
+  - [Hardware](#hardware)
+- [Hardware](#hardware-1)
   - [Schematic](#schematic)
   - [Perfboard](#perfboard)
   - [Showcase](#showcase)
@@ -17,20 +19,33 @@ A cool little ATtiny 25/45/85 based dimmer for WS2812 RGB strips.
 
 ## Features
 
-The Tiny dimmer is a minimal WS2812 dimmer that exposes a potentiometer to control the strips brightness, and a button to toggle between different colors stored inside the program flash. The WS2812 strip size, patches (colors and animations), other hardware and firmware parameters can be configured in the [configuration header](src/config.h).
+The Not-so-Tiny dimmer is a open source ATtiny Based WS2812 strip controller that offers support for single and multi color lights, as well various animations.
 
-The dimmer also comes with potentiometer and push button noise reduction to reduce LED flicker and false color toggling. These features can compensate for sloppy hardware jobs but cost program cycles. The noise potentiometer and button noise reduction can be adjusted or disabled in the [configuration header](src/config.h)
+### Patch bank
+The controller offers a patch bank with up to 10 patches, where each patch slot can be assigned in the [configuration header](src/config.h) to something as simple as projecting a single color across the strip, all the way to projecting flashy rainbow animations. If less than 10 patches are desired, the `NUM_PATCHES` directive can be reduced in the [configuration header](src/config.h).
 
-The dimmer firmware has been written for ATtiny45 and ATtiny85 chips, but will tightly fit onto a ATtiny25 chip with fewer and more simple patches (ex. no animations). The size of the software may be reduced by disabling certain software parameters in the [configuration header](src/config.h), reducing 16 or 32 bit integers to 8 bit integers where its possible etc. however, it is really recommended to simply use an ATiny45 or ATiny85 instead if one wants make full use of all features.
+**Please note, that required ammount of program flash rises with the number and complexity of patches. Thus, the use of an ATtiny25 is likely to only be limited to the use of a few single color patches.**
+
+Due to the fact that patches are implemented C preprocessor directives, the increasing the maximum number of patches requires addition of case statements in the [update_strip](https://github.com/CTXz/Tiny-Dimmer/blob/master/src/main.c#L193) function, along with a change of the `NUM_PATCHES` directive.
+
+### Hardware
+
+To navigate trough the patch bank, a single push button is provided. Once the last patch has been reached, the first patch is loaded again upon button press.
+
+Many patches also offer a tweakable parameter, such as brightness and speed control. A potentiometer is used to adjust these parameters in real time.
+
+To compensate for sloppy hardware jobs, the firmware also comes with potentiometer and push button noise reduction to reduce LED flicker and false color toggling. It should be noted however, that these features cost program flash and runtime cycles and can be adjusted or disabled in the [configuration header](src/config.h)
+
+The controller firmware has been written for and ATtiny85 chips, but will tightly fit onto a ATtiny25 chip if fewer and minimal patches are used. Unless the controller is planned to be used as a simple single-color WS2812 RGB dimmer, it is really recommended to at least use an ATiny45, preferably an ATiny85 if one wants make full use of all features.
 
 ## Hardware
 
-The following components are required to build a tiny dimmer:
+The following components are required to build a Not-so-Tiny dimmer:
 
 |Component|Quantity|Description|
 |---------|--------|-----------|
-|WS2812 strip|1|The dimmer drives addressable WS2812 RGB strips, as those are simply very common and are what I had at home.|
-|ATtiny 85/45/25|1|The chip that runs the firmware, hence the name "TinyDimmer". Although the firmware will barely fit on a ATtiny25, it is highly recommended to use an ATiny45 or ATiny85 if additional features are to be added to the software later.|
+|WS2812 strip|1|The controller drives addressable WS2812 RGB strips, as those are simply very common and are what I had at home.|
+|ATtiny 85/45/25|1|The chip that runs the firmware, hence the name "Tiny" in the name. Although the firmware will barely fit on a ATtiny25, it is highly recommended to use an ATiny45 or ATiny85 if additional features are to be added to the software later.|
 |1K resistor|1|Used to limit the current to prevent the brightness pot from burning trough.|
 |10k linear potentiometer|1|Used to set the brightness. 10k linear pots are recommended, but any linear pot between 1k and 100k should do the job.|
 |10uF Capacitor|1|Optional, but helps decoupling power supply noise.|
@@ -38,7 +53,7 @@ The following components are required to build a tiny dimmer:
 |1x6 2.54mm Female header|1|Exposes a SPI header to program the MCU.|
 |Proto Perfboard|1|In the perfboard layout below I've used a 10x24 Perfboard, however much less is required.|
 
-The dimmer can also be easily be built with a digispark board.
+The controller can also be easily be built with a digispark board.
 
 The price for the components can range anywhere between 5 to 15 EUR, depending from where you purchase the components, and what their quality is.
 
@@ -49,7 +64,7 @@ The price for the components can range anywhere between 5 to 15 EUR, depending f
 ### Perfboard
 
 Top view:
-![](TinyDimmerTop.png)
+![](NotSoTinyDimmerTop.png)
 
 ### Showcase
 
@@ -63,15 +78,15 @@ Programming via SPI with ArduinoISP:
 
 Flashing the firmware is possible even with the chips attached to the board. Hence it is recommended to solder an SPI header onto the board if you're planning to update the software and do not wish to open up the device for every firmware update.
 
-To flash the firmware, an SPI programmer is required. Since I still have a few spare Arduino's lying around, I decided to use an Arduino Leonardo with the [Arduino ISP firmware](https://www.arduino.cc/en/tutorial/arduinoISP) installed to program the TinyDimmer.
+To flash the firmware, an SPI programmer is required. Since I still have a few spare Arduino's lying around, I decided to use an Arduino Leonardo with the [Arduino ISP firmware](https://www.arduino.cc/en/tutorial/arduinoISP) installed to program the controller.
 
 Since the firmware has been written in [PlatformIO](https://platformio.org/), it is easiest to download the IDE, simply import the project and flash it from there.
 
-Should your tiny dimmer not use an ATtiny85, you must change the `board` directive in the [PlatformIO configuration file](platformio.ini) to your ATtiny model.   
+Should your Not-so-Tiny dimmer not use an ATtiny85, you must change the `board` directive in the [PlatformIO configuration file](platformio.ini) to your ATtiny model.   
 
-In addition to that, the [PlatformIO configuration file](platformio.ini) also expects a stk500v1 programmer (compatible with Arduino over ISP). If you are not programming the Tiny dimmer via an Arduino, you must change `upload_protocol` to the the corresponding programmer in the configuration file (See the [PlatformIO atemlavr documentation](https://docs.platformio.org/en/latest/platforms/atmelavr.html)).
+In addition to that, the [PlatformIO configuration file](platformio.ini) also expects a stk500v1 programmer (compatible with Arduino over ISP). If you are not programming the controller via an Arduino, you must change `upload_protocol` to the the corresponding programmer in the configuration file (See the [PlatformIO atemlavr documentation](https://docs.platformio.org/en/latest/platforms/atmelavr.html)).
 
-Once everything is set in PlatformIO, make sure the parameters in the [configuration header](src/config.h) match your needs and simply click the upload button. The firmware should be flashed onto your TinyDimmer in no time. 
+Once everything is set in PlatformIO, make sure the parameters in the [configuration header](src/config.h) match your needs and simply click the upload button. The firmware should be flashed onto your controller in no time. 
 
 If you're planning to flash the firmware without the PlatformIO IDE, **make sure to program the ATtiny's fuses for it to run at 16Mhz!**
 
@@ -93,3 +108,9 @@ All in all, this was a fun project to kill some quarantine time and most importa
 --- Update ---
 
 I have since reworked the software quite a bit. The ws2812 functions have been reduced to a set of 4 core functions, `ws2812_prep_tx()`, `ws2812_wait_rst()`, `ws2812_tx_byte()`, `ws2812_end_tx()`. With these functions I have then implemented a hardware abstraction layer in the [strip.c](src/strip.c) file, which defines various routines to control the LED strip. Patches have been completely reworked and are now defined in the [configuration header](src/config.h) using macros provided by the [patch_macros.h](src/patch_macros.h) header file. Using macros allows for very flexible patches that aren't limited to a single function or some sort of array of a specific data type. This made room for the easy implementation of animations.
+
+--- Update ---
+
+I think it's time to admit that this project is no longer a minimal dimmer, in fact, it has become quite the opposite and is turning into a feature bloated over-engineered ATtiny based WS2812 controller that, at least if the quarantine boredom won't end soon, will be connected, and will require connection, to the world wide web, feature the clunkiest most inaccurate and unnecessary voice control, feature incredibly water and dust sensitive touch controls and some form of AI or who knows what the future offers.
+
+In all seriousness, except for the fact that I've now renamed the project to Not-so-Tiny dimmer, the device can now be more accurately considered a LED strip controller. While I personally do take large joy in adding and using the additional flashy animations, I've taken into account that we're starting to cross the RGB hell border in the eyes of many people, and have hence made sure that the software architecture is very flexible and allows one to take full control of which features and patches to be implemented. Hell, if desired, the controller software can be reduced to only support simple single color light with brightness control.

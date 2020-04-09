@@ -15,7 +15,7 @@
    * along with this program.  If not, see <https://www.gnu.org/licenses/>.
    * 
    * Author: Patrick Pedersen <ctx.xda@gmail.com>
-   * Description: Main firmware routines for the Tiny Dimmer.
+   * Description: Main firmware routines for the Not-so-Tiny dimmer.
    * 
    */
 
