@@ -24,9 +24,9 @@ What initaly just started as minimalist ATtiny based WS2812 LED strip dimmer, qu
 The Not-so-Tiny dimmer is a open source ATtiny Based WS2812 strip controller that offers support for single and multi color lights, as well various animations.
 
 ### Patch bank
-The controller offers a patch bank with up to 10 patches, where each patch slot can be assigned in the [configuration header](src/config.h) to something as simple as projecting a single color across the strip, all the way to projecting flashy rainbow animations. If less than 10 patches are desired, the `NUM_PATCHES` directive can be reduced in the [configuration header](src/config.h).
+The controller offers a patch bank with up to 10 patches, where each patch slot can be hard-coded in the [configuration header](src/config.h) to something as simple as projecting a single color across the strip, all the way to projecting flashy rainbow animations. If less than 10 patches are desired, the `NUM_PATCHES` directive can be reduced in the [configuration header](src/config.h).
 
-**Please note, that required ammount of program flash rises with the number and complexity of patches. Thus, the use of an ATtiny25 is likely to only be limited to the use of a few single color patches.**
+**Please note, that required ammount of program flash rises with the number and complexity of patches. Thus, the use of an ATtiny25 is likely to only limited to a few single color patches.**
 
 Due to the fact that patches are implemented C preprocessor directives, the increasing the maximum number of patches requires addition of case statements in the [update_strip](https://github.com/CTXz/Tiny-Dimmer/blob/master/src/main.c#L193) function, along with a change of the `NUM_PATCHES` directive.
 
@@ -119,7 +119,7 @@ I have since reworked the software quite a bit. The ws2812 functions have been r
 
 I think it's time to admit that this project is no longer a minimal dimmer, in fact, it has become quite the opposite and is turning into a feature bloated over-engineered ATtiny based WS2812 controller that, at least if the quarantine boredom won't end soon, will be connected, and will require connection, to the world wide web, feature the clunkiest most inaccurate and unnecessary voice control, feature incredibly water and dust sensitive touch controls and some form of AI or who knows what the future offers.
 
-In all seriousness, except for the fact that I've now renamed the project to Not-so-Tiny dimmer, the device can now be more accurately considered a LED strip controller. While I personally do take large joy in adding and using the additional flashy animations, I've taken into account that we're starting to cross the RGB hell border in the eyes of many people, and have hence made sure that the software architecture is very flexible and allows one to take full control of which features and patches to be implemented. Hell, if desired, the controller software can be reduced to only support simple single color light with brightness control.
+In all seriousness, except for the fact that I've now renamed the project to Not-so-Tiny dimmer, the device can now be more accurately considered a LED strip controller. While I personally do take large joy in adding and using the additional flashy animations, I've taken into account that we're starting to cross the RGB hell border in the eyes of many people, and have hence made sure that the software architecture is very flexible and allows one to take full control of which features and patches to be implemented. Hell, if desired, the controller software can be reduced to only support a single light setting along with brightness control.
 
 ## License
 
