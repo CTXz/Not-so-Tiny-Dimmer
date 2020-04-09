@@ -187,8 +187,8 @@ void inline strip_distribute_rgb(RGB_t rgb[], uint16_t size)
         strip_free(&substrpbuf);
 }
 
-/* strip_breath
- * ------------
+/* strip_breathe
+ * ---------------
  * Parameters:
  *      rgb - RGB value to be "breathed"
  *      step_size - Color steps during breath
@@ -198,7 +198,7 @@ void inline strip_distribute_rgb(RGB_t rgb[], uint16_t size)
  * Description:
  *      "Breathes" the provided RGB value across the entire strip.
  */
-bool inline strip_breath(RGB_ptr_t rgb, uint8_t step_size)
+bool inline strip_breathe(RGB_ptr_t rgb, uint8_t step_size)
 {
         static bool inc = true;
         static uint8_t brightness = 0;
@@ -239,8 +239,8 @@ bool inline strip_breath(RGB_ptr_t rgb, uint8_t step_size)
         return false;
 }
 
-/* strip_breath_array
- * ------------------
+/* strip_breathe_array
+ * ---------------------
  * Parameters:
  *      rgb - Arrat of RGB values to be "breathed"
  *      size - Size of the RGB array
@@ -248,11 +248,11 @@ bool inline strip_breath(RGB_ptr_t rgb, uint8_t step_size)
  * Description:
  *      "Breathes" the provided RGB values across the entire strip.
  */
-void inline strip_breath_array(RGB_t rgb[], uint8_t size, uint8_t step_size)
+void inline strip_breathe_array(RGB_t rgb[], uint8_t size, uint8_t step_size)
 {
         static uint8_t i = 0;
 
-        if(strip_breath(rgb[i], step_size))
+        if(strip_breathe(rgb[i], step_size))
                 i = (i + 1) % size;
 }
 
@@ -342,8 +342,8 @@ void inline strip_rainbow(uint8_t step_size, uint8_t brightness)
         }
 }
 
-/* strip_breath_random
- * -------------------
+/* strip_breathe_random
+ * ----------------------
  * Parameters:
  *      step_size - Brightness steps during breath.
  * Description:
@@ -351,7 +351,7 @@ void inline strip_rainbow(uint8_t step_size, uint8_t brightness)
  *      Due to the rather poor randomness of rand(), the outcomes tend
  *      to be similar.
  */
-void inline strip_breath_random(uint8_t step_size)
+void inline strip_breathe_random(uint8_t step_size)
 {
         static RGB_t rgb;
 
@@ -361,32 +361,32 @@ void inline strip_breath_random(uint8_t step_size)
                 rgb[B] = 255;
         }
         
-        if (strip_breath(rgb, step_size)) {
+        if (strip_breathe(rgb, step_size)) {
                 rgb[R] = (rand() % 256);
                 rgb[G] = (rand() % 256);
                 rgb[B] = (rand() % 256);
         }
 }
 
-/* strip_breath_rainbow
- * ---------------------
+/* strip_breathe_rainbow
+ * -----------------------
  * Parameters:
  *      breath_step_size - Brightness steps during breath.
  *      rgb_step_size - Color steps.
  * Description:
  *      Gradiently "Breathes" trough the rgb spectrum
  */
-void inline strip_breath_rainbow(uint8_t breath_step_size, uint8_t rgb_step_size)
+void inline strip_breathe_rainbow(uint8_t breath_step_size, uint8_t rgb_step_size)
 {
         static RGB_t rgb = {255, 0, 0};
         static bool r2g = true;
 
-        if (strip_breath(rgb, breath_step_size))
+        if (strip_breathe(rgb, breath_step_size))
                 r2g = apply_rgb_fade(rgb, rgb_step_size, r2g);
 }
 
 /* strip_rotate_rainbow
- * ---------------------
+ * --------------------
  * Description:
  *      Rotates the rgb spectrum accross the strip.
  *      Unlike other RGB fade effects, this one doesn't 

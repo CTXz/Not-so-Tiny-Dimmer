@@ -63,8 +63,8 @@
 
 // Animations
 
-/* PATCH_ANIMATION_BREATH_POT_CTRL
- * -------------------------------
+/* PATCH_ANIMATION_BREATHE_POT_CTRL
+ * --------------------------------
  * Parameters:
  *      R - Red value (0 - 255)
  *      G - Green value (0 - 255)
@@ -73,20 +73,20 @@
  *      "Breathes" the provided RGB value across the entire strip.
  *      The speed of the "breath" can be altered by the potentiometer.
  */
-#define PATCH_ANIMATION_BREATH_POT_CTRL(R, G, B) strip_breath((RGB_t){R, G, B}, pot())
+#define PATCH_ANIMATION_BREATHE_POT_CTRL(R, G, B) strip_breathe((RGB_t){R, G, B}, pot())
 
-/* PATCH_ANIMATION_BREATH_RAND_POT_CTRL
- * ------------------------------------
+/* PATCH_ANIMATION_BREATHE_RAND_POT_CTRL
+ * -------------------------------------
  * Description:
  *      "Breathes" random RGB values across the entire strip.
  *      The speed of the "breath" can be altered by the potentiometer.
  *      Due to the rather poor randomness of rand(), the outcomes tend
  *      to be similar.
  */
-#define PATCH_ANIMATION_BREATH_RAND_POT_CTRL strip_breath_random(pot())
+#define PATCH_ANIMATION_BREATHE_RAND_POT_CTRL strip_breathe_random(pot())
 
-/* PATCH_ANIMATION_BREATH_RAINBOW_POT_CTRL
- * -----------------------------------
+/* PATCH_ANIMATION_BREATHE_RAINBOW_POT_CTRL
+ * ----------------------------------------
  * Parameters:
  *      RGB_STEP_SIZE - Color steps after every "breath".
  *                      A greater step size means the color difference 
@@ -95,10 +95,10 @@
  *      Gradiently "Breathes" trough the rgb spectrum.
  *      The speed of the "breath" can be altered by the potentiometer.
  */
-#define PATCH_ANIMATION_BREATH_RAINBOW_POT_CTRL(RGB_STEP_SIZE) strip_breath_rainbow(pot(), RGB_STEP_SIZE)
+#define PATCH_ANIMATION_BREATHE_RAINBOW_POT_CTRL(RGB_STEP_SIZE) strip_breathe_rainbow(pot(), RGB_STEP_SIZE)
 
-/* PATCH_ANIMATION_BREATH_ARR_POT_CTRL
- * -----------------------------------
+/* PATCH_ANIMATION_BREATHE_ARR_POT_CTRL
+ * ------------------------------------
  * Parameters:
  *      RGB_STEP_SIZE - Color steps after every "breath".
  *                      A greater step size means the color difference 
@@ -107,11 +107,11 @@
  *      Gradiently "Breathes" trough the RGB array.
  *      The speed of the "breath" can be altered by the potentiometer.
  */
-#define PATCH_ANIMATION_BREATH_ARR_POT_CTRL(RGB_ARR) \
+#define PATCH_ANIMATION_BREATHE_ARR_POT_CTRL(RGB_ARR) \
         RGB_t rgb[] = { \
                 RGB_ARR \
         }; \
-        strip_breath_array(rgb, sizeof(rgb)/sizeof(RGB_t), pot());
+        strip_breathe_array(rgb, sizeof(rgb)/sizeof(RGB_t), pot());
 
 /* PATCH_ANIMATION_RAINBOW
  * ------------------------
