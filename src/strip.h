@@ -57,8 +57,7 @@
 typedef uint8_t RGB_t[3];
 typedef uint8_t* RGB_ptr_t;
 
-typedef RGB_t RGBbuf[WS2812_PIXELS];
-typedef RGB_t* RGBbuf_ptr;
+typedef RGB_t* RGBbuf;
 
 typedef struct substrp {
         uint16_t length;
@@ -93,3 +92,4 @@ void strip_breathe_random(uint8_t step_size);
 void strip_breathe_rainbow(uint8_t breath_step_size, uint8_t rgb_step_size);
 void strip_rainbow(uint8_t step_size, uint8_t brightness);
 void strip_rotate_rainbow();
+void strip_apply_pxbuf(pxbuf pxbuf, uint16_t size);

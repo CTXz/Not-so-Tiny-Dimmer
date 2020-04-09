@@ -83,9 +83,6 @@
 // Globals
 ////////////////////////
 
-bool glob_RGBbuf_init = false;
-RGBbuf glob_RGBbuf;
-
 // Patches
 
 uint8_t selected_patch;

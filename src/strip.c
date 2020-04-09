@@ -31,6 +31,10 @@
 #include "strip.h"
 #include "time.h"
 
+// Use a global strip sized RGB buffer to save memory
+static bool glob_RGBbuf_init = false;
+static RGBbuf glob_RGBbuf;
+
 /* rgb_apply_brightness
  * --------------------
  * Parameters:
@@ -138,7 +142,7 @@ void inline strip_apply_substrpbuf(substrpbuf substrpbuf)
  * Description:
  *      Applies a pixel buffer accross the LED strip.
  */
-void inline strip_apply_RGBbuf(RGBbuf_ptr RGBbuf)
+void inline strip_apply_RGBbuf(RGBbuf RGBbuf)
 {
         ws2812_prep_tx();
         for (uint8_t i = 0; i < WS2812_PIXELS; i++) {
@@ -425,3 +429,18 @@ void strip_rotate_rainbow()
                 offset++;
 }
 
+void inline strip_apply_pxbuf(pxbuf pxbuf, uint16_t size)
+{
+        if (!glob_RGBbuf_init) {
+                glob_RGBbuf = malloc(sizeof(RGB_t) * WS2812_PIXELS);
+                glob_RGBbuf_init = true;
+        }
+
+        for (uint16_t i = 0; i < size; i++) {
+                glob_RGBbuf[pxbuf[i].pos][R] = pxbuf[i].rgb[R];
+                glob_RGBbuf[pxbuf[i].pos][G] = pxbuf[i].rgb[G]; 
+                glob_RGBbuf[pxbuf[i].pos][B] = pxbuf[i].rgb[B]; 
+        }
+
+        strip_apply_RGBbuf(glob_RGBbuf);
+}
