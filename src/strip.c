@@ -77,29 +77,29 @@ void inline strip_apply_brightness(substrpbuf *substrpbuf, uint8_t brightness)
         }
 }
 
-/* strip_cpy
- * ---------
+/* substripbuf_cpy
+ * ---------------
  * Parameters:
  *      dst - Strip object to store copy
  *      src - Strip object to be copied
  * Description:
  *      Creates a deep copy of a strip object.
  */
-void inline strip_cpy(substrpbuf *dst, substrpbuf *src)
+void inline substripbuf_cpy(substrpbuf *dst, substrpbuf *src)
 {
         dst->substrps = malloc(sizeof(substrp) * src->n_substrps);
         dst->n_substrps = src->n_substrps;
         memcpy(dst->substrps, src->substrps, sizeof(substrp) * dst->n_substrps);
 }
 
-/* strip_free
- * ----------
+/* substrpbuf_free
+ * ---------------
  * Parameters:
  *      strp - Pointer to the strip object to be freed
  * Description:
  *      Frees a strip object.
  */
-void inline strip_free(substrpbuf *substrpbuf)
+void inline substrpbuf_free(substrpbuf *substrpbuf)
 {
         free(substrpbuf->substrps);
 }
@@ -184,7 +184,7 @@ void inline strip_distribute_rgb(RGB_t rgb[], uint16_t size)
         }
 
         strip_apply_substrpbuf(substrpbuf);
-        strip_free(&substrpbuf);
+        substrpbuf_free(&substrpbuf);
 }
 
 /* strip_breathe

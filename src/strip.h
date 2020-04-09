@@ -75,8 +75,8 @@ void init_RGBbuf(RGBbuf_ptr RGBbuf);
 void rgb_apply_brightness(RGB_t rgb, uint8_t brightness);
 void strip_apply_brightness(substrpbuf *strp, uint8_t brightness);
 
-void strip_cpy(substrpbuf *dst, substrpbuf *src);
-void strip_free(substrpbuf *strp);
+void substrpbuf_cpy(substrpbuf *dst, substrpbuf *src);
+void substrpbuf_free(substrpbuf *strp);
 
 void strip_apply_all(RGB_ptr_t rgb);
 void strip_apply_substrpbuf(substrpbuf strp);
