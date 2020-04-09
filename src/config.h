@@ -32,7 +32,7 @@
 #define WS2812_DIN PB0                          // WS2812 DIN pin
 #define WS2812_PIXELS 36                        // !! UPDATE THIS !! Number of pixels on the WS2812 strip
 #define WS2812_COLOR_ORDER GRB                  // Order in which color should be parsed to the strip (Most WS2812 strips use BGR)
-#define WS2812_RESET_TIME  0                    // Time required for the WS2812 to reset
+#define WS2812_RESET_TIME  30                   // Time required for the WS2812 to reset
                                                 // If runtime between strip writes exceeds the 
                                                 // necessary reset time, this may be set to 0
 ////////////////////////
@@ -110,24 +110,19 @@
 // First strip half purple, second beige
 #define PATCH_5 PATCH_DISTRIBUTE ( \
         RGB_ARRAY (                \
-                {151, 0, 255},     \
-                {255, 74,  33}     \
-        )                          \
-)
-
-// First strip half beige, second purple
-#define PATCH_6 PATCH_DISTRIBUTE ( \
-        RGB_ARRAY (                \
                 {255, 74,  33},    \
                 {151, 0, 255}      \
         )                          \
 )
 
 // RGB Fading with potentiometer speed control 
-#define PATCH_7 PATCH_ANIMATION_FADE_RGB_POT_CTRL
+#define PATCH_6 PATCH_ANIMATION_FADE_RGB_POT_CTRL
 
-// Halves swapping with potentiometer speed control
-#define PATCH_8 PATCH_ANIMATION_SWAP_POT_CTRL(rand() % 256, rand() % 256, rand() % 256, 0, 0, 0);
+// Rotating rainbow animation
+#define PATCH_7 PATCH_ANIMATION_ROTATE_RGB_FADE
 
 // Breath animation with potetionmeter breath length control
-#define PATCH_9 PATCH_ANIMATION_BREATH_RGB_POT_CTRL(10)
+#define PATCH_8 PATCH_ANIMATION_BREATH_RGB_POT_CTRL(10)
+
+// Halves swapping with potentiometer speed control
+#define PATCH_9 PATCH_ANIMATION_SWAP_POT_CTRL(rand() % 256, rand() % 256, rand() % 256, 0, 0, 0);

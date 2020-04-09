@@ -87,3 +87,4 @@ void strip_breath_array(RGB_t rgb[], uint8_t size, uint8_t step_size);
 void strip_breath_random(uint8_t step_size);
 void strip_breath_rgb(uint8_t breath_step_size, uint8_t rgb_step_size);
 void strip_fade_rgb(uint8_t step_size, uint8_t brightness);
+void strip_rotate_rgb_fade();

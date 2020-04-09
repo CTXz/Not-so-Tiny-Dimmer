@@ -175,4 +175,6 @@
                 swap = !swap; \
                 reset_timer(); \
         }
+
+#define PATCH_ANIMATION_ROTATE_RGB_FADE strip_rotate_rgb_fade();
         

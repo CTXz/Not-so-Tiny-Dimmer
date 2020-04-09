@@ -25,6 +25,7 @@
 #include <math.h>
 
 #include <avr/io.h>
+#include <util/delay.h>
 
 #include "ws2812.h"
 #include "strip.h"
@@ -209,7 +210,7 @@ bool inline strip_breath(RGB_ptr_t rgb, uint8_t step_size)
         memcpy(&rgb_cpy, rgb, sizeof(RGB_t));
         rgb_apply_brightness(rgb_cpy, brightness);
         strip_set_all(rgb_cpy);
-        
+
         if (brightness == 0 && ms_passed() < 2000)
                 return false;
 
@@ -382,4 +383,55 @@ void inline strip_breath_rgb(uint8_t breath_step_size, uint8_t rgb_step_size)
 
         if (strip_breath(rgb, breath_step_size))
                 r2g = apply_rgb_fade(rgb, rgb_step_size, r2g);
+}
+
+/* strip_rotate_rgb_fade
+ * ---------------------
+ * Description:
+ *      Rotates a RGB fade. Unlike other RGB fade effects,
+ *      this one doesn't allow for changes in speed, as
+ *      the addition of delays, changes in step size, and
+ *      even just additional code can easily lead to uncomfortable
+ *      lag.
+ */
+void strip_rotate_rgb_fade()
+{
+        static uint16_t offset = 0;
+        uint8_t offset_mod;
+        RGB_t rgb;
+        bool r2g;
+         
+        // Apply offset to RGB;
+        
+        r2g = false;
+        offset_mod = offset % 255;
+
+        if (offset < 255) {
+                rgb[R] = 255 - offset_mod;
+                rgb[G] = 0;
+                rgb[B] = offset_mod;
+        } else if (offset < 510) {
+                rgb[R] = 0;
+                rgb[G] = offset_mod;
+                rgb[B] = 255 - offset_mod;
+        } else {
+                rgb[R] = offset_mod;
+                rgb[G] = 255 - offset_mod;
+                rgb[B] = 0;
+                r2g = true;
+        }
+
+        ws2812_prep_tx();
+                for (uint16_t i = 0; i < WS2812_PIXELS; i++) {
+                        ws2812_tx_byte(rgb[WS2812_WIRING_RGB_0]);
+                        ws2812_tx_byte(rgb[WS2812_WIRING_RGB_1]);
+                        ws2812_tx_byte(rgb[WS2812_WIRING_RGB_2]);
+                        r2g = apply_rgb_fade(rgb, 10, r2g);
+                }
+        ws2812_end_tx();
+
+        if (offset == 764)
+                offset = 0;
+        else
+                offset++;
 }
