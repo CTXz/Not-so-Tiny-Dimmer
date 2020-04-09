@@ -432,7 +432,7 @@ void strip_rotate_rainbow()
 void inline strip_apply_pxbuf(pxbuf pxbuf, uint16_t size)
 {
         if (!glob_RGBbuf_init) {
-                glob_RGBbuf = malloc(sizeof(RGB_t) * WS2812_PIXELS);
+                glob_RGBbuf = calloc(WS2812_PIXELS, sizeof(RGB_t));
                 glob_RGBbuf_init = true;
         }
 
