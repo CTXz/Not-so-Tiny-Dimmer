@@ -104,14 +104,14 @@ void inline strip_free(substrpbuf *substrpbuf)
         free(substrpbuf->substrps);
 }
 
-/* strip_set_all
- * -------------
+/* strip_apply_all
+ * ---------------
  * Parameters:
  *      rgb - RGB object to be applied accross the LED strip
  * Description:
  *      Applies a RGB value accross the entire LED strip.
  */
-void inline strip_set_all(RGB_ptr_t rgb)
+void inline strip_apply_all(RGB_ptr_t rgb)
 {
         ws2812_prep_tx();
         for (uint16_t i = 0; i < WS2812_PIXELS; i++) {
@@ -122,14 +122,14 @@ void inline strip_set_all(RGB_ptr_t rgb)
         ws2812_end_tx();
 }
 
-/* strip_set
- * ---------
+/* strip_apply
+ * -----------
  * Parameters:
  *      substrpbuf - Strip object to be applied accross the LED strip
  * Description:
  *      Applies a strip object accross the LED strip.
  */
-void inline strip_set_substrpbuf(substrpbuf substrpbuf)
+void inline strip_apply_substrpbuf(substrpbuf substrpbuf)
 {
         ws2812_prep_tx();
         for (uint16_t i = 0; i < substrpbuf.n_substrps; i++) {
@@ -142,14 +142,14 @@ void inline strip_set_substrpbuf(substrpbuf substrpbuf)
         ws2812_end_tx();
 }
 
-/* strip_set_RGBbuf
- * ---------------
+/* strip_apply_RGBbuf
+ * ------------------
  * Parameters:
  *      RGBbuf - Pixel buffer to be applied accross the LED strip
  * Description:
  *      Applies a pixel buffer accross the LED strip.
  */
-void inline strip_set_RGBbuf(RGBbuf_ptr RGBbuf)
+void inline strip_apply_RGBbuf(RGBbuf_ptr RGBbuf)
 {
         ws2812_prep_tx();
         for (uint8_t i = 0; i < WS2812_PIXELS; i++) {
@@ -183,12 +183,12 @@ void inline strip_distribute_rgb(RGB_t rgb[], uint16_t size)
                 memcpy(&substrpbuf.substrps[i].rgb, &rgb[i], sizeof(RGB_t));
         }
 
-        strip_set_substrpbuf(substrpbuf);
+        strip_apply_substrpbuf(substrpbuf);
         strip_free(&substrpbuf);
 }
 
 /* strip_breathe
- * ---------------
+ * -------------
  * Parameters:
  *      rgb - RGB value to be "breathed"
  *      step_size - Color steps during breath
@@ -209,7 +209,7 @@ bool inline strip_breathe(RGB_ptr_t rgb, uint8_t step_size)
         RGB_t rgb_cpy;
         memcpy(&rgb_cpy, rgb, sizeof(RGB_t));
         rgb_apply_brightness(rgb_cpy, brightness);
-        strip_set_all(rgb_cpy);
+        strip_apply_all(rgb_cpy);
 
         if (brightness == 0 && ms_passed() < 2000)
                 return false;
@@ -240,7 +240,7 @@ bool inline strip_breathe(RGB_ptr_t rgb, uint8_t step_size)
 }
 
 /* strip_breathe_array
- * ---------------------
+ * -------------------
  * Parameters:
  *      rgb - Arrat of RGB values to be "breathed"
  *      size - Size of the RGB array
@@ -336,14 +336,14 @@ void inline strip_rainbow(uint8_t step_size, uint8_t brightness)
                 RGB_t rgb_cpy;
                 memcpy(&rgb_cpy, &rgb, sizeof(RGB_t));
                 rgb_apply_brightness(rgb_cpy, brightness);
-                strip_set_all(rgb_cpy);
+                strip_apply_all(rgb_cpy);
         } else {
-                strip_set_all(rgb);
+                strip_apply_all(rgb);
         }
 }
 
 /* strip_breathe_random
- * ----------------------
+ * --------------------
  * Parameters:
  *      step_size - Brightness steps during breath.
  * Description:
@@ -369,7 +369,7 @@ void inline strip_breathe_random(uint8_t step_size)
 }
 
 /* strip_breathe_rainbow
- * -----------------------
+ * ---------------------
  * Parameters:
  *      breath_step_size - Brightness steps during breath.
  *      rgb_step_size - Color steps.

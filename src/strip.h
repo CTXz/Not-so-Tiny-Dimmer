@@ -78,9 +78,9 @@ void strip_apply_brightness(substrpbuf *strp, uint8_t brightness);
 void strip_cpy(substrpbuf *dst, substrpbuf *src);
 void strip_free(substrpbuf *strp);
 
-void strip_set_all(RGB_ptr_t rgb);
-void strip_set_substrpbuf(substrpbuf strp);
-void strip_set_RGBbuf(RGBbuf RGBbuf);
+void strip_apply_all(RGB_ptr_t rgb);
+void strip_apply_substrpbuf(substrpbuf strp);
+void strip_apply_RGBbuf(RGBbuf RGBbuf);
 void strip_distribute_rgb(RGB_t rgb[], uint16_t size);
 bool strip_breathe(RGB_ptr_t rgb, uint8_t step_size);
 void strip_breathe_array(RGB_t rgb[], uint8_t size, uint8_t step_size);

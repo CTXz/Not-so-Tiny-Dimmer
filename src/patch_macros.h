@@ -42,7 +42,7 @@
 #define PATCH_SET_ALL(R, G, B) \
         RGB_t rgb = {R, G, B}; \
         rgb_apply_brightness(rgb, pot()); \
-        strip_set_all(rgb);
+        strip_apply_all(rgb);
 
 /* PATCH_SET_ALL
  * -------------
