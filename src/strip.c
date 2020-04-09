@@ -35,6 +35,11 @@
 static bool glob_RGBbuf_init = false;
 static RGBbuf glob_RGBbuf;
 
+void inline zero_RGBbuf(RGBbuf buf, uint16_t size)
+{
+        memset(buf, 0, size * sizeof(RGB_t));
+}
+
 /* rgb_apply_brightness
  * --------------------
  * Parameters:
@@ -434,6 +439,8 @@ void inline strip_apply_pxbuf(pxbuf pxbuf, uint16_t size)
         if (!glob_RGBbuf_init) {
                 glob_RGBbuf = calloc(WS2812_PIXELS, sizeof(RGB_t));
                 glob_RGBbuf_init = true;
+        } else {
+                zero_RGBbuf(glob_RGBbuf, WS2812_PIXELS);
         }
 
         for (uint16_t i = 0; i < size; i++) {
@@ -444,3 +451,4 @@ void inline strip_apply_pxbuf(pxbuf pxbuf, uint16_t size)
 
         strip_apply_RGBbuf(glob_RGBbuf);
 }
+
