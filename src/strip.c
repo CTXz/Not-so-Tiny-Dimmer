@@ -31,17 +31,6 @@
 #include "strip.h"
 #include "time.h"
 
-/* init_RGBbuf
- * ----------
- * Parameters:
- *      RGBbuf - Pointer to a pixel buffer
- * Description:
- *      Initializes an empty pixel buffer.
- */
-void inline init_RGBbuf(RGBbuf_ptr RGBbuf) {
-        RGBbuf = malloc(sizeof(RGBbuf) * WS2812_PIXELS);
-}
-
 /* rgb_apply_brightness
  * --------------------
  * Parameters:
@@ -435,3 +424,4 @@ void strip_rotate_rainbow()
         else
                 offset++;
 }
+

@@ -73,11 +73,9 @@ typedef struct substrpbuf {
 typedef struct pxl {
         uint16_t pos;
         RGB_t rgb;
-}
+} pxl;
 
 typedef pxl* pxbuf;
-
-void init_RGBbuf(RGBbuf_ptr RGBbuf);
 
 void rgb_apply_brightness(RGB_t rgb, uint8_t brightness);
 void strip_apply_brightness(substrpbuf *strp, uint8_t brightness);
