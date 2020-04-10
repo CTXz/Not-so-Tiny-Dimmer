@@ -26,7 +26,7 @@ The Not-so-Tiny dimmer is a open source ATtiny Based WS2812 strip controller tha
 ### Patch bank
 The controller offers a patch bank with up to 10 patches, where each patch slot can be hard-coded in the [configuration header](src/config.h) to something as simple as projecting a single color across the strip, all the way to projecting flashy rainbow animations. If less than 10 patches are desired, the `NUM_PATCHES` directive can be reduced in the [configuration header](src/config.h).
 
-**Please note, that required ammount of program flash rises with the number and complexity of patches. Thus, the use of an ATtiny25 is likely to only limited to a few single color patches.**
+**Please note that the required amount of program flash rises with the number and complexity of patches. Thus, the use of an ATtiny25 is likely to only limited to a few single color patches.**
 
 Due to the fact that patches are implemented C preprocessor directives, the increasing the maximum number of patches requires addition of case statements in the [update_strip](https://github.com/CTXz/Tiny-Dimmer/blob/master/src/main.c#L193) function, along with a change of the `NUM_PATCHES` directive.
 
