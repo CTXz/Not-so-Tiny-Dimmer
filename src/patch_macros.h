@@ -194,6 +194,21 @@
  */
 #define PATCH_ANIMATION_ROTATE_RAINBOW strip_rotate_rainbow();
 
+/* PATCH_ANIMATION_RAIN
+ * --------------------
+ * Parameters:
+ *      _R - Red color value
+ *      _G - Green color value
+ *      _B - Blue color value
+ *      MAX_DROPS - Maximum amount of visible "droplets" at a time
+ *      MIN_T_APPART - Minimum time in ms between drops
+ *      MAX_T_APPART - Maximum time in ms between drops
+ *      STEP_SIZE - Step size of droplet fading
+ * Description:
+ *      Creates a rain effect accross the strip.
+ *      Note that this effect makes use of an RGB buffer and will linearly increase 
+ *      memory consumption with strip size. 
+ */
 #define PATCH_ANIMATION_RAIN(_R, _G, _B, MAX_DROPS, MIN_T_APPART, MAX_T_APPART, STEP_SIZE) \
         RGB_t rgb; \
         rgb[R] = _R; \
@@ -201,6 +216,18 @@
         rgb[B] = _B; \
         strip_rain(rgb, MAX_DROPS, MIN_T_APPART, MAX_T_APPART, STEP_SIZE);
 
+/* PATCH_ANIMATION_RAIN_POT_CTRL
+ * -----------------------------
+ * Parameters:
+ *      _R - Red color value
+ *      _G - Green color value
+ *      _B - Blue color value
+ * Description:
+ *      Creates a rain effect accross the strip.
+ *      The "intensity" of the rain can be adjusted with the potentiometer.
+ *      Note that this effect makes use of an RGB buffer and will linearly increase 
+ *      memory consumption with strip size. 
+ */
 #define PATCH_ANIMATION_RAIN_POT_CTRL(_R, _G, _B) \
         uint8_t pot_read = pot(); \
         RGB_t rgb; \

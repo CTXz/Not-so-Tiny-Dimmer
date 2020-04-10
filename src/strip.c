@@ -471,6 +471,19 @@ void inline strip_apply_pxbuf(pxbuf pxbuf, uint16_t size)
         strip_apply_RGBbuf(glob_RGBbuf);
 }
 
+/* strip_rain
+ * ----------
+ * Parameters:
+ *      rgb - RGB value of rain droplets
+ *      max_drops - Maximum amount of visible "droplets" at a time
+ *      min_t_appart - Minimum time in ms between drops
+ *      max_t_appart - Maximum time in ms between drops
+ *      step_size - Step size of droplet fading
+ * Description:
+ *      Creates a rain effect accross the strip.
+ *      Note that this effect makes use of an RGB buffer and will linearly increase 
+ *      memory consumption with strip size. 
+ */
 void inline strip_rain(RGB_t rgb, uint16_t max_drops, uint16_t min_t_appart, uint16_t max_t_appart, uint8_t step_size)
 {
         static pxbuf pxbuf;

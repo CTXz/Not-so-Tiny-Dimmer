@@ -107,6 +107,7 @@
         )                          \
 )
 
+// Cyan white rain effect with potentiometer intensity control
 #define PATCH_5 PATCH_ANIMATION_RAIN_POT_CTRL(rand() % 256, 255, 255)
 
 // Rainbow fading with potentiometer speed control 
@@ -119,4 +120,4 @@
 #define PATCH_8 PATCH_ANIMATION_BREATHE_RAINBOW_POT_CTRL(10)
 
 // Halves swapping with potentiometer speed control
-#define PATCH_9 PATCH_ANIMATION_SWAP_POT_CTRL(rand() % 256, rand() % 256, rand() % 256, 0, 0, 0);
+#define PATCH_9 PATCH_ANIMATION_SWAP_POT_CTRL(rand() % 256, rand() % 256, rand() % 256, 0, 0, 0)
