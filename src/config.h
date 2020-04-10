@@ -30,7 +30,7 @@
 ////////////////////////
 
 #define WS2812_DIN PB0                          // WS2812 DIN pin
-#define WS2812_PIXELS 36                        // !! UPDATE THIS !! Number of pixels on the WS2812 strip
+#define WS2812_PIXELS 35                        // !! UPDATE THIS !! Number of pixels on the WS2812 strip
 #define WS2812_COLOR_ORDER GRB                  // Order in which color should be parsed to the strip (Most WS2812 strips use BGR)
 #define WS2812_RESET_TIME  30                   // Time required for the WS2812 to reset
                                                 // If runtime between strip writes exceeds the 
@@ -99,21 +99,15 @@
         )                          \
 )
 
-// First strip half cyan, second pink
-#define PATCH_4 PATCH_DISTRIBUTE ( \
-        RGB_ARRAY (                \
-                {255, 20, 127},    \
-                {10, 255, 202}     \
-        )                          \
-)
-
 // First strip half purple, second beige
-#define PATCH_5 PATCH_DISTRIBUTE ( \
+#define PATCH_4 PATCH_DISTRIBUTE ( \
         RGB_ARRAY (                \
                 {255, 74,  33},    \
                 {151, 0, 255}      \
         )                          \
 )
+
+#define PATCH_5 PATCH_ANIMATION_RAIN_POT_CTRL(rand() % 256, 255, 255)
 
 // Rainbow fading with potentiometer speed control 
 #define PATCH_6 PATCH_ANIMATION_RAINBOW_POT_CTRL

@@ -40,6 +40,25 @@ void inline zero_RGBbuf(RGBbuf buf, uint16_t size)
         memset(buf, 0, size * sizeof(RGB_t));
 }
 
+void inline zero_pxbuf(pxbuf buf, uint16_t size)
+{
+        memset(buf, 0, size * sizeof(pxl));
+}
+
+RGBbuf inline init_RGBbuf(uint16_t size)
+{
+        RGBbuf ret = malloc(size * sizeof(RGB_t));
+        zero_RGBbuf(ret, size);
+        return ret;
+}
+
+pxbuf inline init_pxbuf(uint16_t size)
+{
+        pxbuf ret = malloc(size * sizeof(pxl));
+        zero_pxbuf(ret, size);
+        return ret;
+}
+
 /* rgb_apply_brightness
  * --------------------
  * Parameters:
@@ -437,7 +456,7 @@ void strip_rotate_rainbow()
 void inline strip_apply_pxbuf(pxbuf pxbuf, uint16_t size)
 {
         if (!glob_RGBbuf_init) {
-                glob_RGBbuf = calloc(WS2812_PIXELS, sizeof(RGB_t));
+                glob_RGBbuf = init_RGBbuf(WS2812_PIXELS);
                 glob_RGBbuf_init = true;
         } else {
                 zero_RGBbuf(glob_RGBbuf, WS2812_PIXELS);
@@ -446,9 +465,67 @@ void inline strip_apply_pxbuf(pxbuf pxbuf, uint16_t size)
         for (uint16_t i = 0; i < size; i++) {
                 glob_RGBbuf[pxbuf[i].pos][R] = pxbuf[i].rgb[R];
                 glob_RGBbuf[pxbuf[i].pos][G] = pxbuf[i].rgb[G]; 
-                glob_RGBbuf[pxbuf[i].pos][B] = pxbuf[i].rgb[B]; 
+                glob_RGBbuf[pxbuf[i].pos][B] = pxbuf[i].rgb[B];
         }
 
         strip_apply_RGBbuf(glob_RGBbuf);
 }
 
+void inline strip_rain(RGB_t rgb, uint16_t max_drops, uint16_t min_t_appart, uint16_t max_t_appart, uint8_t step_size)
+{
+        static pxbuf pxbuf;
+        static uint16_t pxbuf_size = 0;
+        static bool init = false;
+
+        uint8_t tmp;
+        
+        if (step_size == 0)
+                step_size = 1;
+
+        if (!init) {
+                pxbuf = init_pxbuf(max_drops);
+                init = true;
+        } else if (pxbuf_size != max_drops) {
+                pxbuf = realloc(pxbuf, max_drops * sizeof(pxl));
+                
+                if (max_drops > pxbuf_size)
+                        memset(pxbuf + pxbuf_size, 0, (max_drops - pxbuf_size) * sizeof(pxl));
+        }
+
+        pxbuf_size = max_drops;
+
+        for (uint16_t i = 0; i < max_drops; i++) {
+                if (pxbuf[i].rgb[R] == 0 && pxbuf[i].rgb[G] == 0 && pxbuf[i].rgb[B] == 0) {
+                        if (ms_passed() >= (rand() % (max_t_appart - min_t_appart + 1)) + min_t_appart) {
+                                pxbuf[i].pos = rand() % WS2812_PIXELS;
+                                pxbuf[i].rgb[R] = rgb[R];
+                                pxbuf[i].rgb[G] = rgb[G];
+                                pxbuf[i].rgb[B] = rgb[B];
+                                reset_timer();
+                        }
+                } else {
+                        if (pxbuf[i].rgb[R] != 0) {
+                                tmp = pxbuf[i].rgb[R];
+                                pxbuf[i].rgb[R] -= step_size;
+                                if (pxbuf[i].rgb[R] > tmp)
+                                        pxbuf[i].rgb[R] = 0;
+                        }
+
+                        if (pxbuf[i].rgb[G] != 0) {
+                                tmp = pxbuf[i].rgb[G];
+                                pxbuf[i].rgb[G] -= step_size;
+                                if (pxbuf[i].rgb[G] > tmp)
+                                        pxbuf[i].rgb[G] = 0;
+                        }
+
+                        if (pxbuf[i].rgb[B] != 0) {
+                                tmp = pxbuf[i].rgb[B];
+                                pxbuf[i].rgb[B] -= step_size;
+                                if (pxbuf[i].rgb[B] > tmp)
+                                        pxbuf[i].rgb[B] = 0;
+                        }
+                }
+        }
+
+        strip_apply_pxbuf(pxbuf, pxbuf_size);
+}

@@ -193,4 +193,19 @@
  *      Rotates the rgb spectrum accross the strip.
  */
 #define PATCH_ANIMATION_ROTATE_RAINBOW strip_rotate_rainbow();
-        
+
+#define PATCH_ANIMATION_RAIN(_R, _G, _B, MAX_DROPS, MIN_T_APPART, MAX_T_APPART, STEP_SIZE) \
+        RGB_t rgb; \
+        rgb[R] = _R; \
+        rgb[G] = _G; \
+        rgb[B] = _B; \
+        strip_rain(rgb, MAX_DROPS, MIN_T_APPART, MAX_T_APPART, STEP_SIZE);
+
+#define PATCH_ANIMATION_RAIN_POT_CTRL(_R, _G, _B) \
+        uint8_t pot_read = pot(); \
+        RGB_t rgb; \
+        rgb[R] = _R; \
+        rgb[G] = _G; \
+        rgb[B] = _B; \
+        strip_rain(rgb, pot_read/(255/WS2812_PIXELS), 255 - pot_read, 1020 - (pot_read << 2), pot_read >> 5);
+
