@@ -27,23 +27,16 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
+#include "config.h"
 #include "ws2812.h"
 #include "strip.h"
 #include "time.h"
 
+#if STRIP_TYPE == WS2812
+
 // Use a global strip sized RGB buffer to save memory
 static bool glob_RGBbuf_init = false;
 static RGBbuf glob_RGBbuf;
-
-void inline zero_RGBbuf(RGBbuf buf, uint16_t size)
-{
-        memset(buf, 0, size * sizeof(RGB_t));
-}
-
-void inline zero_pxbuf(pxbuf buf, uint16_t size)
-{
-        memset(buf, 0, size * sizeof(pxl));
-}
 
 RGBbuf inline init_RGBbuf(uint16_t size)
 {
@@ -58,6 +51,19 @@ pxbuf inline init_pxbuf(uint16_t size)
         zero_pxbuf(ret, size);
         return ret;
 }
+
+void inline zero_RGBbuf(RGBbuf buf, uint16_t size)
+{
+        memset(buf, 0, size * sizeof(RGB_t));
+}
+
+void inline zero_pxbuf(pxbuf buf, uint16_t size)
+{
+        memset(buf, 0, size * sizeof(pxl));
+}
+
+#endif
+
 
 /* rgb_apply_brightness
  * --------------------
@@ -94,6 +100,69 @@ void inline strip_apply_brightness(substrpbuf *substrpbuf, uint8_t brightness)
         }
 }
 
+/* apply_rgb_fade
+ * --------------
+ * Parameters:
+ *      rgb - RGB object to apply fade on
+ *      step_size - Color steps after each call
+ *      r2g - Callback to tell the routine which color transition is taking place
+ * Returns:
+ *      Whether the red to green color transition has completed. Parse the return to
+ *      the r2g arg!
+ * Description:
+ *      Apples rgb fading to the provided rgb object.
+ */
+bool inline apply_rgb_fade(RGB_ptr_t rgb, uint8_t step_size, bool r2g)
+{
+        uint8_t tmp;
+
+        if (step_size == 0)
+                step_size = 1;
+
+        if (r2g) {
+                tmp = rgb[R];
+                tmp -= step_size;
+
+                if (tmp > rgb[R]) {
+                        rgb[R] = 0;
+                        rgb[G] = 255;
+                } else {
+                        rgb[R] = tmp;
+                        rgb[G] += step_size;
+                }
+
+                return (rgb[R] > 0);
+        } else if (rgb[G] > 0) {
+                tmp = rgb[G];
+                tmp -= step_size;
+
+                if (tmp > rgb[G]) {
+                        rgb[G] = 0;
+                        rgb[B] = 255;
+                } else {
+                        rgb[G] = tmp;
+                        rgb[B] += step_size;
+                }
+
+                return false;
+        } else {
+                tmp = rgb[B];
+                tmp -= step_size;
+
+                if (tmp > rgb[B]) {
+                        rgb[B] = 0;
+                        rgb[R] = 255;
+                } else {
+                        rgb[B] = tmp;
+                        rgb[R] += step_size;
+                }
+
+                return (rgb[R] == 255);
+        }
+}
+
+#if STRIP_TYPE == WS2812
+
 /* substripbuf_cpy
  * ---------------
  * Parameters:
@@ -121,6 +190,8 @@ void inline substrpbuf_free(substrpbuf *substrpbuf)
         free(substrpbuf->substrps);
 }
 
+#endif
+
 /* strip_apply_all
  * ---------------
  * Parameters:
@@ -130,6 +201,7 @@ void inline substrpbuf_free(substrpbuf *substrpbuf)
  */
 void inline strip_apply_all(RGB_ptr_t rgb)
 {
+#if STRIP_TYPE == WS2812
         ws2812_prep_tx();
         for (uint16_t i = 0; i < WS2812_PIXELS; i++) {
                 ws2812_tx_byte(rgb[WS2812_WIRING_RGB_0]);
@@ -137,10 +209,17 @@ void inline strip_apply_all(RGB_ptr_t rgb)
                 ws2812_tx_byte(rgb[WS2812_WIRING_RGB_2]);
         }
         ws2812_end_tx();
+#else
+        NON_ADDR_STRIP_R_OCR = rgb[R];
+        NON_ADDR_STRIP_G_OCR = rgb[G];
+        NON_ADDR_STRIP_B_OCR = rgb[B];
+#endif
 }
 
-/* strip_apply
- * -----------
+#if STRIP_TYPE == WS2812
+
+/* strip_apply_substrpbuf
+ * ----------------------
  * Parameters:
  *      substrpbuf - Strip object to be applied accross the LED strip
  * Description:
@@ -203,6 +282,8 @@ void inline strip_distribute_rgb(RGB_t rgb[], uint16_t size)
         strip_apply_substrpbuf(substrpbuf);
         substrpbuf_free(&substrpbuf);
 }
+
+#endif
 
 /* strip_breathe
  * -------------
@@ -273,66 +354,6 @@ void inline strip_breathe_array(RGB_t rgb[], uint8_t size, uint8_t step_size)
                 i = (i + 1) % size;
 }
 
-/* apply_rgb_fade
- * --------------
- * Parameters:
- *      rgb - RGB object to apply fade on
- *      step_size - Color steps after each call
- *      r2g - Callback to tell the routine which color transition is taking place
- * Returns:
- *      Whether the red to green color transition has completed. Parse the return to
- *      the r2g arg!
- * Description:
- *      Apples rgb fading to the provided rgb object.
- */
-bool inline apply_rgb_fade(RGB_ptr_t rgb, uint8_t step_size, bool r2g)
-{
-        uint8_t tmp;
-
-        if (step_size == 0)
-                step_size = 1;
-
-        if (r2g) {
-                tmp = rgb[R];
-                tmp -= step_size;
-
-                if (tmp > rgb[R]) {
-                        rgb[R] = 0;
-                        rgb[G] = 255;
-                } else {
-                        rgb[R] = tmp;
-                        rgb[G] += step_size;
-                }
-
-                return (rgb[R] > 0);
-        } else if (rgb[G] > 0) {
-                tmp = rgb[G];
-                tmp -= step_size;
-
-                if (tmp > rgb[G]) {
-                        rgb[G] = 0;
-                        rgb[B] = 255;
-                } else {
-                        rgb[G] = tmp;
-                        rgb[B] += step_size;
-                }
-
-                return false;
-        } else {
-                tmp = rgb[B];
-                tmp -= step_size;
-
-                if (tmp > rgb[B]) {
-                        rgb[B] = 0;
-                        rgb[R] = 255;
-                } else {
-                        rgb[B] = tmp;
-                        rgb[R] += step_size;
-                }
-
-                return (rgb[R] == 255);
-        }
-}
 /* strip_rainbow
  * -------------
  * Parameters:
@@ -401,6 +422,8 @@ void inline strip_breathe_rainbow(uint8_t breath_step_size, uint8_t rgb_step_siz
         if (strip_breathe(rgb, breath_step_size))
                 r2g = apply_rgb_fade(rgb, rgb_step_size, r2g);
 }
+
+#if STRIP_TYPE == WS2812
 
 /* strip_rotate_rainbow
  * --------------------
@@ -542,3 +565,5 @@ void inline strip_rain(RGB_t rgb, uint16_t max_drops, uint16_t min_t_appart, uin
 
         strip_apply_pxbuf(pxbuf, pxbuf_size);
 }
+
+#endif

@@ -22,7 +22,6 @@
 #pragma once
 
 #include <stdbool.h>
-
 #include "config.h"
 
 #define R 0
@@ -34,24 +33,56 @@
 #define BRG 2
 #define BGR 3
 
-#if WS2812_COLOR_ORDER == RGB
-        #define WS2812_WIRING_RGB_0 0
-        #define WS2812_WIRING_RGB_1 1
-        #define WS2812_WIRING_RGB_2 2
-#elif WS2812_COLOR_ORDER == GRB
-        #define WS2812_WIRING_RGB_0 1
-        #define WS2812_WIRING_RGB_1 0
-        #define WS2812_WIRING_RGB_2 2
-#elif WS2812_COLOR_ORDER == BRG
-        #define WS2812_WIRING_RGB_0 2
-        #define WS2812_WIRING_RGB_1 0
-        #define WS2812_WIRING_RGB_2 1
-#elif WS2812_COLOR_ORDER == BGR
-        #define WS2812_WIRING_RGB_0 2
-        #define WS2812_WIRING_RGB_1 1
-        #define WS2812_WIRING_RGB_2 0
+#if STRIP_TYPE == WS2812
+        #if WS2812_COLOR_ORDER == RGB
+                #define WS2812_WIRING_RGB_0 0
+                #define WS2812_WIRING_RGB_1 1
+                #define WS2812_WIRING_RGB_2 2
+        #elif WS2812_COLOR_ORDER == GRB
+                #define WS2812_WIRING_RGB_0 1
+                #define WS2812_WIRING_RGB_1 0
+                #define WS2812_WIRING_RGB_2 2
+        #elif WS2812_COLOR_ORDER == BRG
+                #define WS2812_WIRING_RGB_0 2
+                #define WS2812_WIRING_RGB_1 0
+                #define WS2812_WIRING_RGB_2 1
+        #elif WS2812_COLOR_ORDER == BGR
+                #define WS2812_WIRING_RGB_0 2
+                #define WS2812_WIRING_RGB_1 1
+                #define WS2812_WIRING_RGB_2 0
+        #else
+                #error "No color order specified! Please set the WS2812_COLOR_ORDER directive in the config file!"
+        #endif
 #else
-        #error "No color order specified! Please set the WS2812_COLOR_ORDER directive in the config file!"
+        #if NON_ADDR_STRIP_R == PB0
+                #define NON_ADDR_STRIP_R_OCR OCR0A
+        #elif NON_ADDR_STRIP_R == PB1
+                #define NON_ADDR_STRIP_R_OCR OCR0B
+        #elif NON_ADDR_STRIP_R == PB4
+                #define NON_ADDR_STRIP_R_OCR OCR1B
+        #else
+                #error "Red LED pin does not support PWM! Please use PB0, PB1 or PB4!"
+        #endif
+
+        #if NON_ADDR_STRIP_G == PB0
+                #define NON_ADDR_STRIP_G_OCR OCR0A
+        #elif NON_ADDR_STRIP_G == PB1
+                #define NON_ADDR_STRIP_G_OCR OCR0B
+        #elif NON_ADDR_STRIP_G == PB4
+                #define NON_ADDR_STRIP_G_OCR OCR1B
+        #else
+                #error "Green LED pin does not support PWM! Please use PB0, PB1 or PB4!"
+        #endif
+
+        #if NON_ADDR_STRIP_B == PB0
+                #define NON_ADDR_STRIP_B_OCR OCR0A
+        #elif NON_ADDR_STRIP_B == PB1
+                #define NON_ADDR_STRIP_B_OCR OCR0B
+        #elif NON_ADDR_STRIP_B == PB4
+                #define NON_ADDR_STRIP_B_OCR OCR1B
+        #else
+                #error "Blue LED pin does not support PWM! Please use PB0, PB1 or PB4!"
+        #endif
 #endif
 
 typedef uint8_t RGB_t[3];
@@ -83,14 +114,21 @@ void substrpbuf_cpy(substrpbuf *dst, substrpbuf *src);
 void substrpbuf_free(substrpbuf *strp);
 
 void strip_apply_all(RGB_ptr_t rgb);
+
+#if STRIP_TYPE == WS2812
 void strip_apply_substrpbuf(substrpbuf strp);
 void strip_apply_RGBbuf(RGBbuf RGBbuf);
 void strip_apply_pxbuf(pxbuf pxbuf, uint16_t size);
 void strip_distribute_rgb(RGB_t rgb[], uint16_t size);
+#endif
+
 bool strip_breathe(RGB_ptr_t rgb, uint8_t step_size);
 void strip_breathe_array(RGB_t rgb[], uint8_t size, uint8_t step_size);
 void strip_breathe_random(uint8_t step_size);
 void strip_breathe_rainbow(uint8_t breath_step_size, uint8_t rgb_step_size);
 void strip_rainbow(uint8_t step_size, uint8_t brightness);
+
+#if STRIP_TYPE == WS2812
 void strip_rotate_rainbow();
 void strip_rain(RGB_t rgb, uint16_t max_drops, uint16_t min_t_appart, uint16_t max_t_appart, uint8_t step_size);
+#endif

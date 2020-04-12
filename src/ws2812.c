@@ -14,6 +14,8 @@
 #include "config.h"
 #include "ws2812.h"
  
+#if STRIP_TYPE == WS2812
+
 /*
   This routine writes an array of bytes with RGB values to the Dataout pin
   using the fast 800kHz clockless WS2811/2812 protocol.
@@ -201,3 +203,5 @@ void ws2812_tx_byte(uint8_t data)
 }
 
 #pragma GCC pop_options
+
+#endif

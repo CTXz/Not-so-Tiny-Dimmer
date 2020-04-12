@@ -3,7 +3,7 @@
 
 ![](MainShowcase.gif)
 
-What initaly just started as minimalist ATtiny based WS2812 LED strip dimmer, quickly turned into a cheap and feature rich ATtiny based WS2812 strip controller with single color, multi color and animation support.
+What initaly just started as minimalist ATtiny based WS2812 LED strip dimmer, quickly turned into a cheap and feature rich ATtiny based WS2812 strip controller with single color, multi color and animation support. Non-addressable LED strips are also supported, but limited to single color features only.
 
 ## Contents
 - [Contents](#contents)
@@ -21,11 +21,13 @@ What initaly just started as minimalist ATtiny based WS2812 LED strip dimmer, qu
 
 ## Features
 
-The Not-so-Tiny dimmer is a open source ATtiny Based WS2812 strip controller that offers support for single and multi color lights, as well various animations.
+The Not-so-Tiny dimmer is a open source ATtiny Based WS2812 RGB strip controller that offers support for single and multi color lights, as well various animations. Alternatively, the controller can also be used to drive non-addressable LED strips, but is only limited to single color patches and animations. 
 
 ### Software Features
 
 The controller offers a patch bank with up to 10 patches, where each patch slot can be hard-coded in the [configuration header](src/config.h) to something as simple as projecting a single color across the strip, all the way to projecting flashy rainbow animations. If less than 10 patches are desired, the `NUM_PATCHES` directive can be reduced in the [configuration header](src/config.h).
+
+Non-addressable RGB strips are also supported by the firmware by changing the `STRIP_TYPE` configuration in the [configuration header](src/config.h) to `NON_ADDR`, but will limit the selection to single color patches. Whether a patch is supported on non-addressable strips is indicated in the comments of the [patch macro definitions](src/patch_macros.h). A [template configuration for non-addressable strips](src/config_templates/config_non-addressable.h) can be found in the [configuration_templates directory](src/config_templates/).
 
 **Please note that the required amount of program flash rises with the number and complexity of patches. Thus, the use of an ATtiny25 is likely to only limited to a few single color patches.** For ATtiny25 based controllers, a [minimal configuration file template](src/config_templates/config_minimal.h) has been provided.
 

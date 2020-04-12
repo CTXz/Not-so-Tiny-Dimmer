@@ -37,15 +37,15 @@
  *      B - Blue value (0 - 255)
  * Description:
  *      Sets the entire LED strip to one color.
- *      This patch only consumes little program flash.
+ *      Supported on non-addressable strips.
  */
 #define PATCH_SET_ALL(R, G, B) \
         RGB_t rgb = {R, G, B}; \
         rgb_apply_brightness(rgb, pot()); \
         strip_apply_all(rgb);
 
-/* PATCH_SET_ALL
- * -------------
+/* PATCH_DISTRIBUTE
+ * ----------------
  * Parameters:
  *      RGB_ARR - An RGB_ARRAY() enclosed array of literal RGB arrays.
  *                Ex. RGB_ARRAY({255, 255, 255}, {0, 1, 2}, ...)
@@ -72,6 +72,7 @@
  * Description:
  *      "Breathes" the provided RGB value across the entire strip.
  *      The speed of the "breath" can be altered by the potentiometer.
+ *      Supported on non-addressable strips.
  */
 #define PATCH_ANIMATION_BREATHE_POT_CTRL(R, G, B) strip_breathe((RGB_t){R, G, B}, pot())
 
@@ -82,6 +83,7 @@
  *      The speed of the "breath" can be altered by the potentiometer.
  *      Due to the rather poor randomness of rand(), the outcomes tend
  *      to be similar.
+ *      Supported on non-addressable strips.
  */
 #define PATCH_ANIMATION_BREATHE_RAND_POT_CTRL strip_breathe_random(pot())
 
@@ -106,6 +108,7 @@
  * Description:
  *      Gradiently "Breathes" trough the RGB array.
  *      The speed of the "breath" can be altered by the potentiometer.
+ *      Supported on non-addressable strips.
  */
 #define PATCH_ANIMATION_BREATHE_ARR_POT_CTRL(RGB_ARR) \
         RGB_t rgb[] = { \
@@ -120,6 +123,7 @@
  *                  A greater value results in faster fading.
  * Description:
  *      Gradiently fades all LEDs simultaneously trough the RGB spectrum.
+ *      Supported on non-addressable strips.
  */
 #define PATCH_ANIMATION_RAINBOW(STEP_SIZE) strip_rainbow(STEP_SIZE, pot())
 
@@ -128,6 +132,7 @@
  * Description:
  *      Gradiently fades all LEDs simultaneously trough the RGB spectrum.
  *      The step size, and thus speed, can be altered by the potentiometer.
+ *      Supported on non-addressable strips.
  */
 #define PATCH_ANIMATION_RAINBOW_POT_CTRL strip_rainbow(pot(), 255)
 
@@ -143,6 +148,7 @@
  *      SWAP_TIME - Time (ms) after which the halves get swapped
  * Description:
  *      Splits the strip in two halves and continiously swaps their colors.
+ *      Only supported on addressable strips.
  */
 #define PATCH_ANIMATION_SWAP(RFH, GFH, BFH, RSH, GSH, BSH, SWAP_TIME) \
         static bool swap = false; \
@@ -168,6 +174,7 @@
  * Description:
  *      Splits the strip in two halves and continiously swaps their colors.
  *      The swap time can be altered by the potentiometer.
+ *      Only supported on addressable strips.
  */
 #define PATCH_ANIMATION_SWAP_POT_CTRL(RFH, GFH, BFH, RSH, GSH, BSH) \
         static bool swap = false; \
@@ -208,6 +215,7 @@
  *      Creates a rain effect accross the strip.
  *      Note that this effect makes use of an RGB buffer and will linearly increase 
  *      memory consumption with strip size. 
+ *      Only supported on addressable strips.
  */
 #define PATCH_ANIMATION_RAIN(_R, _G, _B, MAX_DROPS, MIN_T_APPART, MAX_T_APPART, STEP_SIZE) \
         RGB_t rgb; \
@@ -226,7 +234,8 @@
  *      Creates a rain effect accross the strip.
  *      The "intensity" of the rain can be adjusted with the potentiometer.
  *      Note that this effect makes use of an RGB buffer and will linearly increase 
- *      memory consumption with strip size. 
+ *      memory consumption with strip size.
+ *      Only supported on addressable strips.
  */
 #define PATCH_ANIMATION_RAIN_POT_CTRL(_R, _G, _B) \
         uint8_t pot_read = pot(); \

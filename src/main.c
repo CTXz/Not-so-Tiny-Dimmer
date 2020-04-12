@@ -249,13 +249,47 @@ int main()
 {       
         // Initialization
 
-        // Timer
-        TCCR0B |= (1 << CS00);  // 1024 prescaling
+        // Timer 0
+
+        TCCR0B |= (1 << CS00);                // No prescaling
         TIMSK |= (1 << TOIE0);                // Enable Timer interrupts
         TIFR |= (1 << TOV0);                  // Interrupt on timer overflow
 
+#if STRIP_TYPE == NON_ADDR
+        DDRB |= (1 << PB0) | (1 << PB1) | (1 << PB4);
+
+        // Enable Fast PWM
+        TCCR0A |= (1 << WGM01) | (1 << WGM00);
+        TCCR0B |= (0 << WGM02);
+
+        TCCR0A |= (1 << COM0A1) | (0 << COM0A0)  // Non-Inverting PWM on OCR0A/PB0
+               |  (1 << COM0B1) | (0 << COM0B1); // Non-Inverting PWM on OCR0B/PB1
+
+
+        OCR0A = 0;
+        OCR0B = 0;
+
+        // Timer 1
+
+	PLLCSR |= (1 << PLLE); // Enable PLL (64 MHz)
+	PLLCSR |= (1 << PCKE); // Use PLL as timer clock source
+
+        TCCR1 |= (1 << CS10); // 1024 Prescaler
+
+        GTCCR |= (1 << PWM1B)
+              |  (1 << COM1B1) | (0 << COM1B0); // Non-Inverting PWM on OCR1B/PB4
+
+        TCCR1 |= (1 << COM1A0);
+
+        OCR1B = 0;
+        OCR1C = 255;
+#endif
+
         // Pins
+#if STRIP_TYPE == WS2812
         DDRB |= WS2812_DIN_MSK;               // Set WS2812 Data input pin to output
+#endif
+
         DDRB &= ~(1 << BTN);                  // Set button pin to input
         PORTB |= (1 << BTN);                  // Enable internal pull-up on Button pin
 

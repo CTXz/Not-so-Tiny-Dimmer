@@ -31,31 +31,31 @@
 // Non-Addressable RGB Strip
 //////////////////////////////
 
-// #define STRIP_TYPE NON_ADDR
+#define STRIP_TYPE NON_ADDR
 
-// #define NON_ADDR_STRIP_R PB0 // Red LED pin (must support PWM)
-// #define NON_ADDR_STRIP_G PB1 // Green LED pin (must support PWM)
-// #define NON_ADDR_STRIP_B PB4 // Blue LED pin (must support PWM)
+#define NON_ADDR_STRIP_R PB0 // Red LED pin (must support PWM)
+#define NON_ADDR_STRIP_G PB1 // Green LED pin (must support PWM)
+#define NON_ADDR_STRIP_B PB4 // Blue LED pin (must support PWM)
 
 //////////////////////////////
 // WS2812
 //////////////////////////////
 
-#define STRIP_TYPE WS2812
+// #define STRIP_TYPE WS2812
 
-#define WS2812_DIN PB0                          // WS2812 DIN pin
-#define WS2812_PIXELS 35                        // !! UPDATE THIS !! Number of pixels on the WS2812 strip
-#define WS2812_COLOR_ORDER GRB                  // Order in which color should be parsed to the strip (Most WS2812 strips use BGR)
-#define WS2812_RESET_TIME  30                   // Time required for the WS2812 to reset
-                                                // If runtime between strip writes exceeds the 
-                                                // necessary reset time, this may be set to 0
+// #define WS2812_DIN PB0                          // WS2812 DIN pin
+// #define WS2812_PIXELS 35                        // !! UPDATE THIS !! Number of pixels on the WS2812 strip
+// #define WS2812_COLOR_ORDER GRB                  // Order in which color should be parsed to the strip (Most WS2812 strips use BGR)
+// #define WS2812_RESET_TIME  30                   // Time required for the WS2812 to reset
+//                                                 // If runtime between strip writes exceeds the 
+//                                                 // necessary reset time, this may be set to 0
 
 //////////////////////////////
 // Pots
 //////////////////////////////
 
-#define BRIGHTNESS_POT_ADMUX_MSK (1 << MUX1)               // PB4 (Refer to table 17-4 in the ATtiny25/45/85 datasheet)
-// #define BRIGHTNESS_POT_ADMUX_MSK (1 << MUX1) | (1 << MUX0)    // PB3 (Refer to table 17-4 in the ATtiny25/45/85 datasheet)
+// #define BRIGHTNESS_POT_ADMUX_MSK (1 << MUX1)               // PB4 (Refer to table 17-4 in the ATtiny25/45/85 datasheet)
+#define BRIGHTNESS_POT_ADMUX_MSK (1 << MUX1) | (1 << MUX0)    // PB3 (Refer to table 17-4 in the ATtiny25/45/85 datasheet)
 
 #define ADC_AVG_SAMPLES 255                                   // Max 255 - Number of samples used to determine the average potentiometer value.
                                                               // Increase this if the LED strip is noisy, especially at lower settings.
@@ -79,61 +79,21 @@
                                                                // toggles while holding the button, set this value higher. Increasing this will add a delay to
                                                                // button releases. Set to <= 1 or comment out to disable. 
 
-////////////////////////
+//////////////////////////////
 // Patches
-////////////////////////
+//////////////////////////////
 
 // For a list of available patches, please refer to the
 // patch_macros.h header
 
-#define NUM_PATCHES 10 // Max 10 (To increase, add cases to update_strip() in main.c)
+#define NUM_PATCHES 9 // Max 10 (To increase, add cases to update_strip() in main.c)
 
-// Plain white
-#define PATCH_0 PATCH_SET_ALL(255, 255, 255)
-
-// First strip half white, second off 
-#define PATCH_1 PATCH_DISTRIBUTE ( \
-        RGB_ARRAY (                \
-                {255, 255, 255},   \
-                {0, 0, 0}          \
-        )                          \
-)
-
-// First strip half off, second white 
-#define PATCH_2 PATCH_DISTRIBUTE ( \
-        RGB_ARRAY (                \
-                {0, 0, 0},         \
-                {255, 255, 255}    \
-        )                          \
-)
-
-// First strip half pink, second cyan
-#define PATCH_3 PATCH_DISTRIBUTE ( \
-        RGB_ARRAY (                \
-                {10, 255, 202},    \
-                {255, 20, 127}     \
-        )                          \
-)
-
-// First strip half purple, second beige
-#define PATCH_4 PATCH_DISTRIBUTE ( \
-        RGB_ARRAY (                \
-                {255, 74,  33},    \
-                {151, 0, 255}      \
-        )                          \
-)
-
-// Cyan white rain effect with potentiometer intensity control
-#define PATCH_5 PATCH_ANIMATION_RAIN_POT_CTRL(rand() % 256, 255, 255)
-
-// Rainbow fading with potentiometer speed control 
-#define PATCH_6 PATCH_ANIMATION_RAINBOW_POT_CTRL
-
-// Rotating rainbow animation
-#define PATCH_7 PATCH_ANIMATION_ROTATE_RAINBOW
-
-// Breath animation with potetionmeter breath length control
-#define PATCH_8 PATCH_ANIMATION_BREATHE_RAINBOW_POT_CTRL(10)
-
-// Halves swapping with potentiometer speed control
-#define PATCH_9 PATCH_ANIMATION_SWAP_POT_CTRL(rand() % 256, rand() % 256, rand() % 256, 0, 0, 0)
+#define PATCH_0 PATCH_SET_ALL(255, 0, 0)                       // Red
+#define PATCH_1 PATCH_SET_ALL(0, 255, 0)                       // Green
+#define PATCH_2 PATCH_SET_ALL(0, 0, 255)                       // Blue
+#define PATCH_3 PATCH_SET_ALL(255, 255, 0)                     // Yellow
+#define PATCH_4 PATCH_SET_ALL(0, 255, 255)                     // Cyan
+#define PATCH_5 PATCH_SET_ALL(255, 0, 255)                     // Purple
+#define PATCH_6 PATCH_SET_ALL(255, 255, 255)                   // White
+#define PATCH_7 PATCH_ANIMATION_RAINBOW_POT_CTRL               // Rainbow fade
+#define PATCH_8 PATCH_ANIMATION_BREATHE_RAINBOW_POT_CTRL(10)   // Rainbow breathe
