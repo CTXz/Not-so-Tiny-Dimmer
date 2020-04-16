@@ -38,6 +38,16 @@
 static bool glob_RGBbuf_init = false;
 static RGBbuf glob_RGBbuf;
 
+void inline zero_RGBbuf(RGBbuf buf, uint16_t size)
+{
+        memset(buf, 0, size * sizeof(RGB_t));
+}
+
+void inline zero_pxbuf(pxbuf buf, uint16_t size)
+{
+        memset(buf, 0, size * sizeof(pxl));
+}
+
 RGBbuf inline init_RGBbuf(uint16_t size)
 {
         RGBbuf ret = malloc(size * sizeof(RGB_t));
@@ -50,16 +60,6 @@ pxbuf inline init_pxbuf(uint16_t size)
         pxbuf ret = malloc(size * sizeof(pxl));
         zero_pxbuf(ret, size);
         return ret;
-}
-
-void inline zero_RGBbuf(RGBbuf buf, uint16_t size)
-{
-        memset(buf, 0, size * sizeof(RGB_t));
-}
-
-void inline zero_pxbuf(pxbuf buf, uint16_t size)
-{
-        memset(buf, 0, size * sizeof(pxl));
 }
 
 #endif

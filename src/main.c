@@ -141,6 +141,10 @@ uint8_t inline pot()
         ret = ADCH;
 #endif
 
+#ifdef INVERT_POT
+        ret = 255 - ret;
+#endif
+
 #if defined(POT_LOWER_BOUND) && POT_LOWER_BOUND > 0
         if (ret < POT_LOWER_BOUND)
                 return 0;

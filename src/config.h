@@ -56,7 +56,7 @@
 
 #define BRIGHTNESS_POT_ADMUX_MSK (1 << MUX1)               // PB4 (Refer to table 17-4 in the ATtiny25/45/85 datasheet)
 // #define BRIGHTNESS_POT_ADMUX_MSK (1 << MUX1) | (1 << MUX0)    // PB3 (Refer to table 17-4 in the ATtiny25/45/85 datasheet)
-
+// #define INVERT_POT                                         // Uncomment if pot is inverted
 #define ADC_AVG_SAMPLES 255                                   // Max 255 - Number of samples used to determine the average potentiometer value.
                                                               // Increase this if the LED strip is noisy, especially at lower settings.
                                                               // Higher values will reserve more runtime

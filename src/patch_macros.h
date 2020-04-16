@@ -50,7 +50,7 @@
  *      RGB_ARR - An RGB_ARRAY() enclosed array of literal RGB arrays.
  *                Ex. RGB_ARRAY({255, 255, 255}, {0, 1, 2}, ...)
  * Description:
- *      Distributes the provided array of RGB values evenly accross the entire LED strip.
+ *      Distributes the provided array of RGB values evenly across the entire LED strip.
  */
 #define PATCH_DISTRIBUTE(RGB_ARR) \
         RGB_t rgb[] = { \
@@ -71,7 +71,7 @@
  *      B - Blue value (0 - 255)
  * Description:
  *      "Breathes" the provided RGB value across the entire strip.
- *      The speed of the "breath" can be altered by the potentiometer.
+ *      The duration of the "breath" can be altered by the potentiometer.
  *      Supported on non-addressable strips.
  */
 #define PATCH_ANIMATION_BREATHE_POT_CTRL(R, G, B) strip_breathe((RGB_t){R, G, B}, pot())
@@ -80,7 +80,7 @@
  * -------------------------------------
  * Description:
  *      "Breathes" random RGB values across the entire strip.
- *      The speed of the "breath" can be altered by the potentiometer.
+ *      The duration of the "breath" can be altered by the potentiometer.
  *      Due to the rather poor randomness of rand(), the outcomes tend
  *      to be similar.
  *      Supported on non-addressable strips.
@@ -95,19 +95,18 @@
  *                      between each breath becomes more noticeable. 
  * Description:
  *      Gradiently "Breathes" trough the rgb spectrum.
- *      The speed of the "breath" can be altered by the potentiometer.
+ *      The duration of the "breath" can be altered by the potentiometer.
  */
 #define PATCH_ANIMATION_BREATHE_RAINBOW_POT_CTRL(RGB_STEP_SIZE) strip_breathe_rainbow(pot(), RGB_STEP_SIZE)
 
 /* PATCH_ANIMATION_BREATHE_ARR_POT_CTRL
  * ------------------------------------
  * Parameters:
- *      RGB_STEP_SIZE - Color steps after every "breath".
- *                      A greater step size means the color difference 
- *                      between each breath becomes more noticeable. 
+ *      RGB_ARR - An RGB_ARRAY() enclosed array of literal RGB arrays.
+ *                Ex. RGB_ARRAY({255, 255, 255}, {0, 1, 2}, ...)
  * Description:
  *      Gradiently "Breathes" trough the RGB array.
- *      The speed of the "breath" can be altered by the potentiometer.
+ *      The duration of the "breath" can be altered by the potentiometer.
  *      Supported on non-addressable strips.
  */
 #define PATCH_ANIMATION_BREATHE_ARR_POT_CTRL(RGB_ARR) \
@@ -197,7 +196,7 @@
 /* PATCH_ANIMATION_ROTATE_RAINBOW
  * ------------------------------
  * Description:
- *      Rotates the rgb spectrum accross the strip.
+ *      Rotates the rgb spectrum across the strip.
  */
 #define PATCH_ANIMATION_ROTATE_RAINBOW strip_rotate_rainbow();
 
@@ -212,7 +211,7 @@
  *      MAX_T_APPART - Maximum time in ms between drops
  *      STEP_SIZE - Step size of droplet fading
  * Description:
- *      Creates a rain effect accross the strip.
+ *      Creates a rain effect across the strip.
  *      Note that this effect makes use of an RGB buffer and will linearly increase 
  *      memory consumption with strip size. 
  *      Only supported on addressable strips.
@@ -231,7 +230,7 @@
  *      _G - Green color value
  *      _B - Blue color value
  * Description:
- *      Creates a rain effect accross the strip.
+ *      Creates a rain effect across the strip.
  *      The "intensity" of the rain can be adjusted with the potentiometer.
  *      Note that this effect makes use of an RGB buffer and will linearly increase 
  *      memory consumption with strip size.
