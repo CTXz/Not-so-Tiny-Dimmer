@@ -62,9 +62,8 @@ Parameters:
 
 Description:
 
-```
 Sets the entire LED strip to one color. The brightness can be adjusted by the potentiometer.
-```
+
 Supported on non-addressable strips: Yes
 
 Example:
@@ -85,9 +84,7 @@ Parameters:
 
 Description:
 
-```
 Distributes the provided array of RGB values evenly accross the entire LED strip. The brightness can be adjusted by the potentiometer.
-```
 
 Supported on non-addressable strips: No
 
@@ -118,9 +115,7 @@ Parameters:
 
 Description:
 
-```
 "Breathes" the provided RGB value across the entire strip. The duration of a "breath" can be altered by the potentiometer.
-```
 
 Supported on non-addressable strips: Yes
 
@@ -139,12 +134,10 @@ Showcase:
 
 Description:
 
-```
 "Breathes" random RGB values across the entire strip.
 The duration of the "breath" can be altered by the potentiometer.
 Due to the rather poor randomness of rand(), the outcomes tend
 to be similar.
-```
 
 Supported on non-addressable strips: Yes
 
@@ -162,17 +155,15 @@ Parameters:
 |`uint8_t`|RGB_STEP_SIZE|Color steps after every "breath". A greater step size means the color difference  between each breath becomes more noticeable.|
 
 Description:
-
-```c
+c
 Gradiently "Breathes" trough the rgb spectrum. The duration of the "breath" can be altered by the potentiometer.
-```
+
 Supported on non-addressable strips: Yes
 
 Example:
 ```c
 #define PATCH_0 PATCH_ANIMATION_BREATHE_RAINBOW_POT_CTRL(10) // Breathes trough rainbow with 10 steps in color between each breath
 ```
-
 
 ##### `PATCH_ANIMATION_BREATHE_ARR_POT_CTRL`
 
@@ -184,9 +175,7 @@ Parameters:
 
 Description:
 
-```
 Gradiently "Breathes" trough the RGB array. The duration of the "breath" can be altered by the potentiometer.
-```
 
 Supported on non-addressable strips: Yes
 
@@ -212,9 +201,7 @@ Parameters:
 
 Description:
 
-```
 Gradiently fades all LEDs simultaneously trough the RGB spectrum.
-```
 
 Supported on non-addressable strips: Yes
 
@@ -231,10 +218,8 @@ Showcase:
 
 Description:
 
-```
 Gradiently fades all LEDs simultaneously trough the RGB spectrum.
 The step size, and thus fade speed, can be altered by the potentiometer.
-```
 
 Supported on non-addressable strips: Yes
 
@@ -260,9 +245,7 @@ Parameters:
 
 Description:
 
-```
 Splits the strip in two halves and continuously swaps their colors.
-```
 
 Supported on non-addressable strips: No
 
@@ -289,9 +272,8 @@ Parameters:
 |`uint8_t`|BFH|Blue value of second strip half|
 
 Description:
-```
+
 Splits the strip in two halves and continuously swaps their colors. The swap time can be altered by the potentiometer.
-```
 
 Supported on non-addressable strips: No
 
@@ -302,9 +284,8 @@ Supported on non-addressable strips: No
 ##### `PATCH_ANIMATION_ROTATE_RAINBOW`
 
 Description:
-```
+
 Rotates the rgb spectrum across the strip.
-```
 
 Example:
 ```c
@@ -333,10 +314,8 @@ Parameters:
 
 Description:
 
-```
 Creates a rain effect across the strip.
 Note that this effect makes use of an RGB buffer and will linearly increase memory consumption with strip size.
-```
 
 Supported on non-addressable strips: No
 
@@ -364,9 +343,7 @@ Parameters:
 
 Description:
 
-```
 Creates a rain effect across the strip. The "intensity" of the rain can be adjusted with the potentiometer. Note that this effect makes use of an RGB buffer and will linearly increase memory consumption with strip size.
-```
 
 Supported on non-addressable strips: No
 
