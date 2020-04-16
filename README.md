@@ -1,16 +1,30 @@
 <!-- omit in toc -->
 # Not-so-Tiny Dimmer 
 
-![](MainShowcase.gif)
+![](img/MainShowcase.gif)
 
 What initaly just started as minimalist ATtiny based WS2812 LED strip dimmer, quickly turned into a cheap and feature rich ATtiny based WS2812 strip controller with single color, multi color and animation support. Non-addressable LED strips are also supported, but limited to single color features only.
 
 ## Contents
 - [Contents](#contents)
-- [Features](#features)
-  - [Software Features](#software-features)
-  - [Hardware Features](#hardware-features)
-- [Hardware](#hardware)
+- [Overview](#overview)
+  - [Software](#software)
+    - [Patches](#patches)
+      - [`PATCH_SET_ALL`](#patchsetall)
+      - [`PATCH_DISTRIBUTE`](#patchdistribute)
+      - [`PATCH_ANIMATION_BREATHE_POT_CTRL`](#patchanimationbreathepotctrl)
+      - [`PATCH_ANIMATION_BREATHE_RAND_POT_CTRL`](#patchanimationbreatherandpotctrl)
+      - [`PATCH_ANIMATION_BREATHE_RAINBOW_POT_CTRL`](#patchanimationbreatherainbowpotctrl)
+      - [`PATCH_ANIMATION_BREATHE_ARR_POT_CTRL`](#patchanimationbreathearrpotctrl)
+      - [`PATCH_ANIMATION_RAINBOW`](#patchanimationrainbow)
+      - [`PATCH_ANIMATION_RAINBOW_POT_CTRL`](#patchanimationrainbowpotctrl)
+      - [`PATCH_ANIMATION_SWAP`](#patchanimationswap)
+      - [`PATCH_ANIMATION_SWAP_POT_CTRL`](#patchanimationswappotctrl)
+      - [`PATCH_ANIMATION_ROTATE_RAINBOW`](#patchanimationrotaterainbow)
+      - [`PATCH_ANIMATION_RAIN`](#patchanimationrain)
+      - [`PATCH_ANIMATION_RAIN_POT_CTRL`](#patchanimationrainpotctrl)
+  - [Hardware](#hardware)
+- [Hardware](#hardware-1)
   - [Schematic](#schematic)
   - [Perfboard](#perfboard)
   - [Showcase](#showcase)
@@ -19,11 +33,11 @@ What initaly just started as minimalist ATtiny based WS2812 LED strip dimmer, qu
 - [Project log](#project-log)
 - [License](#license)
 
-## Features
+## Overview
 
 The Not-so-Tiny dimmer is a open source ATtiny Based WS2812 RGB strip controller that offers support for single and multi color lights, as well various animations. Alternatively, the controller can also be used to drive non-addressable LED strips, but is only limited to single color patches and animations. 
 
-### Software Features
+### Software
 
 The controller offers a patch bank with up to 10 patches, where each patch slot can be hard-coded in the [configuration header](src/config.h) to something as simple as projecting a single color across the strip, all the way to projecting flashy rainbow animations. If less than 10 patches are desired, the `NUM_PATCHES` directive can be reduced in the [configuration header](src/config.h).
 
@@ -31,9 +45,339 @@ Non-addressable RGB strips are also supported by the firmware by changing the `S
 
 **Please note that the required amount of program flash rises with the number and complexity of patches. Thus, the use of an ATtiny25 is likely to only limited to a few single color patches.** For ATtiny25 based controllers, a [minimal configuration file template](src/config_templates/config_minimal.h) has been provided.
 
-Due to the fact that patches are implemented C preprocessor directives, the increasing the maximum number of patches requires addition of case statements in the [update_strip](https://github.com/CTXz/Tiny-Dimmer/blob/master/src/main.c#L193) function, along with a change of the `NUM_PATCHES` directive.
+Due to the fact that patches are implemented C preprocessor directives, increasing the maximum number of patches requires addition of case statements in the [update_strip](https://github.com/CTXz/Tiny-Dimmer/blob/master/src/main.c#L193) function, along with a change of the `NUM_PATCHES` directive.
 
-### Hardware Features
+#### Patches
+
+The following section lists all available patches that can be assigned to any of the 10 patch slots defined in the [configuration header](src/config.h):
+
+##### `PATCH_SET_ALL`
+
+Parameters:
+|Type|Name|Description|
+|----|----|-----------|
+|`uint8_t`|R|Red value (0 - 255)|
+|`uint8_t`|G|Green value (0 - 255)|
+|`uint8_t`|B|Blue value (0 - 255)|
+
+Description:
+
+```
+Sets the entire LED strip to one color. The brightness can be adjusted by the potentiometer.
+```
+Supported on non-addressable strips: Yes
+
+Example:
+```c
+#define PATCH_0 PATCH_SET_ALL(255, 255, 255) // Fills strip with white
+```
+
+Showcase:
+
+![](img/SetAllShowcase.jpg)
+
+##### `PATCH_DISTRIBUTE`
+
+Parameters:
+|Type|Name|Description|
+|----|----|-----------|
+|`RGB_t[]`|RGB_ARR|An RGB_ARRAY() enclosed array of literal RGB arrays. Ex. `RGB_ARRAY({255, 255, 255}, {0, 1, 2}, ...)`|
+
+Description:
+
+```
+Distributes the provided array of RGB values evenly accross the entire LED strip. The brightness can be adjusted by the potentiometer.
+```
+
+Supported on non-addressable strips: No
+
+Example:
+
+```c
+// First strip half pink, second cyan
+#define PATCH_0 PATCH_DISTRIBUTE ( \
+        RGB_ARRAY (                \
+                {10, 255, 202},    \
+                {255, 20, 127}     \
+        )                          \
+)
+```
+
+Showcase:
+
+![](img/DistributeShowcase.jpg)
+
+##### `PATCH_ANIMATION_BREATHE_POT_CTRL`
+
+Parameters:
+|Type|Name|Description|
+|----|----|-----------|
+|`uint8_t`|R|Red value|
+|`uint8_t`|G|Green value|
+|`uint8_t`|B|Blue value|
+
+Description:
+
+```
+"Breathes" the provided RGB value across the entire strip. The duration of a "breath" can be altered by the potentiometer.
+```
+
+Supported on non-addressable strips: Yes
+
+Example:
+
+```c
+#define PATCH_0 PATCH_ANIMATION_BREATHE_POT_CTRL(255, 255, 255) // Breathes white color
+```
+
+Showcase:
+
+![](img/BreatheShowcase.gif)
+
+
+##### `PATCH_ANIMATION_BREATHE_RAND_POT_CTRL`
+
+Description:
+
+```
+"Breathes" random RGB values across the entire strip.
+The duration of the "breath" can be altered by the potentiometer.
+Due to the rather poor randomness of rand(), the outcomes tend
+to be similar.
+```
+
+Supported on non-addressable strips: Yes
+
+Example:
+```c
+#define PATCH_0 PATCH_ANIMATION_BREATHE_RAND_POT_CTRL
+```
+
+##### `PATCH_ANIMATION_BREATHE_RAINBOW_POT_CTRL`
+
+Parameters:
+
+|Type|Name|Description|
+|----|----|-----------|
+|`uint8_t`|RGB_STEP_SIZE|Color steps after every "breath". A greater step size means the color difference  between each breath becomes more noticeable.|
+
+Description:
+
+```c
+Gradiently "Breathes" trough the rgb spectrum. The duration of the "breath" can be altered by the potentiometer.
+```
+Supported on non-addressable strips: Yes
+
+Example:
+```c
+#define PATCH_0 PATCH_ANIMATION_BREATHE_RAINBOW_POT_CTRL(10) // Breathes trough rainbow with 10 steps in color between each breath
+```
+
+
+##### `PATCH_ANIMATION_BREATHE_ARR_POT_CTRL`
+
+Parameters:
+
+|Type|Name|Description|
+|----|----|-----------|
+|`RGB_t[]`|RGB_ARR|An RGB_ARRAY() enclosed array of literal RGB arrays, ex. RGB_ARRAY({255, 255, 255}, {0, 1, 2}, ...)|
+
+Description:
+
+```
+Gradiently "Breathes" trough the RGB array. The duration of the "breath" can be altered by the potentiometer.
+```
+
+Supported on non-addressable strips: Yes
+
+Example:
+```c
+// Breathes trough red, green and blue
+#define PATCH_0 PATCH_ANIMATION_BREATHE_ARR_POT_CTRL ( \
+        RGB_ARRAY (                                    \
+                {255, 0, 0},                           \
+                {0, 255, 0},                           \
+                {0, 0, 255}                            \
+        )                                              \
+)
+```
+
+##### `PATCH_ANIMATION_RAINBOW`
+
+Parameters:
+
+|Type|Name|Description|
+|----|----|-----------|
+|`uint8_t`|STEP_SIZE|Color steps (0 - 255) between each call. A greater value results in faster fading.|
+
+Description:
+
+```
+Gradiently fades all LEDs simultaneously trough the RGB spectrum.
+```
+
+Supported on non-addressable strips: Yes
+
+Example:
+```c
+#define PATCH_0 PATCH_ANIMATION_RAINBOW(10) // Fade trough RGB spectrum with 10 steps between each color change
+```
+
+Showcase:
+
+![](img/RainbowShowcase.gif)
+
+##### `PATCH_ANIMATION_RAINBOW_POT_CTRL`
+
+Description:
+
+```
+Gradiently fades all LEDs simultaneously trough the RGB spectrum.
+The step size, and thus fade speed, can be altered by the potentiometer.
+```
+
+Supported on non-addressable strips: Yes
+
+Example:
+
+```c
+#define PATCH_0 PATCH_ANIMATION_RAINBOW_POT_CTRL
+```
+
+##### `PATCH_ANIMATION_SWAP`
+
+Parameters:
+
+|Type|Name|Description|
+|----|----|-----------|
+|`uint8_t`|RFH|Red value of first strip half|
+|`uint8_t`|GFH|Green value of first strip half|
+|`uint8_t`|BFH|Blue value of first strip half|
+|`uint8_t`|RFH|Red value of second strip half|
+|`uint8_t`|GFH|Green value of second strip half|
+|`uint8_t`|BFH|Blue value of second strip half|
+|`unsigned long`|SWAP_TIME|Time (ms) after which the halves get swapped|
+
+Description:
+
+```
+Splits the strip in two halves and continuously swaps their colors.
+```
+
+Supported on non-addressable strips: No
+
+Example:
+```c
+#define PATCH_9 PATCH_ANIMATION_SWAP(255, 0, 0, 0, 0, 255, 1000) // Swaps between off and a random color
+```
+
+Showcase:
+
+![](img/SwapShowcase.gif)
+
+##### `PATCH_ANIMATION_SWAP_POT_CTRL`
+
+Parameters:
+
+|Type|Name|Description|
+|----|----|-----------|
+|`uint8_t`|RFH|Red value of first strip half|
+|`uint8_t`|GFH|Green value of first strip half|
+|`uint8_t`|BFH|Blue value of first strip half|
+|`uint8_t`|RFH|Red value of second strip half|
+|`uint8_t`|GFH|Green value of second strip half|
+|`uint8_t`|BFH|Blue value of second strip half|
+
+Description:
+```
+Splits the strip in two halves and continuously swaps their colors. The swap time can be altered by the potentiometer.
+```
+
+Supported on non-addressable strips: No
+
+```c
+#define PATCH_9 PATCH_ANIMATION_SWAP(255, 0, 0, 0, 0, 255) // Swaps between red and blue at a speed set by the potentiometer
+```
+
+##### `PATCH_ANIMATION_ROTATE_RAINBOW`
+
+Description:
+```
+Rotates the rgb spectrum across the strip.
+```
+
+Example:
+```c
+#define PATCH_0 PATCH_ANIMATION_ROTATE_RAINBOW
+```
+
+Supported on non-addressable strips: No
+
+Showcase:
+
+![](img/MainShowcase.gif)
+
+##### `PATCH_ANIMATION_RAIN`
+
+Parameters:
+
+|Type|Name|Description|
+|----|----|-----------|
+|`uint8_t`|_R|Red color value|
+|`uint8_t`|_G|Green color value|
+|`uint8_t`|_B|Blue color value|
+|`uint16_t`|MAX_DROPS|Maximum amount of visible "droplets" at a time|
+|`uint16_t`|MIN_T_APPART|Minimum time in ms between drops|
+|`uint16_t`|MAX_T_APPART|Maximum time in ms between drops|
+|`uint8_t`|STEP_SIZE|Step size of droplet fading|
+
+Description:
+
+```
+Creates a rain effect across the strip.
+Note that this effect makes use of an RGB buffer and will linearly increase memory consumption with strip size.
+```
+
+Supported on non-addressable strips: No
+
+Example:
+
+```c
+// White and cyan rain with max 10 drops, a minimum time of 0ms, maximum time of 100ms and step size of 10
+#define PATCH_0 PATCH_ANIMATION_RAIN(255, 255, rand()%255, 10, 0, 100, 10)
+```
+
+Showcase:
+
+![](img/RainShowcase.gif)
+
+
+##### `PATCH_ANIMATION_RAIN_POT_CTRL`
+
+Parameters:
+
+|Type|Name|Description|
+|----|----|-----------|
+|`uint8_t`|_R|Red color value|
+|`uint8_t`|_G|Green color value|
+|`uint8_t`|_B|Blue color value|
+
+Description:
+
+```
+Creates a rain effect across the strip. The "intensity" of the rain can be adjusted with the potentiometer. Note that this effect makes use of an RGB buffer and will linearly increase memory consumption with strip size.
+```
+
+Supported on non-addressable strips: No
+
+Example:
+
+```c
+// White and cyan rain with potentiometer intensity control
+#define PATCH_0 PATCH_ANIMATION_RAIN(255, 255, rand()%255)
+```
+
+### Hardware
 
 To navigate trough the patch bank, a single push button is provided. Once the last patch has been reached, the first patch is loaded again upon button press.
 
@@ -64,20 +408,20 @@ The price for the components can range anywhere between 5 to 15 EUR, depending f
 
 ### Schematic
 
-![Schematic.png](Schematic.png)
+![Schematic.png](img/Schematic.png)
 
 ### Perfboard
 
 Top view:
-![](NotSoTinyDimmerTop.png)
+![](img/NotSoTinyDimmerTop.png)
 
 ### Showcase
 
 Perfboard:
-![](PCBShowcase.jpg)
+![](img/PCBShowcase.jpg)
 
 Programming via SPI with ArduinoISP:
-![](ShowcaseProgramming.jpg)
+![](img/ShowcaseProgramming.jpg)
 
 ## Flashing the firmware
 

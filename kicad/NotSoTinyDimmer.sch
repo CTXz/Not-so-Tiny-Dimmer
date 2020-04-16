@@ -183,8 +183,6 @@ Wire Wire Line
 Wire Wire Line
 	4300 4600 4300 4500
 Wire Wire Line
-	3700 5150 3700 4500
-Wire Wire Line
 	3700 4500 4300 4500
 Connection ~ 4300 4500
 Wire Wire Line
@@ -262,4 +260,19 @@ Wire Notes Line
 	2350 5950 6500 5950
 Text Notes 4350 3900 0    50   ~ 0
 Tiny Dimmer
+$Comp
+L Device:R R1
+U 1 1 5E962183
+P 3700 4800
+F 0 "R1" H 3770 4846 50  0000 L CNN
+F 1 "1k" H 3770 4755 50  0000 L CNN
+F 2 "" V 3630 4800 50  0001 C CNN
+F 3 "~" H 3700 4800 50  0001 C CNN
+	1    3700 4800
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3700 4500 3700 4650
+Wire Wire Line
+	3700 4950 3700 5150
 $EndSCHEMATC
