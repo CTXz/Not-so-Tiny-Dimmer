@@ -142,7 +142,7 @@ uint8_t inline pot()
 #endif
 
 #ifdef INVERT_POT
-        ret = 255 - ret;
+        ret = ~ret;
 #endif
 
 #if defined(POT_LOWER_BOUND) && POT_LOWER_BOUND > 0
