@@ -427,6 +427,8 @@ void inline strip_breathe_rainbow(uint8_t breath_step_size, uint8_t rgb_step_siz
 
 /* strip_rotate_rainbow
  * --------------------
+ *  * Parameters:
+ *      step_size - Color steps between each pixel
  * Description:
  *      Rotates the rgb spectrum accross the strip.
  *      Unlike other RGB fade effects, this one doesn't 
@@ -434,7 +436,7 @@ void inline strip_breathe_rainbow(uint8_t breath_step_size, uint8_t rgb_step_siz
  *      changes in step size, and even just additional code can
  *      easily lead to uncomfortable lag.
  */
-void strip_rotate_rainbow()
+void strip_rotate_rainbow(uint8_t step_size)
 {
         static uint16_t offset = 0;
         uint8_t offset_mod;
@@ -466,7 +468,7 @@ void strip_rotate_rainbow()
                         ws2812_tx_byte(rgb[WS2812_WIRING_RGB_0]);
                         ws2812_tx_byte(rgb[WS2812_WIRING_RGB_1]);
                         ws2812_tx_byte(rgb[WS2812_WIRING_RGB_2]);
-                        r2g = apply_rgb_fade(rgb, 10, r2g);
+                        r2g = apply_rgb_fade(rgb, step_size, r2g);
                 }
         ws2812_end_tx();
 

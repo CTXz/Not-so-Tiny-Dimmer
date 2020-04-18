@@ -283,13 +283,19 @@ Supported on non-addressable strips: No
 
 ##### `PATCH_ANIMATION_ROTATE_RAINBOW`
 
+Parameters:
+
+|Type|Name|Description|
+|----|----|-----------|
+|`uint8_t`|step_size|Color steps between each pixel|
+
 Description:
 
 Rotates the rgb spectrum across the strip.
 
 Example:
 ```c
-#define PATCH_0 PATCH_ANIMATION_ROTATE_RAINBOW
+#define PATCH_0 PATCH_ANIMATION_ROTATE_RAINBOW(10)
 ```
 
 Supported on non-addressable strips: No

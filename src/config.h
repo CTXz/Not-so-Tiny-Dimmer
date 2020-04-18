@@ -130,7 +130,7 @@
 #define PATCH_6 PATCH_ANIMATION_RAINBOW_POT_CTRL
 
 // Rotating rainbow animation
-#define PATCH_7 PATCH_ANIMATION_ROTATE_RAINBOW
+#define PATCH_7 PATCH_ANIMATION_ROTATE_RAINBOW(3)
 
 // Breath animation with potetionmeter breath length control
 #define PATCH_8 PATCH_ANIMATION_BREATHE_RAINBOW_POT_CTRL(10)

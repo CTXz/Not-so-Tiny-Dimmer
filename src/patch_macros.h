@@ -195,10 +195,12 @@
 
 /* PATCH_ANIMATION_ROTATE_RAINBOW
  * ------------------------------
+ *  * Parameters:
+ *      STEP_SIZE - Color steps (0 - 255) between each pixel.
  * Description:
  *      Rotates the rgb spectrum across the strip.
  */
-#define PATCH_ANIMATION_ROTATE_RAINBOW strip_rotate_rainbow();
+#define PATCH_ANIMATION_ROTATE_RAINBOW(STEP_SIZE) strip_rotate_rainbow(STEP_SIZE);
 
 /* PATCH_ANIMATION_RAIN
  * --------------------
