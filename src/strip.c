@@ -436,7 +436,7 @@ void inline strip_breathe_rainbow(uint8_t breath_step_size, uint8_t rgb_step_siz
  *      changes in step size, and even just additional code can
  *      easily lead to uncomfortable lag.
  */
-void strip_rotate_rainbow(uint8_t step_size)
+void inline strip_rotate_rainbow(uint8_t step_size)
 {
         static uint16_t offset = 0;
         uint8_t offset_mod;
