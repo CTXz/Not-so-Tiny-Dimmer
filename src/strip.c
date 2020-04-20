@@ -568,4 +568,48 @@ void inline strip_rain(RGB_t rgb, uint16_t max_drops, uint16_t min_t_appart, uin
         strip_apply_pxbuf(pxbuf, pxbuf_size);
 }
 
+bool inline strip_override(RGB_t rgb, uint16_t delay)
+{
+
+        static uint16_t pos = 0;
+
+        if (pos == WS2812_PIXELS) {
+                pos = 0;
+                return true;
+        }
+
+        if (ms_passed() < delay)
+                return false;
+        
+        ws2812_prep_tx();        
+        for (uint16_t i = 0; i <= pos; i++) {
+                ws2812_tx_byte(rgb[WS2812_WIRING_RGB_0]);
+                ws2812_tx_byte(rgb[WS2812_WIRING_RGB_1]);
+                ws2812_tx_byte(rgb[WS2812_WIRING_RGB_2]);
+        }
+        ws2812_end_tx();
+
+        pos++;
+
+        reset_timer();
+        return false;
+}
+
+void inline strip_override_array(RGB_t rgb[], uint8_t size, uint16_t delay)
+{
+        static uint8_t i = 0;
+
+        if (strip_override(rgb[i], delay))
+                i = (i + 1) % size;
+}
+
+void inline strip_override_rainbow(uint16_t delay, uint8_t step_size)
+{
+        static RGB_t rgb = {255, 0, 0};
+        static bool r2g = true;
+
+        if (strip_override(rgb, delay))
+                r2g = apply_rgb_fade(rgb, step_size, r2g);
+}
+
 #endif

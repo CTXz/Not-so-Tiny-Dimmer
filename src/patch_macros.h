@@ -246,3 +246,35 @@
         rgb[B] = _B; \
         strip_rain(rgb, pot_read/(255/WS2812_PIXELS), 255 - pot_read, 1020 - (pot_read << 2), pot_read >> 5);
 
+#define PATCH_ANIMATION_OVERRIDE_ARR(RGB_ARR, DELAY) \
+        RGB_t rgb[] = { \
+                RGB_ARR \
+        }; \
+        strip_override_array(rgb, sizeof(rgb)/sizeof(RGB_t), DELAY);
+
+#define PATCH_ANIMATiON_OVERRIDE_ARR_POT_CTRL(RGB_ARR) \
+        RGB_t rgb[] = { \
+                RGB_ARR \
+        }; \
+        strip_override_array(rgb, sizeof(rgb)/sizeof(RGB_t), 255 - pot());
+        
+#define PATCH_ANIMATION_OVERRIDE_RAND(DELAY) \
+        static RGB_t rgb = {255, 255, 255}; \
+        if (strip_override(rgb, DELAY)) { \
+                rgb[R] = rand() % 256; \
+                rgb[G] = rand() % 256; \
+                rgb[B] = rand() % 256; \
+        }
+
+#define PATCH_ANIMATION_OVERRIDE_RAND_POT_CTRL \
+        static RGB_t rgb = {255, 255, 255}; \
+        if (strip_override(rgb, 255 - pot())) { \
+                rgb[R] = rand() % 256; \
+                rgb[G] = rand() % 256; \
+                rgb[B] = rand() % 256; \
+        }
+
+#define PATCH_ANIMATION_OVERRIDE_RAINBOW(DELAY, STEP_SIZE) strip_override_rainbow(DELAY, STEP_SIZE);
+
+#define PATCH_ANIMATION_OVERRIDE_RAINBOW_POT_CTRL(STEP_SIZE) strip_override_rainbow(255 - pot(), STEP_SIZE);
+

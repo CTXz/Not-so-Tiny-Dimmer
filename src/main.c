@@ -146,8 +146,13 @@ uint8_t inline pot()
 #endif
 
 #if defined(POT_LOWER_BOUND) && POT_LOWER_BOUND > 0
-        if (ret < POT_LOWER_BOUND)
+        if (ret <= POT_LOWER_BOUND)
                 return 0;
+#endif
+
+#if defined(POT_UPPER_BOUND) && POT_UPPER_BOUND < 255
+        if (ret >= POT_UPPER_BOUND)
+                return 255;
 #endif
 
         return ret;
