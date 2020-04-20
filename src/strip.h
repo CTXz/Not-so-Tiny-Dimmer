@@ -126,7 +126,7 @@ bool strip_breathe(RGB_ptr_t rgb, uint8_t step_size);
 void strip_breathe_array(RGB_t rgb[], uint8_t size, uint8_t step_size);
 void strip_breathe_random(uint8_t step_size);
 void strip_breathe_rainbow(uint8_t breath_step_size, uint8_t rgb_step_size);
-void strip_rainbow(uint8_t step_size, uint8_t brightness);
+void strip_rainbow(uint8_t step_size, uint16_t delay, uint8_t brightness);
 
 #if STRIP_TYPE == WS2812
 void strip_rotate_rainbow(uint8_t step_size);

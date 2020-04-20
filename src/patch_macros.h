@@ -133,7 +133,7 @@
  *      The step size, and thus speed, can be altered by the potentiometer.
  *      Supported on non-addressable strips.
  */
-#define PATCH_ANIMATION_RAINBOW_POT_CTRL strip_rainbow(pot(), 255)
+#define PATCH_ANIMATION_RAINBOW_POT_CTRL strip_rainbow(pot() >> 6, (255 - pot()) >> 3, 255)
 
 /* PATCH_ANIMATION_SWAP
  * --------------------

@@ -363,11 +363,14 @@ void inline strip_breathe_array(RGB_t rgb[], uint8_t size, uint8_t step_size)
  * Description:
  *      Gradiently fades all LEDs simultaneously trough the RGB spectrum.
  */
-void inline strip_rainbow(uint8_t step_size, uint8_t brightness)
+void inline strip_rainbow(uint8_t step_size, uint16_t delay, uint8_t brightness)
 {
         static RGB_t rgb = {255, 0, 0};
         static bool r2g = true;
-        
+
+        if (ms_passed() < delay)
+                return;
+
         r2g = apply_rgb_fade(rgb, step_size, r2g);
         
         if (brightness < 255) {
@@ -378,6 +381,8 @@ void inline strip_rainbow(uint8_t step_size, uint8_t brightness)
         } else {
                 strip_apply_all(rgb);
         }
+
+        reset_timer();
 }
 
 /* strip_breathe_random
