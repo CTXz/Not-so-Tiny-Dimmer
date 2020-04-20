@@ -125,7 +125,7 @@ bool inline apply_rgb_fade(RGB_ptr_t rgb, uint8_t step_size, bool r2g)
 
                 if (tmp > rgb[R]) {
                         rgb[R] = 0;
-                        rgb[G] = 255;
+                        rgb[G] = tmp;
                 } else {
                         rgb[R] = tmp;
                         rgb[G] += step_size;
@@ -138,7 +138,7 @@ bool inline apply_rgb_fade(RGB_ptr_t rgb, uint8_t step_size, bool r2g)
 
                 if (tmp > rgb[G]) {
                         rgb[G] = 0;
-                        rgb[B] = 255;
+                        rgb[B] = tmp;
                 } else {
                         rgb[G] = tmp;
                         rgb[B] += step_size;
@@ -151,13 +151,13 @@ bool inline apply_rgb_fade(RGB_ptr_t rgb, uint8_t step_size, bool r2g)
 
                 if (tmp > rgb[B]) {
                         rgb[B] = 0;
-                        rgb[R] = 255;
+                        rgb[R] = tmp;
                 } else {
                         rgb[B] = tmp;
                         rgb[R] += step_size;
                 }
 
-                return (rgb[R] == 255);
+                return (rgb[B] == 0);
         }
 }
 
