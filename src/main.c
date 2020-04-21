@@ -105,6 +105,7 @@ uint8_t selected_patch;
 
 uint8_t inline adc_avg(uint8_t num_samples)
 {
+        uint8_t _ADCSRA = ADCSRA;
         ADCSRA &= ~(1 << ADATE); // Temporarily disable auto triggering
 
         uint16_t ret = 0;
@@ -114,7 +115,7 @@ uint8_t inline adc_avg(uint8_t num_samples)
                 ret += ADCH;
         }
 
-        ADCSRA |= (1 << ADATE); // Restore auto triggering
+        ADCSRA = _ADCSRA; // Restore auto triggering
 
         return round((double)ret/num_samples);
 }
