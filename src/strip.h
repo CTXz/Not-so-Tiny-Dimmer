@@ -105,7 +105,10 @@ typedef struct pxl {
         RGB_t rgb;
 } pxl;
 
-typedef pxl* pxbuf;
+typedef struct pxbuf {
+        pxl* buf;
+        uint16_t size;
+} pxbuf;
 
 void rgb_apply_brightness(RGB_t rgb, uint8_t brightness);
 void strip_apply_brightness(substrpbuf *strp, uint8_t brightness);
@@ -113,12 +116,16 @@ void strip_apply_brightness(substrpbuf *strp, uint8_t brightness);
 void substrpbuf_cpy(substrpbuf *dst, substrpbuf *src);
 void substrpbuf_free(substrpbuf *strp);
 
+void pxbuf_init(pxbuf *buf);
+void pxbuf_insert(pxbuf *buf, uint16_t pos, RGB_t rgb);
+void pxbuf_remove(pxbuf *buf, uint16_t index);
+
 void strip_apply_all(RGB_ptr_t rgb);
 
 #if STRIP_TYPE == WS2812
 void strip_apply_substrpbuf(substrpbuf strp);
 void strip_apply_RGBbuf(RGBbuf RGBbuf);
-void strip_apply_pxbuf(pxbuf pxbuf, uint16_t size);
+void strip_apply_pxbuf(pxbuf *buf);
 void strip_distribute_rgb(RGB_t rgb[], uint16_t size);
 #endif
 

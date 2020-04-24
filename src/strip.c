@@ -34,18 +34,9 @@
 
 #if STRIP_TYPE == WS2812
 
-// Use a global strip sized RGB buffer to save memory
-static bool glob_RGBbuf_init = false;
-static RGBbuf glob_RGBbuf;
-
 void inline zero_RGBbuf(RGBbuf buf, uint16_t size)
 {
         memset(buf, 0, size * sizeof(RGB_t));
-}
-
-void inline zero_pxbuf(pxbuf buf, uint16_t size)
-{
-        memset(buf, 0, size * sizeof(pxl));
 }
 
 RGBbuf inline init_RGBbuf(uint16_t size)
@@ -55,15 +46,7 @@ RGBbuf inline init_RGBbuf(uint16_t size)
         return ret;
 }
 
-pxbuf inline init_pxbuf(uint16_t size)
-{
-        pxbuf ret = malloc(size * sizeof(pxl));
-        zero_pxbuf(ret, size);
-        return ret;
-}
-
 #endif
-
 
 /* rgb_apply_brightness
  * --------------------
@@ -190,6 +173,139 @@ void inline substrpbuf_free(substrpbuf *substrpbuf)
         free(substrpbuf->substrps);
 }
 
+/* pxbuf_init
+ * ----------
+ * Parameters:
+ *      buf - Pointer to a pixel buffer
+ * Description:
+ *      Initializes a pixel buffer
+ */
+void inline pxbuf_init(pxbuf *buf)
+{
+        buf->buf = NULL;
+        buf->size = 0;
+}
+
+/* pxbuf_insert
+ * -------------
+ * Parameters:
+ *      buf - Pointer to a pixel buffer
+ *      pos - Position of the pixel to be inserted
+ *      rgb - RGB value of the pixel
+ * Description:
+ *      Adds/Allocates a pixel in the pixel buffer.
+ */
+void inline pxbuf_insert(pxbuf *buf, uint16_t pos, RGB_t rgb)
+{
+        if (buf->size == 0) {
+                buf->buf = malloc(sizeof(pxl));
+                buf->buf[0].pos = pos;
+                buf->buf[0].rgb[R] = rgb[R];
+                buf->buf[0].rgb[G] = rgb[G];
+                buf->buf[0].rgb[B] = rgb[B];
+                buf->size++;
+                return;
+        }
+
+        for (uint16_t i = 0; i < buf->size; i++) {
+
+                // Pixel already allocated
+                if (buf->buf[i].pos == pos) {
+                        buf->buf[i].pos = pos;
+                        buf->buf[i].rgb[R] = rgb[R];
+                        buf->buf[i].rgb[G] = rgb[G];
+                        buf->buf[i].rgb[B] = rgb[B];
+                        return;
+                }
+
+                // Not the last pixel in the pxbuf, insert and shift array!
+                if (buf->buf[i].pos > pos) {
+                        buf->size++;
+                        buf->buf = realloc(buf->buf, sizeof(pxl) * buf->size);
+
+                        for (uint16_t j = buf->size-1; j > i; j--) {
+                                pxl* prev_px = &(buf->buf[j-1]);
+                                buf->buf[j].pos = prev_px->pos;
+                                buf->buf[j].rgb[R] = prev_px->rgb[R];
+                                buf->buf[j].rgb[G] = prev_px->rgb[G];
+                                buf->buf[j].rgb[B] = prev_px->rgb[B];
+                        }
+
+                        buf->buf[i].pos = pos;
+                        buf->buf[i].rgb[R] = rgb[R];
+                        buf->buf[i].rgb[G] = rgb[G];
+                        buf->buf[i].rgb[B] = rgb[B];
+
+                        return;
+                }
+        }
+
+        // Last pixel in the pxbuf, simply append it!
+        buf->size++;
+        buf->buf = realloc(buf->buf, sizeof(pxl) * buf->size);
+        buf->buf[buf->size-1].pos = pos;
+        buf->buf[buf->size-1].rgb[R] = rgb[R];
+        buf->buf[buf->size-1].rgb[G] = rgb[G];
+        buf->buf[buf->size-1].rgb[B] = rgb[B];
+}
+
+/* pxbuf_remove
+ * -------------
+ * Parameters:
+ *      buf - Pointer to a pixel buffer
+ *      index - Index of pixel element to be deleted
+ * Description:
+ *      Deletes the pixel object stored at the provided index (NOT POSITION!)
+ */
+void inline pxbuf_remove(pxbuf *buf, uint16_t index)
+{
+        buf->size--;
+        
+        if (buf->size == 0) {
+                free(buf->buf);
+                buf->buf = NULL;
+                return;
+        }
+
+        for (uint16_t i = index; i < buf->size; i++) {
+                buf->buf[i] = buf->buf[i+1];               
+        }
+
+        buf->buf = realloc(buf->buf, sizeof(pxl) * buf->size);
+}
+
+/* pxbuf_remove_at
+ * ---------------
+ * Parameters:
+ *      buf - Pointer to a pixel buffer
+ *      pos - Position of pixel to be deleted from the pixel buffer
+ * Returns:
+ *      true - Pixel object deleted
+ *      false - No pixel object assigned to the position
+ * Description:
+ *      Deletes the pixel object assigned to the position
+ */
+bool inline pxbuf_remove_at(pxbuf *buf, uint16_t pos)
+{
+        for (uint16_t i = 0; i < buf->size; i++)
+        {
+                if (buf->buf[i].pos == pos) {
+                        pxbuf_remove(buf, i);
+                        return true;
+                }
+
+                // If no previous pixel has matched
+                // and we've reached a position exceeding pos,
+                // we can assume the position has no entry
+                // in the pxbuf
+                if (buf->buf[i].pos > pos) {
+                        return false;
+                }
+        }
+
+        return false;
+}
+
 #endif
 
 /* strip_apply_all
@@ -241,9 +357,9 @@ void inline strip_apply_substrpbuf(substrpbuf substrpbuf)
 /* strip_apply_RGBbuf
  * ------------------
  * Parameters:
- *      RGBbuf - Pixel buffer to be applied accross the LED strip
+ *      RGBbuf - RGB buffer to be applied accross the LED strip
  * Description:
- *      Applies a pixel buffer accross the LED strip.
+ *      Applies a RGB buffer with the strip size accross the LED strip.
  */
 void inline strip_apply_RGBbuf(RGBbuf RGBbuf)
 {
@@ -483,22 +599,38 @@ void inline strip_rotate_rainbow(uint8_t step_size)
                 offset++;
 }
 
-void inline strip_apply_pxbuf(pxbuf pxbuf, uint16_t size)
+/* strip_apply_RGBbuf
+ * ------------------
+ * Parameters:
+ *      pxbuf - Pixel buffer to be applied accross the LED strip
+ * Description:
+ *      Applies a pixel buffer accross the LED strip.
+ */
+void inline strip_apply_pxbuf(pxbuf *buf)
 {
-        if (!glob_RGBbuf_init) {
-                glob_RGBbuf = init_RGBbuf(WS2812_PIXELS);
-                glob_RGBbuf_init = true;
-        } else {
-                zero_RGBbuf(glob_RGBbuf, WS2812_PIXELS);
+        uint16_t px_i;
+
+        if (buf->size == 0) {
+                strip_apply_all((RGB_t){0, 0, 0});
+                return;
         }
 
-        for (uint16_t i = 0; i < size; i++) {
-                glob_RGBbuf[pxbuf[i].pos][R] = pxbuf[i].rgb[R];
-                glob_RGBbuf[pxbuf[i].pos][G] = pxbuf[i].rgb[G]; 
-                glob_RGBbuf[pxbuf[i].pos][B] = pxbuf[i].rgb[B];
+        px_i = 0;
+        
+        ws2812_prep_tx();
+        for (uint16_t i = 0; i < WS2812_PIXELS; i++) {
+                if (px_i < buf->size && i == buf->buf[px_i].pos) {
+                        ws2812_tx_byte(buf->buf[px_i].rgb[WS2812_WIRING_RGB_0]);
+                        ws2812_tx_byte(buf->buf[px_i].rgb[WS2812_WIRING_RGB_1]);
+                        ws2812_tx_byte(buf->buf[px_i].rgb[WS2812_WIRING_RGB_2]);
+                        px_i++;
+                } else {
+                        ws2812_tx_byte(0);
+                        ws2812_tx_byte(0);
+                        ws2812_tx_byte(0); 
+                }
         }
-
-        strip_apply_RGBbuf(glob_RGBbuf);
+        ws2812_end_tx();
 }
 
 /* strip_rain
@@ -516,61 +648,52 @@ void inline strip_apply_pxbuf(pxbuf pxbuf, uint16_t size)
  */
 void inline strip_rain(RGB_t rgb, uint16_t max_drops, uint16_t min_t_appart, uint16_t max_t_appart, uint8_t step_size)
 {
-        static pxbuf pxbuf;
-        static uint16_t pxbuf_size = 0;
-        static bool init = false;
+        static pxbuf pxbuf = {
+                .buf = NULL, 
+                .size = 0
+        };
 
         uint8_t tmp;
+        bool t_passed;
         
         if (step_size == 0)
                 step_size = 1;
 
-        if (!init) {
-                pxbuf = init_pxbuf(max_drops);
-                init = true;
-        } else if (pxbuf_size != max_drops) {
-                pxbuf = realloc(pxbuf, max_drops * sizeof(pxl));
-                
-                if (max_drops > pxbuf_size)
-                        memset(pxbuf + pxbuf_size, 0, (max_drops - pxbuf_size) * sizeof(pxl));
-        }
-
-        pxbuf_size = max_drops;
-
-        for (uint16_t i = 0; i < max_drops; i++) {
-                if (pxbuf[i].rgb[R] == 0 && pxbuf[i].rgb[G] == 0 && pxbuf[i].rgb[B] == 0) {
-                        if (ms_passed() >= (rand() % (max_t_appart - min_t_appart + 1)) + min_t_appart) {
-                                pxbuf[i].pos = rand() % WS2812_PIXELS;
-                                pxbuf[i].rgb[R] = rgb[R];
-                                pxbuf[i].rgb[G] = rgb[G];
-                                pxbuf[i].rgb[B] = rgb[B];
-                                reset_timer();
-                        }
+        for (uint16_t i = 0; i < pxbuf.size; i++) {
+                if (pxbuf.buf[i].rgb[R] == 0 && pxbuf.buf[i].rgb[G] == 0 && pxbuf.buf[i].rgb[B] == 0) {
+                        pxbuf_remove(&pxbuf, i);
                 } else {
-                        if (pxbuf[i].rgb[R] != 0) {
-                                tmp = pxbuf[i].rgb[R];
-                                pxbuf[i].rgb[R] -= step_size;
-                                if (pxbuf[i].rgb[R] > tmp)
-                                        pxbuf[i].rgb[R] = 0;
+                        if (pxbuf.buf[i].rgb[R] != 0) {
+                                tmp = pxbuf.buf[i].rgb[R];
+                                pxbuf.buf[i].rgb[R] -= step_size;
+                                if (pxbuf.buf[i].rgb[R] > tmp)
+                                        pxbuf.buf[i].rgb[R] = 0;
                         }
 
-                        if (pxbuf[i].rgb[G] != 0) {
-                                tmp = pxbuf[i].rgb[G];
-                                pxbuf[i].rgb[G] -= step_size;
-                                if (pxbuf[i].rgb[G] > tmp)
-                                        pxbuf[i].rgb[G] = 0;
+                        if (pxbuf.buf[i].rgb[G] != 0) {
+                                tmp = pxbuf.buf[i].rgb[G];
+                                pxbuf.buf[i].rgb[G] -= step_size;
+                                if (pxbuf.buf[i].rgb[G] > tmp)
+                                        pxbuf.buf[i].rgb[G] = 0;
                         }
 
-                        if (pxbuf[i].rgb[B] != 0) {
-                                tmp = pxbuf[i].rgb[B];
-                                pxbuf[i].rgb[B] -= step_size;
-                                if (pxbuf[i].rgb[B] > tmp)
-                                        pxbuf[i].rgb[B] = 0;
+                        if (pxbuf.buf[i].rgb[B] != 0) {
+                                tmp = pxbuf.buf[i].rgb[B];
+                                pxbuf.buf[i].rgb[B] -= step_size;
+                                if (pxbuf.buf[i].rgb[B] > tmp)
+                                        pxbuf.buf[i].rgb[B] = 0;
                         }
-                }
+                }                
         }
 
-        strip_apply_pxbuf(pxbuf, pxbuf_size);
+        t_passed = ms_passed() >= (rand() % (max_t_appart - min_t_appart + 1)) + min_t_appart;
+
+        if (t_passed && pxbuf.size < max_drops) {
+                pxbuf_insert(&pxbuf, rand() % WS2812_PIXELS, rgb);    
+                reset_timer();   
+        }
+
+        strip_apply_pxbuf(&pxbuf);
 }
 
 bool inline strip_override(RGB_t rgb, uint16_t delay)
