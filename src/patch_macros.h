@@ -124,7 +124,7 @@
  *      Gradiently fades all LEDs simultaneously trough the RGB spectrum.
  *      Supported on non-addressable strips.
  */
-#define PATCH_ANIMATION_RAINBOW(STEP_SIZE) strip_rainbow(STEP_SIZE, pot())
+#define PATCH_ANIMATION_RAINBOW(STEP_SIZE, DELAY, BRIGHTNESS) strip_rainbow(STEP_SIZE, DELAY, BRIGHTNESS)
 
 /* PATCH_ANIMATION_RAINBOW_POT_CTRL
  * ---------------------------------
