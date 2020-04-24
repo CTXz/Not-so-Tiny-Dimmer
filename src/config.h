@@ -126,14 +126,16 @@
 // Cyan white rain effect with potentiometer intensity control
 #define PATCH_5 PATCH_ANIMATION_RAIN_POT_CTRL(rand() % 256, 255, 255)
 
-// Rainbow fading with potentiometer speed control 
-#define PATCH_6 PATCH_ANIMATION_RAINBOW_POT_CTRL
-
+#define PATCH_6 PATCH_ANIMATiON_OVERRIDE_ARR_POT_CTRL ( \
+        RGB_ARRAY (                                     \
+                {10, 255, 202},                         \
+                {255, 20, 127}                          \
+        )                                               \
+)
 // Rotating rainbow animation
-#define PATCH_7 PATCH_ANIMATION_ROTATE_RAINBOW(3)
+#define PATCH_7 PATCH_ANIMATION_ROTATE_RAINBOW(10)
 
-// Breath animation with potetionmeter breath length control
-#define PATCH_8 PATCH_ANIMATION_BREATHE_RAINBOW_POT_CTRL(10)
+#define PATCH_8 PATCH_ANIMATION_RAINBOW_POT_CTRL
 
 // Halves swapping with potentiometer speed control
 #define PATCH_9 PATCH_ANIMATION_SWAP_POT_CTRL(rand() % 256, rand() % 256, rand() % 256, 0, 0, 0)
