@@ -244,7 +244,7 @@
         rgb[R] = _R; \
         rgb[G] = _G; \
         rgb[B] = _B; \
-        strip_rain(rgb, pot_read/(255/WS2812_PIXELS), 255 - pot_read, 1020 - (pot_read << 2), pot_read >> 5);
+        strip_rain(rgb, (pot_read * WS2812_PIXELS) / 255, 255 - pot_read, 510 - (pot_read << 1), pot_read >> 5);
 
 #define PATCH_ANIMATION_OVERRIDE_ARR(RGB_ARR, DELAY) \
         RGB_t rgb[] = { \
