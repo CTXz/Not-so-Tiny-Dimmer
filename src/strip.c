@@ -48,6 +48,22 @@ RGBbuf inline init_RGBbuf(uint16_t size)
 
 #endif
 
+/* rgb_cpy
+ * -------
+ * Parameters:
+ *      dst - Destination RGB object
+ *      src - Source RGB object
+ * Description:
+ *      Copies values from the source RGB object to
+ *      the destination RGB object.
+ */
+void inline rgb_cpy(RGB_ptr_t dst, RGB_t src)
+{
+        dst[R] = src[R];
+        dst[G] = src[G];
+        dst[B] = src[B];
+}
+
 /* rgb_apply_brightness
  * --------------------
  * Parameters:
@@ -200,9 +216,7 @@ void inline pxbuf_insert(pxbuf *buf, uint16_t pos, RGB_t rgb)
         if (buf->size == 0) {
                 buf->buf = malloc(sizeof(pxl));
                 buf->buf[0].pos = pos;
-                buf->buf[0].rgb[R] = rgb[R];
-                buf->buf[0].rgb[G] = rgb[G];
-                buf->buf[0].rgb[B] = rgb[B];
+                rgb_cpy(buf->buf[0].rgb, rgb);
                 buf->size++;
                 return;
         }
@@ -212,9 +226,7 @@ void inline pxbuf_insert(pxbuf *buf, uint16_t pos, RGB_t rgb)
                 // Pixel already allocated
                 if (buf->buf[i].pos == pos) {
                         buf->buf[i].pos = pos;
-                        buf->buf[i].rgb[R] = rgb[R];
-                        buf->buf[i].rgb[G] = rgb[G];
-                        buf->buf[i].rgb[B] = rgb[B];
+                        rgb_cpy(buf->buf[i].rgb, rgb);
                         return;
                 }
 
@@ -226,15 +238,11 @@ void inline pxbuf_insert(pxbuf *buf, uint16_t pos, RGB_t rgb)
                         for (uint16_t j = buf->size-1; j > i; j--) {
                                 pxl* prev_px = &(buf->buf[j-1]);
                                 buf->buf[j].pos = prev_px->pos;
-                                buf->buf[j].rgb[R] = prev_px->rgb[R];
-                                buf->buf[j].rgb[G] = prev_px->rgb[G];
-                                buf->buf[j].rgb[B] = prev_px->rgb[B];
+                                rgb_cpy(buf->buf[j].rgb, prev_px->rgb);
                         }
 
                         buf->buf[i].pos = pos;
-                        buf->buf[i].rgb[R] = rgb[R];
-                        buf->buf[i].rgb[G] = rgb[G];
-                        buf->buf[i].rgb[B] = rgb[B];
+                        rgb_cpy(buf->buf[i].rgb, rgb);
 
                         return;
                 }
@@ -244,9 +252,7 @@ void inline pxbuf_insert(pxbuf *buf, uint16_t pos, RGB_t rgb)
         buf->size++;
         buf->buf = realloc(buf->buf, sizeof(pxl) * buf->size);
         buf->buf[buf->size-1].pos = pos;
-        buf->buf[buf->size-1].rgb[R] = rgb[R];
-        buf->buf[buf->size-1].rgb[G] = rgb[G];
-        buf->buf[buf->size-1].rgb[B] = rgb[B];
+        rgb_cpy(buf->buf[buf->size-1].rgb, rgb);
 }
 
 /* pxbuf_remove
@@ -417,13 +423,14 @@ bool inline strip_breathe(RGB_ptr_t rgb, uint8_t step_size)
         static bool inc = true;
         static uint8_t brightness = 0;
 
+        RGB_t rgbcpy;
+
         if (step_size == 0)
                 step_size = 1;
-
-        RGB_t rgb_cpy;
-        memcpy(&rgb_cpy, rgb, sizeof(RGB_t));
-        rgb_apply_brightness(rgb_cpy, brightness);
-        strip_apply_all(rgb_cpy);
+        
+        rgb_cpy(rgbcpy, rgb);
+        rgb_apply_brightness(rgbcpy, brightness);
+        strip_apply_all(rgbcpy);
 
         if (brightness == 0 && ms_passed() < 2000)
                 return false;
@@ -484,16 +491,17 @@ void inline strip_rainbow(uint8_t step_size, uint16_t delay, uint8_t brightness)
         static RGB_t rgb = {255, 0, 0};
         static bool r2g = true;
 
+        RGB_t rgbcpy;
+
         if (ms_passed() < delay)
                 return;
 
         r2g = apply_rgb_fade(rgb, step_size, r2g);
         
         if (brightness < 255) {
-                RGB_t rgb_cpy;
-                memcpy(&rgb_cpy, &rgb, sizeof(RGB_t));
-                rgb_apply_brightness(rgb_cpy, brightness);
-                strip_apply_all(rgb_cpy);
+                rgb_cpy(rgbcpy, rgb);
+                rgb_apply_brightness(rgbcpy, brightness);
+                strip_apply_all(rgbcpy);
         } else {
                 strip_apply_all(rgb);
         }
