@@ -24,10 +24,9 @@ What initaly just started as minimalist ATtiny based WS2812 LED strip dimmer, qu
       - [`PATCH_ANIMATION_RAIN`](#patchanimationrain)
       - [`PATCH_ANIMATION_RAIN_POT_CTRL`](#patchanimationrainpotctrl)
   - [Hardware](#hardware)
-- [Hardware](#hardware-1)
-  - [Schematic](#schematic)
-  - [Perfboard](#perfboard)
-  - [Showcase](#showcase)
+    - [Schematic](#schematic)
+    - [Perfboard](#perfboard)
+    - [Showcase](#showcase)
 - [Flashing the firmware](#flashing-the-firmware)
 - [Credits](#credits)
 - [Project log](#project-log)
@@ -370,8 +369,6 @@ To compensate for sloppy hardware jobs, the firmware also comes with potentiomet
 
 The controller firmware has been written for and ATtiny85 chips, but will tightly fit onto a ATtiny25 chip if fewer and minimal patches are used. Unless the controller is planned to be used as a simple single-color WS2812 RGB dimmer, it is really recommended to at least use an ATiny45, preferably an ATiny85 if one wants make full use of all features.
 
-## Hardware
-
 The following components are required to build a Not-so-Tiny dimmer:
 
 |Component|Quantity|Description|
@@ -389,16 +386,16 @@ The controller can also be easily be built with a digispark board.
 
 The price for the components can range anywhere between 5 to 15 EUR, depending from where you purchase the components, and what their quality is.
 
-### Schematic
+#### Schematic
 
 ![Schematic.png](img/Schematic.png)
 
-### Perfboard
+#### Perfboard
 
 Top view:
 ![](img/NotSoTinyDimmerTop.png)
 
-### Showcase
+#### Showcase
 
 Perfboard:
 ![](img/PCBShowcase.jpg)
