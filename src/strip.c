@@ -34,11 +34,28 @@
 
 #if STRIP_TYPE == WS2812
 
+/* zero_RGBbuf
+ * -------
+ * Parameters:
+ *      buf - RGB buffer to be zeroed
+ *      size - Size of RGB buffer
+ * Description:
+ *      Sets all rgb objects in an RGB buffer to black (0, 0, 0).
+ */
 void inline zero_RGBbuf(RGBbuf buf, uint16_t size)
 {
         memset(buf, 0, size * sizeof(RGB_t));
 }
 
+/* init_RGBbuf
+ * -------
+ * Parameters:
+ *      size - Size of RGB buffer
+ * Returns:
+ *      Pointer to a newly allocated RGB buffer
+ * Description:
+ *      Allocates a new RGB buffer.
+ */
 RGBbuf inline init_RGBbuf(uint16_t size)
 {
         RGBbuf ret = malloc(size * sizeof(RGB_t));
@@ -70,7 +87,7 @@ void inline rgb_cpy(RGB_ptr_t dst, RGB_t src)
  *      rgb - A pointer to an RGB object
  *      brightness - Brightness to be applied to the RGB object
  * Description:
- *      Applies a brightness (0 - 0%, 255 - 100%) to the provided
+ *      Applies a brightness (0 = 0%, 255 = 100%) to the provided
  *      RGB object.
  */
 void inline rgb_apply_brightness(RGB_ptr_t rgb, uint8_t brightness)
@@ -82,16 +99,16 @@ void inline rgb_apply_brightness(RGB_ptr_t rgb, uint8_t brightness)
         }
 }
 
-/* strip_apply_brightness
+/* substripbuf_apply_brightness
  * ----------------------
  * Parameters:
- *      substrpbuf - A pointer to an substrip buffer object
- *      brightness - Brightness to be applied to the RGB object
+ *      substrpbuf - Pointer to a substrip buffer
+ *      brightness - Brightness to be applied to the substrip buffer
  * Description:
- *      Applies a brightness (0 - 0%, 255 - 100%) to the provided
- *      strip object.
+ *      Applies a brightness (0 = 0%, 255 = 100%) to the provided
+ *      substrip buffer.
  */
-void inline strip_apply_brightness(substrpbuf *substrpbuf, uint8_t brightness)
+void inline substripbuf_apply_brightness(substrpbuf *substrpbuf, uint8_t brightness)
 {
         if (brightness < 255) {
                 for (uint16_t i = 0; i < substrpbuf->n_substrps; i++) 
@@ -99,20 +116,30 @@ void inline strip_apply_brightness(substrpbuf *substrpbuf, uint8_t brightness)
         }
 }
 
-/* apply_rgb_fade
+/* rgb_apply_fade
  * --------------
  * Parameters:
- *      rgb - RGB object to apply fade on
+ *      rgb - RGB object to store fade values
  *      step_size - Color steps after each call
- *      r2g - Callback to tell the routine which color transition is taking place
  * Returns:
  *      Whether the red to green color transition has completed. Parse the return to
  *      the r2g arg!
  * Description:
  *      Apples rgb fading to the provided rgb object.
  */
-bool inline apply_rgb_fade(RGB_ptr_t rgb, uint8_t step_size, bool r2g)
+void inline rgb_apply_fade(RGB_ptr_t rgb, uint8_t step_size)
 {
+        bool r2g;
+
+        // Invalid RGB, correct it!
+        if (rgb[R] != 0 && rgb[G] != 0 && rgb[B] != 0) {
+                rgb[R] = 255;
+                rgb[G] = 0;
+                rgb[B] = 0;
+        }        
+
+        r2g = (rgb[G] < 255 && rgb[B] == 0);
+
         uint8_t tmp;
 
         if (step_size == 0)
@@ -129,8 +156,6 @@ bool inline apply_rgb_fade(RGB_ptr_t rgb, uint8_t step_size, bool r2g)
                         rgb[R] = tmp;
                         rgb[G] += step_size;
                 }
-
-                return (rgb[R] > 0);
         } else if (rgb[G] > 0) {
                 tmp = rgb[G];
                 tmp -= step_size;
@@ -142,8 +167,6 @@ bool inline apply_rgb_fade(RGB_ptr_t rgb, uint8_t step_size, bool r2g)
                         rgb[G] = tmp;
                         rgb[B] += step_size;
                 }
-
-                return false;
         } else {
                 tmp = rgb[B];
                 tmp -= step_size;
@@ -156,7 +179,6 @@ bool inline apply_rgb_fade(RGB_ptr_t rgb, uint8_t step_size, bool r2g)
                         rgb[R] += step_size;
                 }
 
-                return (rgb[B] == 0);
         }
 }
 
@@ -398,7 +420,7 @@ void inline strip_distribute_rgb(RGB_t rgb[], uint16_t size)
                 if (i == size - 1)
                         substrpbuf.substrps[i].length += WS2812_PIXELS % size;
 
-                memcpy(&substrpbuf.substrps[i].rgb, &rgb[i], sizeof(RGB_t));
+                rgb_cpy(substrpbuf.substrps[i].rgb, rgb[i]);
         }
 
         strip_apply_substrpbuf(substrpbuf);
@@ -482,21 +504,20 @@ void inline strip_breathe_array(RGB_t rgb[], uint8_t size, uint8_t step_size)
  * Parameters:
  *      step_size - Color steps between each call.
  *                  A greater value results in faster fading.
- *      brightness - Brightness value (0 - 0%, 255 - 100%) of the fade
+ *      brightness - Brightness value (0 = 0%, 255 = 100%) of the fade
  * Description:
  *      Gradiently fades all LEDs simultaneously trough the RGB spectrum.
  */
 void inline strip_rainbow(uint8_t step_size, uint16_t delay, uint8_t brightness)
 {
         static RGB_t rgb = {255, 0, 0};
-        static bool r2g = true;
 
         RGB_t rgbcpy;
 
         if (ms_passed() < delay)
                 return;
 
-        r2g = apply_rgb_fade(rgb, step_size, r2g);
+        rgb_apply_fade(rgb, step_size);
         
         if (brightness < 255) {
                 rgb_cpy(rgbcpy, rgb);
@@ -546,10 +567,9 @@ void inline strip_breathe_random(uint8_t step_size)
 void inline strip_breathe_rainbow(uint8_t breath_step_size, uint8_t rgb_step_size)
 {
         static RGB_t rgb = {255, 0, 0};
-        static bool r2g = true;
 
         if (strip_breathe(rgb, breath_step_size))
-                r2g = apply_rgb_fade(rgb, rgb_step_size, r2g);
+                rgb_apply_fade(rgb, rgb_step_size);
 }
 
 #if STRIP_TYPE == WS2812
@@ -570,11 +590,9 @@ void inline strip_rotate_rainbow(uint8_t step_size)
         static uint16_t offset = 0;
         uint8_t offset_mod;
         RGB_t rgb;
-        bool r2g;
          
         // Apply offset to RGB;
         
-        r2g = false;
         offset_mod = offset % 255;
 
         if (offset < 255) {
@@ -589,7 +607,6 @@ void inline strip_rotate_rainbow(uint8_t step_size)
                 rgb[R] = offset_mod;
                 rgb[G] = 255 - offset_mod;
                 rgb[B] = 0;
-                r2g = true;
         }
 
         ws2812_prep_tx();
@@ -597,7 +614,7 @@ void inline strip_rotate_rainbow(uint8_t step_size)
                         ws2812_tx_byte(rgb[WS2812_WIRING_RGB_0]);
                         ws2812_tx_byte(rgb[WS2812_WIRING_RGB_1]);
                         ws2812_tx_byte(rgb[WS2812_WIRING_RGB_2]);
-                        r2g = apply_rgb_fade(rgb, step_size, r2g);
+                        rgb_apply_fade(rgb, step_size);
                 }
         ws2812_end_tx();
 
@@ -742,10 +759,9 @@ void inline strip_override_array(RGB_t rgb[], uint8_t size, uint16_t delay)
 void inline strip_override_rainbow(uint16_t delay, uint8_t step_size)
 {
         static RGB_t rgb = {255, 0, 0};
-        static bool r2g = true;
 
         if (strip_override(rgb, delay))
-                r2g = apply_rgb_fade(rgb, step_size, r2g);
+                rgb_apply_fade(rgb, step_size);
 }
 
 #endif

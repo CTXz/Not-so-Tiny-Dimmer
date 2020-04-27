@@ -28,11 +28,11 @@
 // Interrupt controlled
 volatile static unsigned long timer_counter = 0; // Counts number of times TIMER0 has overflown
 
-/* TIMER0_OVF_vect
- * ---------------
+/* ISR(TIMER0_OVF_vect)
+ * --------------------
  * Description:
- *      Increases the timer counter every time the
- *      timer overflows.
+ *      Increases the timer counter every time
+ *      timer0 overflows.
  */
 ISR(TIMER0_OVF_vect)
 {
@@ -42,7 +42,7 @@ ISR(TIMER0_OVF_vect)
 /* reset_timer
  * -----------
  * Description:
- *      Resets the the timer to 0
+ *      Resets the the timer.
  */
 void inline reset_timer()
 {

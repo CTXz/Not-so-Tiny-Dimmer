@@ -1,4 +1,4 @@
-  /*
+          /*
    * Copyright (C) 2020  Patrick Pedersen
 
    * This program is free software: you can redistribute it and/or modify
@@ -106,12 +106,12 @@ typedef struct pxl {
 } pxl;
 
 typedef struct pxbuf {
-        pxl* buf;
         uint16_t size;
+        pxl* buf;
 } pxbuf;
 
 void rgb_apply_brightness(RGB_t rgb, uint8_t brightness);
-void strip_apply_brightness(substrpbuf *strp, uint8_t brightness);
+void substripbuf_apply_brightness(substrpbuf *strp, uint8_t brightness);
 
 void substrpbuf_cpy(substrpbuf *dst, substrpbuf *src);
 void substrpbuf_free(substrpbuf *strp);
@@ -119,6 +119,7 @@ void substrpbuf_free(substrpbuf *strp);
 void pxbuf_init(pxbuf *buf);
 void pxbuf_insert(pxbuf *buf, uint16_t pos, RGB_t rgb);
 void pxbuf_remove(pxbuf *buf, uint16_t index);
+bool pxbuf_remove_at(pxbuf *buf, uint16_t pos);
 
 void strip_apply_all(RGB_ptr_t rgb);
 
