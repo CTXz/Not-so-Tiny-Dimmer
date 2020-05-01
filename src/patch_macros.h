@@ -177,7 +177,7 @@
  */
 #define PATCH_ANIMATION_SWAP_POT_CTRL(RFH, GFH, BFH, RSH, GSH, BSH) \
         static bool swap = false; \
-        if (ms_passed() >= (1020 - (pot() << 2))) { \
+        if (ms_passed() >= (1020 - (pot() << 2) + 100)) { \
                 if (swap) { \
                         RGB_t rgb[] = { \
                                 {RFH, GFH, BFH}, {RSH, GSH, BSH} \
@@ -252,11 +252,11 @@
         }; \
         strip_override_array(rgb, sizeof(rgb)/sizeof(RGB_t), DELAY);
 
-#define PATCH_ANIMATiON_OVERRIDE_ARR_POT_CTRL(RGB_ARR) \
+#define PATCH_ANIMATION_OVERRIDE_ARR_POT_CTRL(RGB_ARR) \
         RGB_t rgb[] = { \
                 RGB_ARR \
         }; \
-        strip_override_array(rgb, sizeof(rgb)/sizeof(RGB_t), 255 - pot());
+        strip_override_array(rgb, sizeof(rgb)/sizeof(RGB_t), 255 - pot() + 5);
         
 #define PATCH_ANIMATION_OVERRIDE_RAND(DELAY) \
         static RGB_t rgb = {255, 255, 255}; \
