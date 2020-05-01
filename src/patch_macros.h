@@ -197,10 +197,21 @@
  * ------------------------------
  *  * Parameters:
  *      STEP_SIZE - Color steps (0 - 255) between each pixel.
+ *      DELAY - Delay between each call in ms
  * Description:
  *      Rotates the rgb spectrum across the strip.
  */
-#define PATCH_ANIMATION_ROTATE_RAINBOW(STEP_SIZE) strip_rotate_rainbow(STEP_SIZE);
+#define PATCH_ANIMATION_ROTATE_RAINBOW(STEP_SIZE, DELAY) strip_rotate_rainbow(STEP_SIZE, DELAY);
+
+/* PATCH_ANIMATION_ROTATE_RAINBOW
+ * ------------------------------
+ *  * Parameters:
+ *      STEP_SIZE - Color steps (0 - 255) between each pixel.
+ *      DELAY - Delay between each call in ms
+ * Description:
+ *      Rotates the rgb spectrum across the strip. The speed can be adjusted by the potentiometer.
+ */
+#define PATCH_ANIMATION_ROTATE_RAINBOW_POT_CTRL(STEP_SIZE) strip_rotate_rainbow(STEP_SIZE, 31 - (pot() >> 3) + 5);
 
 /* PATCH_ANIMATION_RAIN
  * --------------------

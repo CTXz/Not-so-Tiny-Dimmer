@@ -137,7 +137,7 @@ void strip_breathe_rainbow(uint8_t breath_step_size, uint8_t rgb_step_size);
 void strip_rainbow(uint8_t step_size, uint16_t delay, uint8_t brightness);
 
 #if STRIP_TYPE == WS2812
-void strip_rotate_rainbow(uint8_t step_size);
+void strip_rotate_rainbow(uint8_t step_size, uint16_t delay_ms);
 void strip_rain(RGB_t rgb, uint16_t max_drops, uint16_t min_t_appart, uint16_t max_t_appart, uint8_t step_size);
 bool strip_override(RGB_t rgb, uint16_t delay);
 void strip_override_array(RGB_t rgb[], uint8_t size, uint16_t delay);

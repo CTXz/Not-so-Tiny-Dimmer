@@ -149,6 +149,7 @@ void inline rgb_apply_fade(RGB_ptr_t rgb, uint8_t step_size)
                 if (tmp > rgb[R]) {
                         rgb[R] = 0;
                         rgb[G] = tmp;
+                        rgb[B] = 255 - tmp;
                 } else {
                         rgb[R] = tmp;
                         rgb[G] += step_size;
@@ -160,6 +161,7 @@ void inline rgb_apply_fade(RGB_ptr_t rgb, uint8_t step_size)
                 if (tmp > rgb[G]) {
                         rgb[G] = 0;
                         rgb[B] = tmp;
+                        rgb[R] = 255 - tmp;
                 } else {
                         rgb[G] = tmp;
                         rgb[B] += step_size;
@@ -171,6 +173,7 @@ void inline rgb_apply_fade(RGB_ptr_t rgb, uint8_t step_size)
                 if (tmp > rgb[B]) {
                         rgb[B] = 0;
                         rgb[R] = tmp;
+                        rgb[G] = 255 - tmp;
                 } else {
                         rgb[B] = tmp;
                         rgb[R] += step_size;
@@ -582,43 +585,29 @@ void inline strip_breathe_rainbow(uint8_t breath_step_size, uint8_t rgb_step_siz
  *      changes in step size, and even just additional code can
  *      easily lead to uncomfortable lag.
  */
-void inline strip_rotate_rainbow(uint8_t step_size)
+void inline strip_rotate_rainbow(uint8_t step_size, uint16_t delay_ms)
 {
-        static uint16_t offset = 0;
-        uint8_t offset_mod;
-        RGB_t rgb;
-         
-        // Apply offset to RGB;
         
-        offset_mod = offset % 255;
+        static RGB_t rgb = {255, 0 , 0};
+        
+        if (ms_passed() < delay_ms)
+                return;
 
-        if (offset < 255) {
-                rgb[R] = 255 - offset_mod;
-                rgb[G] = 0;
-                rgb[B] = offset_mod;
-        } else if (offset < 510) {
-                rgb[R] = 0;
-                rgb[G] = offset_mod;
-                rgb[B] = 255 - offset_mod;
-        } else {
-                rgb[R] = offset_mod;
-                rgb[G] = 255 - offset_mod;
-                rgb[B] = 0;
-        }
+        rgb_apply_fade(rgb, step_size);
+
+        RGB_t tmp;
+        rgb_cpy(tmp, rgb);
 
         ws2812_prep_tx();
                 for (uint16_t i = 0; i < WS2812_PIXELS; i++) {
-                        ws2812_tx_byte(rgb[WS2812_WIRING_RGB_0]);
-                        ws2812_tx_byte(rgb[WS2812_WIRING_RGB_1]);
-                        ws2812_tx_byte(rgb[WS2812_WIRING_RGB_2]);
-                        rgb_apply_fade(rgb, step_size);
+                        ws2812_tx_byte(tmp[WS2812_WIRING_RGB_0]);
+                        ws2812_tx_byte(tmp[WS2812_WIRING_RGB_1]);
+                        ws2812_tx_byte(tmp[WS2812_WIRING_RGB_2]);
+                        rgb_apply_fade(tmp, step_size);
                 }
         ws2812_end_tx();
 
-        if (offset == 764)
-                offset = 0;
-        else
-                offset++;
+        reset_timer();
 }
 
 /* strip_apply_RGBbuf
