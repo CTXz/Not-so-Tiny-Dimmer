@@ -121,9 +121,6 @@ void inline substripbuf_apply_brightness(substrpbuf *substrpbuf, uint8_t brightn
  * Parameters:
  *      rgb - RGB object to store fade values
  *      step_size - Color steps after each call
- * Returns:
- *      Whether the red to green color transition has completed. Parse the return to
- *      the r2g arg!
  * Description:
  *      Apples rgb fading to the provided rgb object.
  */
@@ -190,7 +187,7 @@ void inline rgb_apply_fade(RGB_ptr_t rgb, uint8_t step_size)
  *      dst - Strip object to store copy
  *      src - Strip object to be copied
  * Description:
- *      Creates a deep copy of a strip object.
+ *      Creates a deep copy of a substrip object.
  */
 void inline substripbuf_cpy(substrpbuf *dst, substrpbuf *src)
 {
@@ -202,9 +199,9 @@ void inline substripbuf_cpy(substrpbuf *dst, substrpbuf *src)
 /* substrpbuf_free
  * ---------------
  * Parameters:
- *      strp - Pointer to the strip object to be freed
+ *      substrpbuf - Pointer to the substrip buffer to be freed
  * Description:
- *      Frees a strip object.
+ *      Frees a substrip buffer.
  */
 void inline substrpbuf_free(substrpbuf *substrpbuf)
 {
@@ -216,7 +213,7 @@ void inline substrpbuf_free(substrpbuf *substrpbuf)
  * Parameters:
  *      buf - Pointer to a pixel buffer
  * Description:
- *      Initializes a pixel buffer
+ *      Initializes a pixel buffer.
  */
 void inline pxbuf_init(pxbuf *buf)
 {
@@ -283,7 +280,7 @@ void inline pxbuf_insert(pxbuf *buf, uint16_t pos, RGB_t rgb)
  *      buf - Pointer to a pixel buffer
  *      index - Index of pixel element to be deleted
  * Description:
- *      Deletes the pixel object stored at the provided index (NOT POSITION!)
+ *      Deletes the pixel object stored at the provided index (NOT POSITION!).
  */
 void inline pxbuf_remove(pxbuf *buf, uint16_t index)
 {
@@ -311,7 +308,7 @@ void inline pxbuf_remove(pxbuf *buf, uint16_t index)
  *      true - Pixel object deleted
  *      false - No pixel object assigned to the position
  * Description:
- *      Deletes the pixel object assigned to the position
+ *      Deletes the pixel object assigned to the position.
  */
 bool inline pxbuf_remove_at(pxbuf *buf, uint16_t pos)
 {
@@ -339,9 +336,9 @@ bool inline pxbuf_remove_at(pxbuf *buf, uint16_t pos)
 /* strip_apply_all
  * ---------------
  * Parameters:
- *      rgb - RGB object to be applied accross the LED strip
+ *      rgb - RGB value to be applied across the LED strip
  * Description:
- *      Applies a RGB value accross the entire LED strip.
+ *      Applies a RGB value across the entire LED strip.
  */
 void inline strip_apply_all(RGB_ptr_t rgb)
 {
@@ -365,9 +362,9 @@ void inline strip_apply_all(RGB_ptr_t rgb)
 /* strip_apply_substrpbuf
  * ----------------------
  * Parameters:
- *      substrpbuf - Strip object to be applied accross the LED strip
+ *      substrpbuf - Sub strip buffer to be applied across the LED strip
  * Description:
- *      Applies a strip object accross the LED strip.
+ *      Applies a strip object across the LED strip.
  */
 void inline strip_apply_substrpbuf(substrpbuf substrpbuf)
 {
@@ -385,9 +382,9 @@ void inline strip_apply_substrpbuf(substrpbuf substrpbuf)
 /* strip_apply_RGBbuf
  * ------------------
  * Parameters:
- *      RGBbuf - RGB buffer to be applied accross the LED strip
+ *      RGBbuf - RGB buffer to be applied across the LED strip
  * Description:
- *      Applies a RGB buffer with the strip size accross the LED strip.
+ *      Applies a RGB buffer with the strip size across the LED strip.
  */
 void inline strip_apply_RGBbuf(RGBbuf RGBbuf)
 {
@@ -403,10 +400,10 @@ void inline strip_apply_RGBbuf(RGBbuf RGBbuf)
 /* strip_distribute_rgb
  * --------------------
  * Parameters:
- *      rgb - Array of rgb objects to be distributed
+ *      rgb - Array of rgb values to be distributed
  *      size - Size of the rgb array
  * Description:
- *      Evenly distributes an array of rgb values accross the LED strip.
+ *      Evenly distributes an array of rgb values across the LED strip.
  */
 void inline strip_distribute_rgb(RGB_t rgb[], uint16_t size)
 {
@@ -579,7 +576,7 @@ void inline strip_breathe_rainbow(uint8_t breath_step_size, uint8_t rgb_step_siz
  *  * Parameters:
  *      step_size - Color steps between each pixel
  * Description:
- *      Rotates the rgb spectrum accross the strip.
+ *      Rotates the rgb spectrum across the strip.
  *      Unlike other RGB fade effects, this one doesn't 
  *      allow for changes in speed, as the addition of delays, 
  *      changes in step size, and even just additional code can
@@ -627,9 +624,9 @@ void inline strip_rotate_rainbow(uint8_t step_size)
 /* strip_apply_RGBbuf
  * ------------------
  * Parameters:
- *      pxbuf - Pixel buffer to be applied accross the LED strip
+ *      pxbuf - Pixel buffer to be applied across the LED strip
  * Description:
- *      Applies a pixel buffer accross the LED strip.
+ *      Applies a pixel buffer across the LED strip.
  */
 void inline strip_apply_pxbuf(pxbuf *buf)
 {
@@ -667,7 +664,7 @@ void inline strip_apply_pxbuf(pxbuf *buf)
  *      max_t_appart - Maximum time in ms between drops
  *      step_size - Step size of droplet fading
  * Description:
- *      Creates a rain effect accross the strip.
+ *      Creates a rain effect across the strip.
  *      Note that this effect makes use of an RGB buffer and will linearly increase 
  *      memory consumption with strip size. 
  */
