@@ -222,19 +222,19 @@
  *      MAX_DROPS - Maximum amount of visible "droplets" at a time
  *      MIN_T_APPART - Minimum time in ms between drops
  *      MAX_T_APPART - Maximum time in ms between drops
- *      STEP_SIZE - Step size of droplet fading
+ *      DELAY - Delay of droplet fading
  * Description:
  *      Creates a rain effect across the strip.
  *      Note that this effect makes use of an RGB buffer and will linearly increase 
  *      memory consumption with strip size. 
  *      Only supported on addressable strips.
  */
-#define PATCH_ANIMATION_RAIN(_R, _G, _B, MAX_DROPS, MIN_T_APPART, MAX_T_APPART, STEP_SIZE) \
+#define PATCH_ANIMATION_RAIN(_R, _G, _B, MAX_DROPS, MIN_T_APPART, MAX_T_APPART, DELAY) \
         RGB_t rgb; \
         rgb[R] = _R; \
         rgb[G] = _G; \
         rgb[B] = _B; \
-        strip_rain(rgb, MAX_DROPS, MIN_T_APPART, MAX_T_APPART, STEP_SIZE);
+        strip_rain(rgb, MAX_DROPS, MIN_T_APPART, MAX_T_APPART, DELAY);
 
 /* PATCH_ANIMATION_RAIN_POT_CTRL
  * -----------------------------
@@ -255,7 +255,10 @@
         rgb[R] = _R; \
         rgb[G] = _G; \
         rgb[B] = _B; \
-        strip_rain(rgb, (pot_read * WS2812_PIXELS) / 255, 255 - pot_read, 510 - (pot_read << 1), pot_read >> 5);
+        uint8_t delay = (31 - (pot_read >> 3)); \
+        if (delay > 10) \
+                delay = 10; \
+        strip_rain(rgb, (pot_read * WS2812_PIXELS) / 255, 255 - pot_read + 5, 510 - (pot_read << 1) + 5, delay);
 
 #define PATCH_ANIMATION_OVERRIDE_ARR(RGB_ARR, DELAY) \
         RGB_t rgb[] = { \

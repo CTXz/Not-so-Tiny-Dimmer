@@ -247,7 +247,6 @@ void inline pxbuf_insert(pxbuf *buf, uint16_t pos, RGB_t rgb)
 
                 // Pixel already allocated
                 if (buf->buf[i].pos == pos) {
-                        buf->buf[i].pos = pos;
                         rgb_cpy(buf->buf[i].rgb, rgb);
                         return;
                 }
@@ -275,6 +274,18 @@ void inline pxbuf_insert(pxbuf *buf, uint16_t pos, RGB_t rgb)
         buf->buf = realloc(buf->buf, sizeof(pxl) * buf->size);
         buf->buf[buf->size-1].pos = pos;
         rgb_cpy(buf->buf[buf->size-1].rgb, rgb);
+}
+
+bool inline pxbuf_exists(pxbuf *buf, uint16_t pos)
+{
+        for (uint16_t i = 0; i < buf->size; i++) {
+                if (buf->buf[i].pos == pos)
+                        return true;
+                else if (buf->buf[i].pos > pos)                
+                        break;
+        }
+
+        return false;
 }
 
 /* pxbuf_remove
@@ -651,57 +662,59 @@ void inline strip_apply_pxbuf(pxbuf *buf)
  *      max_drops - Maximum amount of visible "droplets" at a time
  *      min_t_appart - Minimum time in ms between drops
  *      max_t_appart - Maximum time in ms between drops
- *      step_size - Step size of droplet fading
+ *      dealy - Delay of droplet fading
  * Description:
  *      Creates a rain effect across the strip.
  *      Note that this effect makes use of an RGB buffer and will linearly increase 
  *      memory consumption with strip size. 
  */
-void inline strip_rain(RGB_t rgb, uint16_t max_drops, uint16_t min_t_appart, uint16_t max_t_appart, uint8_t step_size)
+void inline strip_rain(RGB_t rgb, uint16_t max_drops, uint16_t min_t_appart, uint16_t max_t_appart, uint16_t delay)
 {
         static pxbuf pxbuf = {
                 .buf = NULL, 
                 .size = 0
         };
 
-        uint8_t tmp;
+        static uint16_t wait_until = 0;
+
+        uint16_t ms;
+        uint16_t pos;
         bool t_passed;
-        
-        if (step_size == 0)
-                step_size = 1;
+
+        t_passed = ms_passed() >= wait_until;
 
         for (uint16_t i = 0; i < pxbuf.size; i++) {
                 if (pxbuf.buf[i].rgb[R] == 0 && pxbuf.buf[i].rgb[G] == 0 && pxbuf.buf[i].rgb[B] == 0) {
                         pxbuf_remove(&pxbuf, i);
-                } else {
-                        if (pxbuf.buf[i].rgb[R] != 0) {
-                                tmp = pxbuf.buf[i].rgb[R];
-                                pxbuf.buf[i].rgb[R] -= step_size;
-                                if (pxbuf.buf[i].rgb[R] > tmp)
-                                        pxbuf.buf[i].rgb[R] = 0;
-                        }
-
-                        if (pxbuf.buf[i].rgb[G] != 0) {
-                                tmp = pxbuf.buf[i].rgb[G];
-                                pxbuf.buf[i].rgb[G] -= step_size;
-                                if (pxbuf.buf[i].rgb[G] > tmp)
-                                        pxbuf.buf[i].rgb[G] = 0;
-                        }
-
-                        if (pxbuf.buf[i].rgb[B] != 0) {
-                                tmp = pxbuf.buf[i].rgb[B];
-                                pxbuf.buf[i].rgb[B] -= step_size;
-                                if (pxbuf.buf[i].rgb[B] > tmp)
-                                        pxbuf.buf[i].rgb[B] = 0;
-                        }
-                }                
+                } else if (t_passed) {
+                        if (pxbuf.buf[i].rgb[R] != 0)
+                                pxbuf.buf[i].rgb[R]--;
+                        if (pxbuf.buf[i].rgb[G] != 0)
+                                pxbuf.buf[i].rgb[G]--;
+                        if (pxbuf.buf[i].rgb[B] != 0)
+                                pxbuf.buf[i].rgb[B]--;                        
+                }
         }
+        
+        if (t_passed)
+                wait_until = ms_passed() + delay;
 
         t_passed = ms_passed() >= (rand() % (max_t_appart - min_t_appart + 1)) + min_t_appart;
 
         if (t_passed && pxbuf.size < max_drops) {
-                pxbuf_insert(&pxbuf, rand() % WS2812_PIXELS, rgb);    
-                reset_timer();   
+                pos = rand() % WS2812_PIXELS;
+
+                if (!pxbuf_exists(&pxbuf, pos)) {
+                        pxbuf_insert(&pxbuf, pos, rgb);
+                        ms = ms_passed();
+                        
+                        if (ms < wait_until)
+                                wait_until -= ms;
+                        else
+                                wait_until = 0; // Already passed 
+
+                        reset_timer();   
+                }
         }
 
         strip_apply_pxbuf(&pxbuf);

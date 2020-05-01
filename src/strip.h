@@ -118,6 +118,7 @@ void substrpbuf_free(substrpbuf *strp);
 
 void pxbuf_init(pxbuf *buf);
 void pxbuf_insert(pxbuf *buf, uint16_t pos, RGB_t rgb);
+bool pxbuf_exists(pxbuf *buf, uint16_t pos);
 void pxbuf_remove(pxbuf *buf, uint16_t index);
 bool pxbuf_remove_at(pxbuf *buf, uint16_t pos);
 
@@ -138,7 +139,7 @@ void strip_rainbow(uint8_t step_size, uint16_t delay, uint8_t brightness);
 
 #if STRIP_TYPE == WS2812
 void strip_rotate_rainbow(uint8_t step_size, uint16_t delay_ms);
-void strip_rain(RGB_t rgb, uint16_t max_drops, uint16_t min_t_appart, uint16_t max_t_appart, uint8_t step_size);
+void strip_rain(RGB_t rgb, uint16_t max_drops, uint16_t min_t_appart, uint16_t max_t_appart, uint16_t delay);
 bool strip_override(RGB_t rgb, uint16_t delay);
 void strip_override_array(RGB_t rgb[], uint8_t size, uint16_t delay);
 void strip_override_rainbow(uint16_t delay, uint8_t step_size);
