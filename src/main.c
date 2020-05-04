@@ -159,35 +159,6 @@ uint8_t inline pot()
         return ret;
 }
 
-// Buttons
-
-/* btn
- * ---
- * Returns:
- *      True - Button is being held down
- *      False - Button is released
- * Description:
- *      Returns the current state of the push button.
- *      If the BTN_MIN_RELEASED_READS has been defined
- *      in the configuration header, the function
- *      will only return false if the button state
- *      has been read as released for the specified
- *      ammount of times. This helps reduce the read of
- *      false released when the button is being held.
- */
-
-bool inline btn_min_reads(bool pressed, uint32_t min_reads)
-{
-        if (min_reads == 0)
-                return BTN_STATE;
-        
-        for (uint32_t i = 0; i < min_reads; i++)
-                if (BTN_STATE)
-                        return true;
-
-        return false;
-}
-
 // LED Strip
 
 /* update_strip
@@ -328,11 +299,8 @@ int main()
         bool prev_btn_state = BTN_STATE;
 
         while(true) {
-#if defined(BTN_MIN_RELEASED_READS) && BTN_MIN_RELEASED_READS > 1
-                        bool btn_state = btn_min_reads(false, prev_btn_state ? BTN_MIN_RELEASED_READS : 0);
-#else
-                        bool btn_state = BTN_STATE;
-#endif
+                bool btn_state = BTN_STATE;
+
                 if (!prev_btn_state && btn_state) { // Button press
 #if defined(BTN_DEBOUNCE_TIME) && BTN_DEBOUNCE_TIME > 0
                         _delay_ms(BTN_DEBOUNCE_TIME);
