@@ -26,10 +26,11 @@ What initaly just started as minimalist ATtiny based WS2812 LED strip dimmer, qu
   - [Hardware](#hardware)
     - [Schematic](#schematic)
     - [PCB](#pcb)
+      - [Showcase](#showcase)
       - [Ordering](#ordering)
       - [Soldering Tips](#soldering-tips)
     - [Perfboard](#perfboard)
-    - [Showcase](#showcase)
+    - [Showcase](#showcase-1)
 - [Flashing the firmware](#flashing-the-firmware)
 - [Credits](#credits)
 - [Project log](#project-log)
@@ -414,19 +415,11 @@ The controller can also be easily be built with a digispark board.
 
 The price for the components can range anywhere between 10 to 15 EUR, depending from where you purchase the components, and their quality.
 
-PCB rev 1.0.0 (hence the few quirks) front showcase:
-
-![PCB Front](img/PCBShowcaseFront.jpg)
-
-PCB rev 1.0.0 back showcase (pardon the solder flux):
-
-![PCB Back](img/PCBShowcaseBack.jpg)
-
 #### Schematic
 
 WS2812 Version: 
 
-![Schematic WS2812](img/Schematic.png)
+![Schematic WS2812](img/SchematicWS2812.png)
 
 Non-Addressable strip version:
 
@@ -441,6 +434,16 @@ WS2812 Version:
 Non-Addressable strip version:
 
 ![PCB Non Addressable](img/PCB_NON_ADDR_1_3_3.png)
+
+##### Showcase
+
+PCB rev 1.0.0 (hence the few quirks) front showcase:
+
+![PCB Front](img/PCBShowcaseFront.jpg)
+
+PCB rev 1.0.0 back showcase (pardon the solder flux):
+
+![PCB Back](img/PCBShowcaseBack.jpg)
 
 ##### Ordering
 
