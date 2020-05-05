@@ -24,13 +24,14 @@ What initaly just started as minimalist ATtiny based WS2812 LED strip dimmer, qu
       - [`PATCH_ANIMATION_RAIN`](#patchanimationrain)
       - [`PATCH_ANIMATION_RAIN_POT_CTRL`](#patchanimationrainpotctrl)
   - [Hardware](#hardware)
-    - [Schematic](#schematic)
-    - [PCB](#pcb)
-      - [Showcase](#showcase)
-      - [Ordering](#ordering)
-      - [Soldering Tips](#soldering-tips)
-    - [Perfboard](#perfboard)
-    - [Showcase](#showcase-1)
+    - [Building](#building)
+      - [Schematic](#schematic)
+      - [PCBs](#pcbs)
+        - [Showcase](#showcase)
+        - [Ordering](#ordering)
+        - [Soldering Tips](#soldering-tips)
+      - [Perfboard](#perfboard)
+      - [Showcase](#showcase-1)
 - [Flashing the firmware](#flashing-the-firmware)
 - [Credits](#credits)
 - [Project log](#project-log)
@@ -367,16 +368,18 @@ Example:
 
 To navigate trough the patch bank, a single push button is provided. Once the last patch has been reached, the first patch is loaded again upon button press. Many patches also offer a tweakable parameter, such as brightness and speed control. A potentiometer is used to adjust these parameters in real time.
 
-To compensate for sloppy hardware jobs, the firmware also comes with potentiometer and push button noise reduction to reduce LED flicker and false color toggling. It should be noted however, that these features cost program flash and runtime cycles and can be adjusted or disabled in the [configuration header](src/config.h).
+To compensate for sloppy hardware jobs, the firmware also offers potentiometer and push button noise reduction to reduce brightness flickering and false patch toggling. It should be noted however, that these features cost program flash and runtime cycles and can be adjusted or disabled in the [configuration header](src/config.h).
 
-The controller firmware has been written for and ATtiny85 chips, but will tightly fit onto a ATtiny25 chip if fewer and minimal patches are used. Unless the controller is planned to be used as a simple single-color WS2812 RGB dimmer, it is really recommended to at least use an ATiny45, preferably an ATiny85 if one wants make full use of all features.
+The controller firmware has been written for ATtiny85 chips, but will tightly fit onto a ATtiny25 chip if fewer and minimal patches are used. Unless the controller is planned to be used as a simple single-color WS2812 RGB dimmer, it is really recommended to at least use an ATiny45, preferably an ATiny85 if one wants make full use of all features.
 
-The schematics and PCB files, including gerbers, for the WS2812 and non-addressable LED strips versions can be found here:
+#### Building
+
+The schematics and PCB files, including the gerbers, for the WS2812 and non-addressable LED strips versions can be found here:
 
 - [WS2812](kicad/Not-So-Tiny-Dimmer/)
 - [Non-Addressable strips](kicad/Not-So-Tiny-Dimmer_Non-addr/)
 
-Alternatively, one can also build the Tiny Dimmer on a perf board. A perf board layout diagram for the WS2812 version has been provided bellow.
+Alternatively, one can also build the Tiny Dimmer on a perfboard. A perfboard layout diagram for the WS2812 version has been provided in the [perfboard section)(#Perfboard) bellow.
 
 The following components are required to build a Not-so-Tiny dimmer for WS2812 strips:
 
@@ -415,7 +418,7 @@ The controller can also be easily be built with a digispark board.
 
 The price for the components can range anywhere between 10 to 15 EUR, depending from where you purchase the components, and their quality.
 
-#### Schematic
+##### Schematic
 
 WS2812 Version: 
 
@@ -425,7 +428,7 @@ Non-Addressable strip version:
 
 ![Schematic Non Addressable](img/SchematicNonAddr.png)
 
-#### PCB
+##### PCBs
 
 WS2812 Version:
 
@@ -435,7 +438,7 @@ Non-Addressable strip version:
 
 ![PCB Non Addressable](img/PCB_NON_ADDR_1_3_3.png)
 
-##### Showcase
+###### Showcase
 
 PCB rev 1.0.0 (hence the few quirks) front showcase:
 
@@ -445,11 +448,11 @@ PCB rev 1.0.0 back showcase (pardon the solder flux):
 
 ![PCB Back](img/PCBShowcaseBack.jpg)
 
-##### Ordering
+###### Ordering
 
 To order PCBs, simply send the gerber files (found under the `kicad/` directory) to your favorite PCB manufacturer. For my boards, I have chosen to order them from [JLCPCB](https://jlcpcb.com/?gclid=Cj0KCQjwncT1BRDhARIsAOQF9LkeNfO6bdbyJwIi-upbhMTT3J_9f7ANeXa-8HaEN9GSgqXFjCqWPz4aAvFlEALw_wcB).
 
-##### Soldering Tips
+###### Soldering Tips
 
 Some tips when soldering the PCBs:
 
@@ -457,24 +460,24 @@ Some tips when soldering the PCBs:
 - Start with the small components (resistors, ceramic caps)
 - Some vertical pots have too big mounting pins (pins on the side) for the PCB. Cutting the mounting pins short does the job.
 
-#### Perfboard
+##### Perfboard
 
 Top view:
 ![](img/NotSoTinyDimmerTop.png)
 
-#### Showcase
+##### Showcase
 
 Perfboard:
 ![](img/PCBShowcase.jpg)
-
-Programming via SPI with ArduinoISP:
-![](img/ShowcaseProgramming.jpg)
 
 ## Flashing the firmware
 
 Flashing the firmware is possible even with the chips attached to the board. Hence it is recommended to solder an SPI header onto the board if you're planning to update the software and do not wish to open up the device for every firmware update.
 
 To flash the firmware, an SPI programmer is required. Since I still have a few spare Arduino's lying around, I decided to use an Arduino Leonardo with the [Arduino ISP firmware](https://www.arduino.cc/en/tutorial/arduinoISP) installed to program the controller.
+
+Programming via SPI with ArduinoISP:
+![](img/ShowcaseProgramming.jpg)
 
 Since the firmware has been written in [PlatformIO](https://platformio.org/), it is easiest to download the IDE, simply import the project and flash it from there.
 
