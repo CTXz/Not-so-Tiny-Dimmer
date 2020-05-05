@@ -9,7 +9,7 @@ What initaly just started as minimalist ATtiny based WS2812 LED strip dimmer, qu
 - [Contents](#contents)
 - [Overview](#overview)
   - [Software](#software)
-    - [Patches](#patches)
+    - [Patches/Effects](#patcheseffects)
       - [`PATCH_SET_ALL`](#patchsetall)
       - [`PATCH_DISTRIBUTE`](#patchdistribute)
       - [`PATCH_ANIMATION_BREATHE_POT_CTRL`](#patchanimationbreathepotctrl)
@@ -46,7 +46,7 @@ Non-addressable RGB strips are also supported by the firmware by changing the `S
 
 Due to the fact that patches are implemented C preprocessor directives, increasing the maximum number of patches requires addition of case statements in the [update_strip](https://github.com/CTXz/Tiny-Dimmer/blob/master/src/main.c#L193) function, along with a change of the `NUM_PATCHES` directive.
 
-#### Patches
+#### Patches/Effects
 
 The following section lists all available patches that can be assigned to any of the 10 patch slots defined in the [configuration header](src/config.h):
 
