@@ -375,16 +375,17 @@ The following components are required to build a Not-so-Tiny dimmer:
 |---------|--------|-----------|
 |WS2812 strip|1|The controller drives addressable WS2812 RGB strips, as those are simply very common and are what I had at home.|
 |ATtiny 85/45/25|1|The chip that runs the firmware, hence the name "Tiny" in the name. Although the firmware will barely fit on a ATtiny25, it is highly recommended to use an ATiny45 or ATiny85 if additional features are to be added to the software later.|
-|1K resistor|1|Used to limit the current to prevent the brightness pot from burning trough.|
+|10k - 100k resistor|1|Pulls up the reset pin to prevent random resets (Optional for extra stability, since the ATtiny already has an internal pull-up)|
+|1k resistor|1|Optional, used, along wiht a 100nf cermaic cap, to reduce push button debouncing|
 |10k linear potentiometer|1|Used to set the brightness. 10k linear pots are recommended, but any linear pot between 1k and 100k should do the job.|
-|10uF Capacitor|1|Optional, but helps decoupling power supply noise.|
+|10uF Electrolytic Capacitor|1|Optional, but helps decoupling power supply noise.|
+|100nF Ceramic Capacitor|2|Optional, used to decouple supply noise and reduce push button debouncing|
 |Push Button|1|Used to toggle between colors and to activate fading.|
-|1x6 2.54mm Female header|1|Exposes a SPI header to program the MCU.|
-|Proto Perfboard|1|In the perfboard layout below I've used a 10x24 Perfboard, however much less is required.|
+|2.54mm Male/Female headers|1|SPI header to program the MCU.|
 
 The controller can also be easily be built with a digispark board.
 
-The price for the components can range anywhere between 5 to 15 EUR, depending from where you purchase the components, and what their quality is.
+The price for the components can range anywhere between 10 to 15 EUR, depending from where you purchase the components, and their quality.
 
 #### Schematic
 
