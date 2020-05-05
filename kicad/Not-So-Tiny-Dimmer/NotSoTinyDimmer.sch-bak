@@ -1,0 +1,396 @@
+EESchema Schematic File Version 4
+EELAYER 30 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 1 1
+Title "Not-So-Tiny Dimmer"
+Date ""
+Rev "1.3"
+Comp ""
+Comment1 ""
+Comment2 "https://tapr.org/the-tapr-open-hardware-license/"
+Comment3 "License: TAPR Open Hardware License v1.0"
+Comment4 "Author: Patrick Pedersen"
+$EndDescr
+Text Notes 8750 2300 0    50   ~ 0
+ICSP
+Wire Notes Line
+	950  4800 10700 4800
+Wire Notes Line
+	950  2150 950  4800
+Wire Wire Line
+	10250 3500 9950 3500
+Wire Wire Line
+	10250 3650 10250 3500
+Wire Wire Line
+	10250 3300 9950 3300
+Wire Wire Line
+	10250 3150 10250 3300
+Wire Wire Line
+	9300 3400 9450 3400
+Wire Wire Line
+	9450 3500 9300 3500
+Wire Wire Line
+	10100 3400 9950 3400
+Wire Wire Line
+	9300 3300 9450 3300
+$Comp
+L Connector_Generic:Conn_02x03_Odd_Even J2
+U 1 1 5EAC515A
+P 9650 3400
+F 0 "J2" H 9700 3717 50  0000 C CNN
+F 1 "Conn_02x03_Odd_Even" H 9700 3626 50  0000 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_2x03_P2.54mm_Vertical" H 9650 3400 50  0001 C CNN
+F 3 "~" H 9650 3400 50  0001 C CNN
+	1    9650 3400
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3650 4250 3650 4450
+Connection ~ 3650 4250
+Connection ~ 2750 4250
+Wire Wire Line
+	2750 4250 3650 4250
+Wire Wire Line
+	3650 3900 3650 4250
+Connection ~ 2250 4250
+Wire Wire Line
+	1750 4250 2250 4250
+Wire Wire Line
+	1750 2800 1750 4250
+Connection ~ 2250 2600
+Wire Wire Line
+	1600 2600 2250 2600
+Wire Wire Line
+	2250 4250 2750 4250
+Wire Wire Line
+	2250 3550 2250 4250
+Wire Wire Line
+	2750 3550 2750 4250
+Wire Wire Line
+	3650 2600 3650 3000
+Connection ~ 3650 2600
+Connection ~ 2750 2600
+Wire Wire Line
+	2750 2600 3650 2600
+Wire Wire Line
+	2250 2600 2250 3250
+Wire Wire Line
+	2750 2600 2250 2600
+Wire Wire Line
+	2750 3250 2750 2600
+$Comp
+L Device:CP1 C1
+U 1 1 5E9CA3FB
+P 2250 3400
+F 0 "C1" H 2365 3446 50  0000 L CNN
+F 1 "10uF" H 2365 3355 50  0000 L CNN
+F 2 "Capacitor_THT:CP_Radial_D5.0mm_P2.00mm" H 2250 3400 50  0001 C CNN
+F 3 "~" H 2250 3400 50  0001 C CNN
+	1    2250 3400
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C2
+U 1 1 5E9C847F
+P 2750 3400
+F 0 "C2" H 2865 3446 50  0000 L CNN
+F 1 "100nF" H 2865 3355 50  0000 L CNN
+F 2 "Capacitor_THT:C_Disc_D10.0mm_W2.5mm_P5.00mm" H 2788 3250 50  0001 C CNN
+F 3 "~" H 2750 3400 50  0001 C CNN
+	1    2750 3400
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3650 2500 3650 2600
+Wire Wire Line
+	1750 2800 1600 2800
+$Comp
+L Connector:Jack-DC J1
+U 1 1 5E9BBCF5
+P 1300 2700
+F 0 "J1" H 1357 3025 50  0000 C CNN
+F 1 "Jack-DC" H 1357 2934 50  0000 C CNN
+F 2 "Connector_BarrelJack:BarrelJack_Horizontal" H 1350 2660 50  0001 C CNN
+F 3 "~" H 1350 2660 50  0001 C CNN
+	1    1300 2700
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:+5V #PWR03
+U 1 1 5E8839D8
+P 10250 3150
+F 0 "#PWR03" H 10250 3000 50  0001 C CNN
+F 1 "+5V" H 10265 3323 50  0000 C CNN
+F 2 "" H 10250 3150 50  0001 C CNN
+F 3 "" H 10250 3150 50  0001 C CNN
+	1    10250 3150
+	1    0    0    -1  
+$EndComp
+Text GLabel 9300 3500 0    50   Input ~ 0
+RST-PB5
+$Comp
+L power:GND #PWR04
+U 1 1 5E87AFDD
+P 10250 3650
+F 0 "#PWR04" H 10250 3400 50  0001 C CNN
+F 1 "GND" H 10255 3477 50  0000 C CNN
+F 2 "" H 10250 3650 50  0001 C CNN
+F 3 "" H 10250 3650 50  0001 C CNN
+	1    10250 3650
+	1    0    0    -1  
+$EndComp
+Text GLabel 10100 3400 2    50   Input ~ 0
+MOSI-PB0
+Text GLabel 9300 3400 0    50   Input ~ 0
+SCK-PB2
+Text GLabel 9300 3300 0    50   Input ~ 0
+MISO-PB1
+$Comp
+L power:GND #PWR02
+U 1 1 5E8578B9
+P 3650 4450
+F 0 "#PWR02" H 3650 4200 50  0001 C CNN
+F 1 "GND" H 3655 4277 50  0000 C CNN
+F 2 "" H 3650 4450 50  0001 C CNN
+F 3 "" H 3650 4450 50  0001 C CNN
+	1    3650 4450
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:+5V #PWR01
+U 1 1 5E8568EC
+P 3650 2500
+F 0 "#PWR01" H 3650 2350 50  0001 C CNN
+F 1 "+5V" H 3665 2673 50  0000 C CNN
+F 2 "" H 3650 2500 50  0001 C CNN
+F 3 "" H 3650 2500 50  0001 C CNN
+	1    3650 2500
+	1    0    0    -1  
+$EndComp
+$Comp
+L dk_Embedded-Microcontrollers:ATTINY85-20PU U1
+U 1 1 5E854FF7
+P 3750 3400
+F 0 "U1" H 3978 3403 60  0000 L CNN
+F 1 "ATTINYx5" H 3978 3297 60  0000 L CNN
+F 2 "digikey-footprints:DIP-8_W7.62mm" H 3950 3600 60  0001 L CNN
+F 3 "http://www.microchip.com/mymicrochip/filehandler.aspx?ddocname=en589894" H 3950 3700 60  0001 L CNN
+F 4 "ATTINY85-20PU-ND" H 3950 3800 60  0001 L CNN "Digi-Key_PN"
+F 5 "ATTINY85-20PU" H 3950 3900 60  0001 L CNN "MPN"
+F 6 "Integrated Circuits (ICs)" H 3950 4000 60  0001 L CNN "Category"
+F 7 "Embedded - Microcontrollers" H 3950 4100 60  0001 L CNN "Family"
+F 8 "http://www.microchip.com/mymicrochip/filehandler.aspx?ddocname=en589894" H 3950 4200 60  0001 L CNN "DK_Datasheet_Link"
+F 9 "/product-detail/en/microchip-technology/ATTINY85-20PU/ATTINY85-20PU-ND/735469" H 3950 4300 60  0001 L CNN "DK_Detail_Page"
+F 10 "IC MCU 8BIT 8KB FLASH 8DIP" H 3950 4400 60  0001 L CNN "Description"
+F 11 "Microchip Technology" H 3950 4500 60  0001 L CNN "Manufacturer"
+F 12 "Active" H 3950 4600 60  0001 L CNN "Status"
+	1    3750 3400
+	-1   0    0    -1  
+$EndComp
+Wire Wire Line
+	4200 3300 3950 3300
+NoConn ~ 3950 3500
+$Comp
+L power:PWR_FLAG #FLG01
+U 1 1 5EB819B2
+P 2250 2450
+F 0 "#FLG01" H 2250 2525 50  0001 C CNN
+F 1 "PWR_FLAG" H 2250 2623 50  0000 C CNN
+F 2 "" H 2250 2450 50  0001 C CNN
+F 3 "~" H 2250 2450 50  0001 C CNN
+	1    2250 2450
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2250 2450 2250 2600
+$Comp
+L power:PWR_FLAG #FLG02
+U 1 1 5EB83634
+P 2250 4450
+F 0 "#FLG02" H 2250 4525 50  0001 C CNN
+F 1 "PWR_FLAG" H 2250 4623 50  0000 C CNN
+F 2 "" H 2250 4450 50  0001 C CNN
+F 3 "~" H 2250 4450 50  0001 C CNN
+	1    2250 4450
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	2250 4450 2250 4250
+Wire Wire Line
+	4400 3700 3950 3700
+Connection ~ 4400 3700
+Wire Wire Line
+	4300 3400 3950 3400
+Connection ~ 4300 3400
+Connection ~ 4100 3200
+Wire Wire Line
+	3950 3200 4100 3200
+Wire Notes Line
+	10700 4800 10700 2150
+Wire Notes Line
+	8700 4800 8700 2150
+Wire Notes Line
+	950  2150 10700 2150
+Wire Wire Line
+	4400 3100 4400 3700
+Wire Wire Line
+	4300 3100 4300 3400
+Wire Wire Line
+	4200 3100 4200 3300
+Wire Wire Line
+	4100 3100 4100 3200
+Text GLabel 4200 3100 1    50   Input ~ 0
+MISO-PB1
+Text GLabel 4300 3100 1    50   Input ~ 0
+SCK-PB2
+Text GLabel 4400 3100 1    50   Input ~ 0
+RST-PB5
+Text GLabel 4100 3100 1    50   Input ~ 0
+MOSI-PB0
+Wire Wire Line
+	5350 3400 4300 3400
+Wire Wire Line
+	4650 3700 4400 3700
+$Comp
+L Device:R_POT RV1
+U 1 1 5E865E0F
+P 5000 3600
+F 0 "RV1" H 4931 3646 50  0000 R CNN
+F 1 "10k" H 4931 3555 50  0000 R CNN
+F 2 "Potentiometer_THT:Potentiometer_Alpha_RD901F-40-00D_Single_Vertical" H 5000 3600 50  0001 C CNN
+F 3 "~" H 5000 3600 50  0001 C CNN
+	1    5000 3600
+	-1   0    0    -1  
+$EndComp
+Wire Wire Line
+	6000 4250 6700 4250
+Wire Wire Line
+	6700 3400 6700 4250
+Wire Wire Line
+	6550 3400 6700 3400
+Wire Wire Line
+	6000 3850 6000 4250
+Wire Wire Line
+	6000 3400 5650 3400
+Connection ~ 6000 3400
+Wire Wire Line
+	6000 3550 6000 3400
+$Comp
+L Device:CP1 C3
+U 1 1 5E9FB50B
+P 6000 3700
+F 0 "C3" H 6115 3746 50  0000 L CNN
+F 1 "100nF" H 6115 3655 50  0000 L CNN
+F 2 "Capacitor_THT:C_Disc_D10.0mm_W2.5mm_P5.00mm" H 6000 3700 50  0001 C CNN
+F 3 "~" H 6000 3700 50  0001 C CNN
+	1    6000 3700
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6150 3400 6000 3400
+$Comp
+L Device:R R2
+U 1 1 5E9F7182
+P 5500 3400
+F 0 "R2" V 5400 3400 50  0000 C CNN
+F 1 "1k" V 5600 3400 50  0000 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P5.08mm_Horizontal" V 5430 3400 50  0001 C CNN
+F 3 "~" H 5500 3400 50  0001 C CNN
+	1    5500 3400
+	0    1    1    0   
+$EndComp
+$Comp
+L dk_Pushbutton-Switches:GPTS203211B S1
+U 1 1 5E8584FE
+P 6350 3400
+F 0 "S1" H 6200 3550 50  0000 C CNN
+F 1 "Push Button" H 6350 3584 50  0001 C CNN
+F 2 "Button_Switch_THT:SW_PUSH_6mm" H 6550 3600 50  0001 L CNN
+F 3 "http://switches-connectors-custom.cwind.com/Asset/GPTS203211BR2.pdf" H 6550 3700 60  0001 L CNN
+F 4 "CW181-ND" H 6550 3800 60  0001 L CNN "Digi-Key_PN"
+F 5 "GPTS203211B" H 6550 3900 60  0001 L CNN "MPN"
+F 6 "Switches" H 6550 4000 60  0001 L CNN "Category"
+F 7 "Pushbutton Switches" H 6550 4100 60  0001 L CNN "Family"
+F 8 "http://switches-connectors-custom.cwind.com/Asset/GPTS203211BR2.pdf" H 6550 4200 60  0001 L CNN "DK_Datasheet_Link"
+F 9 "/product-detail/en/cw-industries/GPTS203211B/CW181-ND/3190590" H 6550 4300 60  0001 L CNN "DK_Detail_Page"
+F 10 "SWITCH PUSHBUTTON SPST 1A 30V" H 6550 4400 60  0001 L CNN "Description"
+F 11 "CW Industries" H 6550 4500 60  0001 L CNN "Manufacturer"
+F 12 "Active" H 6550 4600 60  0001 L CNN "Status"
+	1    6350 3400
+	1    0    0    -1  
+$EndComp
+$Comp
+L Connector:Screw_Terminal_01x03 WS1
+U 1 1 5EA588DD
+P 8200 3200
+F 0 "WS1" H 8280 3242 50  0000 L CNN
+F 1 "Screw_Terminal_01x03" H 8280 3151 50  0001 L CNN
+F 2 "TerminalBlock_TE-Connectivity:TerminalBlock_TE_282834-3_1x03_P2.54mm_Horizontal" H 8200 3200 50  0001 C CNN
+F 3 "~" H 8200 3200 50  0001 C CNN
+	1    8200 3200
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3650 2600 4650 2600
+Wire Wire Line
+	8000 2600 8000 3100
+Wire Wire Line
+	8000 3300 8000 4250
+Connection ~ 6000 4250
+Wire Wire Line
+	6000 4250 5000 4250
+Connection ~ 6700 4250
+Wire Wire Line
+	4850 3600 3950 3600
+Wire Wire Line
+	5000 2600 5000 3450
+Wire Wire Line
+	5000 3750 5000 4250
+Connection ~ 5000 4250
+Wire Wire Line
+	5000 4250 3650 4250
+$Comp
+L Device:R R1
+U 1 1 5EB0B5D0
+P 4650 2900
+F 0 "R1" H 4720 2946 50  0000 L CNN
+F 1 "10k" H 4720 2855 50  0000 L CNN
+F 2 "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P5.08mm_Horizontal" V 4580 2900 50  0001 C CNN
+F 3 "~" H 4650 2900 50  0001 C CNN
+	1    4650 2900
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4650 2750 4650 2600
+Connection ~ 4650 2600
+Wire Wire Line
+	4650 3050 4650 3700
+Text Notes 8050 3000 0    50   ~ 0
+5V
+Text Notes 8050 3450 0    50   ~ 0
+GND
+Text Notes 7900 3200 0    50   ~ 0
+DIN
+$Comp
+L Graphic:Logo_Open_Hardware_Small #LOGO1
+U 1 1 5EBC2D69
+P 10500 1800
+F 0 "#LOGO1" H 10500 2075 50  0001 C CNN
+F 1 "Logo_Open_Hardware_Small" H 10500 1575 50  0001 C CNN
+F 2 "" H 10500 1800 50  0001 C CNN
+F 3 "~" H 10500 1800 50  0001 C CNN
+	1    10500 1800
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4650 2600 5000 2600
+Connection ~ 5000 2600
+Wire Wire Line
+	5000 2600 8000 2600
+Wire Wire Line
+	4100 3200 8000 3200
+Wire Wire Line
+	6700 4250 8000 4250
+$EndSCHEMATC

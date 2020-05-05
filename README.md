@@ -25,6 +25,9 @@ What initaly just started as minimalist ATtiny based WS2812 LED strip dimmer, qu
       - [`PATCH_ANIMATION_RAIN_POT_CTRL`](#patchanimationrainpotctrl)
   - [Hardware](#hardware)
     - [Schematic](#schematic)
+    - [PCB](#pcb)
+      - [Ordering](#ordering)
+      - [Soldering Tips](#soldering-tips)
     - [Perfboard](#perfboard)
     - [Showcase](#showcase)
 - [Flashing the firmware](#flashing-the-firmware)
@@ -361,35 +364,95 @@ Example:
 
 ### Hardware
 
-To navigate trough the patch bank, a single push button is provided. Once the last patch has been reached, the first patch is loaded again upon button press.
+To navigate trough the patch bank, a single push button is provided. Once the last patch has been reached, the first patch is loaded again upon button press. Many patches also offer a tweakable parameter, such as brightness and speed control. A potentiometer is used to adjust these parameters in real time.
 
-Many patches also offer a tweakable parameter, such as brightness and speed control. A potentiometer is used to adjust these parameters in real time.
-
-To compensate for sloppy hardware jobs, the firmware also comes with potentiometer and push button noise reduction to reduce LED flicker and false color toggling. It should be noted however, that these features cost program flash and runtime cycles and can be adjusted or disabled in the [configuration header](src/config.h)
+To compensate for sloppy hardware jobs, the firmware also comes with potentiometer and push button noise reduction to reduce LED flicker and false color toggling. It should be noted however, that these features cost program flash and runtime cycles and can be adjusted or disabled in the [configuration header](src/config.h).
 
 The controller firmware has been written for and ATtiny85 chips, but will tightly fit onto a ATtiny25 chip if fewer and minimal patches are used. Unless the controller is planned to be used as a simple single-color WS2812 RGB dimmer, it is really recommended to at least use an ATiny45, preferably an ATiny85 if one wants make full use of all features.
 
-The following components are required to build a Not-so-Tiny dimmer:
+The schematics and PCB files, including gerbers, for the WS2812 and non-addressable LED strips versions can be found here:
+
+- [WS2812](kicad/Not-So-Tiny-Dimmer/)
+- [Non-Addressable strips](kicad/Not-So-Tiny-Dimmer_Non-addr/)
+
+Alternatively, one can also build the Tiny Dimmer on a perf board. A perf board layout diagram for the WS2812 version has been provided bellow.
+
+The following components are required to build a Not-so-Tiny dimmer for WS2812 strips:
 
 |Component|Quantity|Description|
 |---------|--------|-----------|
-|WS2812 strip|1|The controller drives addressable WS2812 RGB strips, as those are simply very common and are what I had at home.|
+|WS2812 strip|1|The controller drives addressable WS2812 RGB strips.|
+|ATtiny 85/45/25|1|The chip that runs the firmware, hence the name "Tiny" in the name. Although the firmware will barely fit on a ATtiny25, it is highly recommended to use an ATiny45 or ATiny85 if additional features are to be added to the software later.|
+|10k - 100k resistor (0204 recommended)|1|Pulls up the reset pin to prevent random resets (Optional for extra stability, since the ATtiny already has an internal pull-up)|
+|1k resistor (0204 recommended)|1|Optional, used, along wiht a 100nf cermaic cap, to reduce push button debouncing|
+|10k **vertical** linear potentiometer ([example](https://tech.alpsalpine.com/prod/e/html/potentiometer/rotarypotentiometers/rk09k/rk09k_list.html))|1|Used to set the brightness. 10k linear pots are recommended, but any linear pot between 1k and 100k should do the job.|
+|10uF Electrolytic Capacitor|1|Optional, but helps decoupling power supply noise.|
+|100nF Ceramic Capacitor|2|Optional, used to decouple supply noise and reduce push button debouncing|
+|6mm x 6mm x (7mm - 10mm) Tactile Push Button|1|Used to toggle between colors and to activate fading. A height of at least 7mm is recommended.|
+|2.54mm Male/Female headers|1|SPI header to program the MCU.|
+|2.54mm 3 Pin PCB screw terminal block|1|WS2812 connector.|
+|DC Barrel Jack|1|5V Voltage supply input.|
+
+For a non-addressable strip controller, the following parts are requried:
+
+|Component|Quantity|Description|
+|---------|--------|-----------|
+|Non-Addressable RGB strip|1|The controller drives non addressable RGB strips.|
 |ATtiny 85/45/25|1|The chip that runs the firmware, hence the name "Tiny" in the name. Although the firmware will barely fit on a ATtiny25, it is highly recommended to use an ATiny45 or ATiny85 if additional features are to be added to the software later.|
 |10k - 100k resistor|1|Pulls up the reset pin to prevent random resets (Optional for extra stability, since the ATtiny already has an internal pull-up)|
 |1k resistor|1|Optional, used, along wiht a 100nf cermaic cap, to reduce push button debouncing|
-|10k linear potentiometer|1|Used to set the brightness. 10k linear pots are recommended, but any linear pot between 1k and 100k should do the job.|
+|10k **vertical** linear potentiometer ([example](https://tech.alpsalpine.com/prod/e/html/potentiometer/rotarypotentiometers/rk09k/rk09k_list.html))|1|Used to set the brightness. 10k linear pots are recommended, but any linear pot between 1k and 100k should do the job.|
 |10uF Electrolytic Capacitor|1|Optional, but helps decoupling power supply noise.|
 |100nF Ceramic Capacitor|2|Optional, used to decouple supply noise and reduce push button debouncing|
-|Push Button|1|Used to toggle between colors and to activate fading.|
+|6mm x 6mm x (7mm - 10mm) Tactile Push Button|1|Used to toggle between colors and to activate fading. A height of at least 7mm is recommended.|
+|IRF630 N-MOS|3|Drives the 12V powered RGB strip. Most TO-220 N-MOSFETs with the same pinout will do.|
 |2.54mm Male/Female headers|1|SPI header to program the MCU.|
+|2.54mm 2 Pin PCB screw terminal block|2|12V, 5V and GND Voltage supply input.|
+|2.54mm 4 Pin PCB screw terminal block|1|Non-Addressable strip connector.|
 
-The controller can also be easily be built with a digispark board.
+The controller can also be easily be built with a digispark board. 
 
 The price for the components can range anywhere between 10 to 15 EUR, depending from where you purchase the components, and their quality.
 
+PCB rev 1.0.0 (hence the few quirks) front showcase:
+
+![PCB Front](img/PCBShowcaseFront.jpg)
+
+PCB rev 1.0.0 back showcase (pardon the solder flux):
+
+![PCB Back](img/PCBShowcaseBack.jpg)
+
 #### Schematic
 
-![Schematic.png](img/Schematic.png)
+WS2812 Version: 
+
+![Schematic WS2812](img/Schematic.png)
+
+Non-Addressable strip version:
+
+![Schematic Non Addressable](img/SchematicNonAddr.png)
+
+#### PCB
+
+WS2812 Version:
+
+![PCB WS2812](img/PCB_WS2812_1_3_3.png)
+
+Non-Addressable strip version:
+
+![PCB Non Addressable](img/PCB_NON_ADDR_1_3_3.png)
+
+##### Ordering
+
+To order PCBs, simply send the gerber files (found under the `kicad/` directory) to your favorite PCB manufacturer. For my boards, I have chosen to order them from [JLCPCB](https://jlcpcb.com/?gclid=Cj0KCQjwncT1BRDhARIsAOQF9LkeNfO6bdbyJwIi-upbhMTT3J_9f7ANeXa-8HaEN9GSgqXFjCqWPz4aAvFlEALw_wcB).
+
+##### Soldering Tips
+
+Some tips when soldering the PCBs:
+
+- The push button and potentiometer are soldered to the back side of the PCB. This is so that the PCB can be easily mounted onto a panel.
+- Start with the small components (resistors, ceramic caps)
+- Some vertical pots have too big mounting pins (pins on the side) for the PCB. Cutting the mounting pins short does the job.
 
 #### Perfboard
 

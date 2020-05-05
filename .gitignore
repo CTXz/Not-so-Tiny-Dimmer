@@ -3,3 +3,6 @@
 .vscode/c_cpp_properties.json
 .vscode/launch.json
 .vscode/ipch
+config_table.h
+config_kitchen.h
+config_balcony.h
