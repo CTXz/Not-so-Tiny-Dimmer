@@ -131,6 +131,7 @@ void strip_apply_pxbuf(pxbuf *buf);
 void strip_distribute_rgb(RGB_t rgb[], uint16_t size);
 #endif
 
+void strip_scroll_rgb(uint16_t val, uint8_t brightness);
 bool strip_breathe(RGB_ptr_t rgb, uint8_t step_size);
 void strip_breathe_array(RGB_t rgb[], uint8_t size, uint8_t step_size);
 void strip_breathe_random(uint8_t step_size);

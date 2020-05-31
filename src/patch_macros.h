@@ -115,6 +115,16 @@
         }; \
         strip_breathe_array(rgb, sizeof(rgb)/sizeof(RGB_t), pot());
 
+
+/* PATCH_RGB_POT_CTRL
+ * ----------------
+ * Parameters:
+ *      BRIGHTNESS - Brightness of the color spectrum
+ * Description:
+ *      Scrolls the RGB spectrum with the potentiometer
+ */
+#define PATCH_RGB_POT_CTRL(BRIGHTNESS) strip_scroll_rgb(pot() * 3, BRIGHTNESS)
+
 /* PATCH_ANIMATION_RAINBOW
  * ------------------------
  * Parameters:

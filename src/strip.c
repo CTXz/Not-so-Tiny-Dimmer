@@ -541,6 +541,39 @@ void inline strip_rainbow(uint8_t step_size, uint16_t delay, uint8_t brightness)
         reset_timer();
 }
 
+/* strip_scroll_rgb
+ * -------------
+ * Parameters:
+ *      val - RGB wheel offset from start (red) 
+ * Description:
+ *      Sets the rgb strip to a value on a RGB wheel.
+ */
+
+void inline strip_scroll_rgb(uint16_t val, uint8_t brightness) {
+        RGB_t rgb;
+
+        val %= 765;
+
+        if (val < 255 + 1) {
+                rgb[R] = 255 - val;
+                rgb[G] = val;
+                rgb[B] = 0;        
+        } else if (val < (2 * 255) + 1) {
+                val -= 255;
+                rgb[R] = 0;
+                rgb[G] = 255 - val;
+                rgb[B] = val;
+        } else {
+                val -= 510;
+                rgb[R] = val;
+                rgb[G] = 0;
+                rgb[B] = 255 - val;
+        }
+
+        rgb_apply_brightness(rgb, brightness);
+        strip_apply_all(rgb);
+}
+
 /* strip_breathe_random
  * --------------------
  * Parameters:
@@ -598,7 +631,6 @@ void inline strip_breathe_rainbow(uint8_t breath_step_size, uint8_t rgb_step_siz
  */
 void inline strip_rotate_rainbow(uint8_t step_size, uint16_t delay_ms)
 {
-        
         static RGB_t rgb = {255, 0 , 0};
         
         if (ms_passed() < delay_ms)
