@@ -85,26 +85,105 @@
         #endif
 #endif
 
+////////////////////////
+// Data Structures
+////////////////////////
+
+/* RGB_t
+ * ----------
+ * Description:
+ *      A simple three byte long array that
+ *      stores RGB color values.
+ */
 typedef uint8_t RGB_t[3];
 typedef uint8_t* RGB_ptr_t;
 
+/* RGBbuf
+ * ----------
+ * Description:
+ *      A primitve array of RGB_t objects.
+ *      Must be allocated first! To project
+ *      RGB buffers onto the stirp, use
+ *      strip_apply_RGBbuf.
+ * 
+ *      WARNING: RGB buffers are very memory intensive,
+ *      especially on bigger strips. Please consider using 
+ *      other data structures if possible! If access of single
+ *      pixels is required, please consider using the pxlbuf data
+ *      structure!
+ *      
+ *      The required memory for a RGB buffer is given by:
+ * 
+ *              mem = RGB buffer size * sizeof(RGB_t) = RGB buffer size * 3
+ * 
+ *      Meaning if one were to fill a strip of 100 pixels with a RGB buffer, a
+ *      total of 300 Bytes of memory would be necessary. This, toghether with
+ *      the required memory for the firmware would exceed an ATtiny's memory
+ *      size.  
+ *            
+ */
 typedef RGB_t* RGBbuf;
 
+/* substrp
+ * ----------
+ * Description:
+ *      Reverses a given amount of pixels (length) and sets them
+ *      to a specific color (rgb).
+ *            
+ */
 typedef struct substrp {
         uint16_t length;
         RGB_t rgb;
 } substrp;
 
+/* substrpbuf
+ * ----------
+ * Description:
+ *      Buffer of substrips. Substrips are projected
+ *      in their indexed order. If the substrips do
+ *      not cover the entire strip, the remaining
+ *      pixels are set to off.
+ *      Must be allocated first!
+ * 
+ *      Also see:
+ *              substrpbuf_cpy
+ *              substrpbuf_free
+ *            
+ */
 typedef struct substrpbuf {
         uint16_t n_substrps;
         substrp *substrps;
 } substrpbuf;
 
+/* pxl
+ * ----------
+ * Description:
+ *      Addresses a pixel at any given position (pos)
+ *      and sets its color to the provided RGB value (rgb).
+ *            
+ */
 typedef struct pxl {
         uint16_t pos;
         RGB_t rgb;
 } pxl;
 
+/* pxlbuf
+ * ----------
+ * Description:
+ *      Buffer of pxl objects. Allows one to address
+ *      pixels individually without having to allocate
+ *      memory for unused pixels.
+ *      
+ *      The following helper functions should be used
+ *      when working with pixel buffers:
+ *      
+ *              pxbuf_init
+ *              pxbuf_insert
+ *              pxbuf_exists
+ *              pxbuf_remove
+ *              pxbuf_remove_at
+ *                 
+ */
 typedef struct pxbuf {
         uint16_t size;
         pxl* buf;
