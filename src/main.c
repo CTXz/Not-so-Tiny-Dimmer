@@ -31,10 +31,12 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <avr/eeprom.h>
 #include <util/delay.h>
 
-#include "strip.h"
 #include "config.h"
+#include "input.h"
+#include "strip.h"
 #include "time.h"
 
 ////////////////////////
@@ -46,7 +48,6 @@
 #endif
 
 #define MAX_BRIGHTNESS 255
-#define BTN_STATE !(PINB & (1 << BTN))
 
 #ifndef PATCH_0
 #define PATCH_0 break
@@ -90,74 +91,6 @@ uint8_t selected_patch;
 ////////////////////////
 // Functions
 ////////////////////////
-
-// Pots
-
-/* adc_avg
- * -------
- * Parameters:
- *      num_samples - Number of ADC samples to be averaged (max 255)
- * Returns:
- *      Average 8-bit ADC reading
- * Description:
- *      Returns the average ADC reading from n samples
- */
-
-uint8_t inline adc_avg(uint8_t num_samples)
-{
-        uint8_t _ADCSRA = ADCSRA;
-        ADCSRA &= ~(1 << ADATE); // Temporarily disable auto triggering
-
-        uint16_t ret = 0;
-        for (uint8_t i = 0; i < num_samples; i++) {
-                ADCSRA |= (1 << ADSC); // Trigger ADC
-                loop_until_bit_is_clear(ADCSRA, ADSC);
-                ret += ADCH;
-        }
-
-        ADCSRA = _ADCSRA; // Restore auto triggering
-
-        return round((double)ret/num_samples);
-}
-
-/* pot()
- * -----
- * Returns:
- *      The currently set potentiometer value
- * Description:
- *      Reads the current potentiometer value. Depending on the flags
- *      configured in config, this function may be as simple as
- *      simply returning the the current analog value of the pot
- *      input, or as complex as to calculate the average pot
- *      value.
- */
-
-uint8_t inline pot()
-{
-        uint8_t ret;
-
-#if defined(ADC_AVG_SAMPLES) && ADC_AVG_SAMPLES > 1
-        ret = adc_avg(ADC_AVG_SAMPLES);
-#else
-        ret = ADCH;
-#endif
-
-#ifdef INVERT_POT
-        ret = ~ret;
-#endif
-
-#if defined(POT_LOWER_BOUND) && POT_LOWER_BOUND > 0
-        if (ret <= POT_LOWER_BOUND)
-                return 0;
-#endif
-
-#if defined(POT_UPPER_BOUND) && POT_UPPER_BOUND < 255
-        if (ret >= POT_UPPER_BOUND)
-                return 255;
-#endif
-
-        return ret;
-}
 
 // LED Strip
 
@@ -296,7 +229,14 @@ int main()
 
         _delay_ms(10);                         // Allow supply voltage to calm down 
 
+#if STRIP_TYPE == WS2812
+        strip_size = GET_STRIP_SIZE;
+        if (strip_size == 0)
+                strip_calibrate();
+#endif
+
         bool prev_btn_state = BTN_STATE;
+        bool calibrated = false;
 
         while(true) {
                 bool btn_state = BTN_STATE;
@@ -305,9 +245,27 @@ int main()
 #if defined(BTN_DEBOUNCE_TIME) && BTN_DEBOUNCE_TIME > 0
                         _delay_ms(BTN_DEBOUNCE_TIME);
 #endif
-                } else if (prev_btn_state && !btn_state) { // Button Released
-                        selected_patch = (selected_patch + 1) % NUM_PATCHES;
-                        update_strip(selected_patch);
+#if STRIP_TYPE == WS2812
+                        reset_timer();
+#endif
+                }
+#if STRIP_TYPE == WS2812
+                else if (btn_state) {
+                        if (ms_passed() >= 5000) {
+                                strip_calibrate();
+                                calibrated = true;
+                        }
+                        
+                        continue;
+                }
+#endif
+                else if (prev_btn_state && !btn_state) { // Button Released
+                        if (calibrated) {
+                                calibrated = false;
+                        } else {
+                                selected_patch = (selected_patch + 1) % NUM_PATCHES;
+                                update_strip(selected_patch);
+                        }
                 }
 
                 prev_btn_state = btn_state;

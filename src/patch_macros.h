@@ -268,7 +268,7 @@
         uint8_t delay = (31 - (pot_read >> 3)); \
         if (delay > 10) \
                 delay = 10; \
-        strip_rain(rgb, (pot_read * WS2812_PIXELS) / 255, 255 - pot_read + 5, 510 - (pot_read << 1) + 5, delay);
+        strip_rain(rgb, (pot_read * strip_size) / 255, 255 - pot_read + 5, 510 - (pot_read << 1) + 5, delay);
 
 #define PATCH_ANIMATION_OVERRIDE_ARR(RGB_ARR, DELAY) \
         RGB_t rgb[] = { \

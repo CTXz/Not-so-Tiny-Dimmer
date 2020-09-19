@@ -21,18 +21,115 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
 #include <math.h>
 
 #include <avr/io.h>
+#include <avr/eeprom.h>
 #include <util/delay.h>
 
-#include "config.h"
+#include "input.h"
 #include "ws2812.h"
 #include "strip.h"
 #include "time.h"
 
 #if STRIP_TYPE == WS2812
+
+uint16_t eeprom_strip_size EEMEM = 0;
+uint16_t strip_size;
+
+/* strip_calibrate
+ * -------
+ * Description:
+ *      Places the controller into calibration mode to determine 
+ *      the length of the LED strip. The length is specified
+ *      by rotating the potentiometer (coarse) or pressing the push button (fine)
+ *      until the endpoint, indicated in green, reaches the end of the strip.
+ *      The currently specified length is then saved/applied by holding
+ *      the push button for more than a second. This function is
+ *      executed after the first flash (see platformio.ini on how to flash a 
+ *      controller for the first time), or  by holding down the push button for
+ *      longer than 5 seconds.
+ */
+void strip_calibrate()
+{        
+        substrpbuf buf;
+        buf.n_substrps = 3;
+        buf.substrps = malloc(sizeof(substrp) * 3);
+
+        uint8_t pot = adc_avg(255);
+
+#ifdef INVERT_POT
+        pot = ~pot;
+#endif
+
+        buf.substrps[0].length = pot - 1;
+        buf.substrps[0].rgb[R] = 255;
+        buf.substrps[0].rgb[G] = 255;
+        buf.substrps[0].rgb[B] = 255;
+        
+        // End point
+        buf.substrps[1].length = 1;
+        buf.substrps[1].rgb[R] = 0;
+        buf.substrps[1].rgb[G] = 255;
+        buf.substrps[1].rgb[B] = 0;
+
+        buf.substrps[2].length = 254 - buf.substrps[0].length;
+        buf.substrps[2].rgb[R] = 0;
+        buf.substrps[2].rgb[G] = 0;
+        buf.substrps[2].rgb[B] = 0;
+
+        strip_apply_substrpbuf(buf);
+
+        while (BTN_STATE);
+
+        bool prev_btn_state = BTN_STATE;
+        uint8_t prev_pot = pot;
+
+        while(true) {
+                bool btn_state = BTN_STATE;
+
+                if (!prev_btn_state && btn_state) { // Button press
+#if defined(BTN_DEBOUNCE_TIME) && BTN_DEBOUNCE_TIME > 0
+                        _delay_ms(BTN_DEBOUNCE_TIME);
+#endif
+                        reset_timer();
+                } else if (btn_state && ms_passed() >= 1000) { // Button held for 1 sec 
+                        strip_size = buf.substrps[0].length + 1;
+                        SET_STRIP_SIZE(strip_size);
+                        
+                        // Blink strip
+                        for (uint8_t i = 0; i < 3; i++) {
+                                strip_apply_all((RGB_t){0, 0, 0});
+                                _delay_ms(200);
+                                strip_apply_substrpbuf(buf);
+                                _delay_ms(200);
+                        }
+                        strip_apply_all((RGB_t){0, 0, 0});
+                        _delay_ms(200);
+
+                        return;
+
+                } else if (prev_btn_state && !btn_state) { // Button Released
+                        buf.substrps[0].length++;
+                        buf.substrps[2].length--;
+                }
+
+                pot = adc_avg(255);
+#ifdef INVERT_POT
+                pot = ~pot;
+#endif
+
+                // Pot has been moved
+                if (pot != prev_pot) {
+                        buf.substrps[0].length = pot;
+                        buf.substrps[2].length = 254 - pot;
+                }
+                
+                strip_apply_substrpbuf(buf);
+                prev_btn_state = btn_state;
+                prev_pot = pot;
+        }
+}
 
 /* zero_RGBbuf
  * -------
@@ -358,7 +455,7 @@ void inline strip_apply_all(RGB_ptr_t rgb)
 {
 #if STRIP_TYPE == WS2812
         ws2812_prep_tx();
-        for (uint16_t i = 0; i < WS2812_PIXELS; i++) {
+        for (uint16_t i = 0; i < strip_size; i++) {
                 ws2812_tx_byte(rgb[WS2812_WIRING_RGB_0]);
                 ws2812_tx_byte(rgb[WS2812_WIRING_RGB_1]);
                 ws2812_tx_byte(rgb[WS2812_WIRING_RGB_2]);
@@ -403,7 +500,7 @@ void inline strip_apply_substrpbuf(substrpbuf substrpbuf)
 void inline strip_apply_RGBbuf(RGBbuf RGBbuf)
 {
         ws2812_prep_tx();
-        for (uint8_t i = 0; i < WS2812_PIXELS; i++) {
+        for (uint8_t i = 0; i < strip_size; i++) {
                 ws2812_tx_byte(RGBbuf[i][WS2812_WIRING_RGB_0]);
                 ws2812_tx_byte(RGBbuf[i][WS2812_WIRING_RGB_1]);
                 ws2812_tx_byte(RGBbuf[i][WS2812_WIRING_RGB_2]);
@@ -426,10 +523,10 @@ void inline strip_distribute_rgb(RGB_t rgb[], uint16_t size)
         substrpbuf.substrps = malloc(sizeof(substrp) * size);
 
         for (uint16_t i = 0; i < size; i++) {
-                substrpbuf.substrps[i].length = WS2812_PIXELS/size;
+                substrpbuf.substrps[i].length = strip_size/size;
 
                 if (i == size - 1)
-                        substrpbuf.substrps[i].length += WS2812_PIXELS % size;
+                        substrpbuf.substrps[i].length += strip_size % size;
 
                 rgb_cpy(substrpbuf.substrps[i].rgb, rgb[i]);
         }
@@ -642,7 +739,7 @@ void inline strip_rotate_rainbow(uint8_t step_size, uint16_t delay_ms)
         rgb_cpy(tmp, rgb);
 
         ws2812_prep_tx();
-                for (uint16_t i = 0; i < WS2812_PIXELS; i++) {
+                for (uint16_t i = 0; i < strip_size; i++) {
                         ws2812_tx_byte(tmp[WS2812_WIRING_RGB_0]);
                         ws2812_tx_byte(tmp[WS2812_WIRING_RGB_1]);
                         ws2812_tx_byte(tmp[WS2812_WIRING_RGB_2]);
@@ -672,7 +769,7 @@ void inline strip_apply_pxbuf(pxbuf *buf)
         px_i = 0;
         
         ws2812_prep_tx();
-        for (uint16_t i = 0; i < WS2812_PIXELS; i++) {
+        for (uint16_t i = 0; i < strip_size; i++) {
                 if (px_i < buf->size && i == buf->buf[px_i].pos) {
                         ws2812_tx_byte(buf->buf[px_i].rgb[WS2812_WIRING_RGB_0]);
                         ws2812_tx_byte(buf->buf[px_i].rgb[WS2812_WIRING_RGB_1]);
@@ -734,7 +831,7 @@ void inline strip_rain(RGB_t rgb, uint16_t max_drops, uint16_t min_t_appart, uin
         t_passed = ms_passed() >= (rand() % (max_t_appart - min_t_appart + 1)) + min_t_appart;
 
         if (t_passed && pxbuf.size < max_drops) {
-                pos = rand() % WS2812_PIXELS;
+                pos = rand() % strip_size;
 
                 if (!pxbuf_exists(&pxbuf, pos)) {
                         pxbuf_insert(&pxbuf, pos, rgb);
@@ -757,7 +854,7 @@ bool inline strip_override(RGB_t rgb, uint16_t delay)
 
         static uint16_t pos = 0;
 
-        if (pos == WS2812_PIXELS) {
+        if (pos == strip_size) {
                 pos = 0;
                 return true;
         }

@@ -22,6 +22,10 @@
 #pragma once
 
 #include <stdbool.h>
+#include <stdint.h>
+
+#include <avr/eeprom.h>
+
 #include "config.h"
 
 #define R 0
@@ -34,6 +38,13 @@
 #define BGR 3
 
 #if STRIP_TYPE == WS2812
+
+extern uint16_t eeprom_strip_size EEMEM;
+extern uint16_t strip_size;
+
+#define SET_STRIP_SIZE(size) eeprom_update_word(&eeprom_strip_size, size)
+#define GET_STRIP_SIZE (eeprom_read_word(&eeprom_strip_size))
+
         #if WS2812_COLOR_ORDER == RGB
                 #define WS2812_WIRING_RGB_0 0
                 #define WS2812_WIRING_RGB_1 1
@@ -204,6 +215,7 @@ bool pxbuf_remove_at(pxbuf *buf, uint16_t pos);
 void strip_apply_all(RGB_ptr_t rgb);
 
 #if STRIP_TYPE == WS2812
+void strip_calibrate();
 void strip_apply_substrpbuf(substrpbuf strp);
 void strip_apply_RGBbuf(RGBbuf RGBbuf);
 void strip_apply_pxbuf(pxbuf *buf);

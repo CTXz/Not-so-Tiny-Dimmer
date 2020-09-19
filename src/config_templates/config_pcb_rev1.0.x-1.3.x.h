@@ -44,7 +44,6 @@
 #define STRIP_TYPE WS2812
 
 #define WS2812_DIN PB0                          // WS2812 DIN pin
-#define WS2812_PIXELS XXX                       // !! UPDATE THIS !! Number of pixels on the WS2812 strip
 #define WS2812_COLOR_ORDER GRB                  // Order in which color should be parsed to the strip (Most WS2812 strips use BGR)
 #define WS2812_RESET_TIME  35                   // Time required for the WS2812 to reset
                                                 // If runtime between strip writes exceeds the 
