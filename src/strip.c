@@ -56,13 +56,7 @@ void strip_calibrate()
         buf.n_substrps = 3;
         buf.substrps = malloc(sizeof(substrp) * 3);
 
-        uint8_t pot = adc_avg(255);
-
-#ifdef INVERT_POT
-        pot = ~pot;
-#endif
-
-        buf.substrps[0].length = pot - 1;
+        buf.substrps[0].length = 0;
         buf.substrps[0].rgb[R] = 255;
         buf.substrps[0].rgb[G] = 255;
         buf.substrps[0].rgb[B] = 255;
@@ -73,7 +67,7 @@ void strip_calibrate()
         buf.substrps[1].rgb[G] = 255;
         buf.substrps[1].rgb[B] = 0;
 
-        buf.substrps[2].length = 254 - buf.substrps[0].length;
+        buf.substrps[2].length = 255;
         buf.substrps[2].rgb[R] = 0;
         buf.substrps[2].rgb[G] = 0;
         buf.substrps[2].rgb[B] = 0;
@@ -83,6 +77,11 @@ void strip_calibrate()
         while (BTN_STATE);
 
         bool prev_btn_state = BTN_STATE;
+
+        uint8_t pot = adc_avg(255);
+#ifdef INVERT_POT
+                pot = ~pot;
+#endif
         uint8_t prev_pot = pot;
 
         while(true) {
