@@ -78,10 +78,7 @@ void strip_calibrate()
 
         bool prev_btn_state = BTN_STATE;
 
-        uint8_t pot = adc_avg(255);
-#ifdef INVERT_POT
-                pot = ~pot;
-#endif
+        uint8_t pot = pot_avg(255);
         uint8_t prev_pot = pot;
 
         while(true) {
@@ -113,10 +110,7 @@ void strip_calibrate()
                         buf.substrps[2].length--;
                 }
 
-                pot = adc_avg(255);
-#ifdef INVERT_POT
-                pot = ~pot;
-#endif
+                pot = pot_avg(255);
 
                 // Pot has been moved
                 if (pot != prev_pot) {
