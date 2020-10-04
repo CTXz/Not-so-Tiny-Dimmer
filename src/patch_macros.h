@@ -44,6 +44,21 @@
         rgb_apply_brightness(rgb, pot()); \
         strip_apply_all(rgb);
 
+#define PATCH_SPLIT(R1, G1, B1, R2, G2, B2, SPLIT) \
+        static substrpbuf buf = {2, NULL}; \
+        if (!buf.substrps) \
+                buf.substrps = (substrp *)malloc(sizeof(substrp) * 2); \
+        buf.substrps[0].length = SPLIT; \
+        buf.substrps[0].rgb[R] = R1; \
+        buf.substrps[0].rgb[G] = G1; \
+        buf.substrps[0].rgb[B] = B1; \
+        buf.substrps[1].length = strip_size - SPLIT; \
+        buf.substrps[1].rgb[R] = R2; \
+        buf.substrps[1].rgb[G] = G2; \
+        buf.substrps[1].rgb[B] = B2; \
+        substripbuf_apply_brightness(&buf, pot()); \
+        strip_apply_substrpbuf(buf);
+
 /* PATCH_DISTRIBUTE
  * ----------------
  * Parameters:
