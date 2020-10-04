@@ -31,5 +31,6 @@
 
 #define BTN_STATE !(PINB & (1 << BTN))
 
-uint8_t adc_avg(uint8_t num_samples);
+uint8_t adc_avg(uint8_t samples);
 uint8_t pot();
+uint8_t pot_avg(uint8_t samples);

@@ -33,13 +33,13 @@
  *      Returns the average ADC reading from n samples
  */
 
-uint8_t inline adc_avg(uint8_t num_samples)
+uint8_t inline adc_avg(uint8_t samples)
 {
         uint8_t _ADCSRA = ADCSRA;
         ADCSRA &= ~(1 << ADATE); // Temporarily disable auto triggering
 
         uint16_t ret = 0;
-        for (uint8_t i = 0; i < num_samples; i++) {
+        for (uint8_t i = 0; i < samples; i++) {
                 ADCSRA |= (1 << ADSC); // Trigger ADC
                 loop_until_bit_is_clear(ADCSRA, ADSC);
                 ret += ADCH;
@@ -47,7 +47,7 @@ uint8_t inline adc_avg(uint8_t num_samples)
 
         ADCSRA = _ADCSRA; // Restore auto triggering
 
-        return round((double)ret/num_samples);
+        return round((double)ret/samples);
 }
 
 /* pot()
@@ -87,4 +87,34 @@ uint8_t inline pot()
 #endif
 
         return ret;
+}
+
+/* pot_avg()
+ * -----
+ * Returns:
+ *      The average potentiometer value with n samples
+ * Description:
+ *      Same as pot() except that the sample size for averaging isn't
+ *      configuration defined but provided as a parameter.
+ *      This is practical if average potentiometer readings
+ *      are certainly required and are not simply an option.
+ */
+uint8_t inline pot_avg(uint8_t samples) {
+        uint8_t ret = adc_avg(samples);
+
+#ifdef INVERT_POT
+        ret = ~ret;
+#endif
+
+#if defined(POT_LOWER_BOUND) && POT_LOWER_BOUND > 0
+        if (ret <= POT_LOWER_BOUND)
+                return 0;
+#endif
+
+#if defined(POT_UPPER_BOUND) && POT_UPPER_BOUND < 255
+        if (ret >= POT_UPPER_BOUND)
+                return 255;
+#endif
+
+        return ret;    
 }
