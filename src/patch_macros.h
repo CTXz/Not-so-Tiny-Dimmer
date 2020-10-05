@@ -89,7 +89,9 @@
  *      The duration of the "breath" can be altered by the potentiometer.
  *      Supported on non-addressable strips.
  */
-#define PATCH_ANIMATION_BREATHE_POT_CTRL(R, G, B) strip_breathe((RGB_t){R, G, B}, pot())
+#define PATCH_ANIMATION_BREATHE_POT_CTRL(R, G, B) \
+        RGB_t rgb = {R, G, B}; \
+        strip_breathe(rgb, pot())
 
 /* PATCH_ANIMATION_BREATHE_RAND_POT_CTRL
  * -------------------------------------
@@ -202,7 +204,7 @@
  */
 #define PATCH_ANIMATION_SWAP_POT_CTRL(RFH, GFH, BFH, RSH, GSH, BSH) \
         static bool swap = false; \
-        if (ms_passed() >= (1020 - (pot() << 2) + 100)) { \
+        if (ms_passed() >= (uint16_t)(1020 - (pot() << 2) + 100)) { \
                 if (swap) { \
                         RGB_t rgb[] = { \
                                 {RFH, GFH, BFH}, {RSH, GSH, BSH} \

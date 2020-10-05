@@ -215,7 +215,12 @@ int main()
         PORTB |= (1 << BTN);                  // Enable internal pull-up on Button pin
 
         // ADC
-        ADMUX = (1 << ADLAR);                 // Reduce ADC input to 8-bit value (0-255)
+        ADMUX = (1 << ADLAR); // Reduce ADC input to 8-bit value (0-255)
+
+#if defined(__AVR_ATmega328__) || defined(__AVR_ATmega328P__)
+        ADMUX |= (1 << REFS0);  // Set reference to AVcc
+#endif
+
         ADMUX |= BRIGHTNESS_POT_ADMUX_MSK;    // Set MUX to Brightness potentiometer pin
 
         ADCSRA = 

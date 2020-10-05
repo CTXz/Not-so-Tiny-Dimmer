@@ -43,7 +43,7 @@
 
 #define STRIP_TYPE WS2812
 
-#define WS2812_DIN PB0                          // WS2812 DIN pin
+#define WS2812_DIN PB0                          // WS2812 DIN pin | Arduino Pin 8
 #define WS2812_COLOR_ORDER GRB                  // Order in which color should be parsed to the strip (Most WS2812 strips use BGR)
 #define WS2812_RESET_TIME  50                   // Time required for the WS2812 to reset
                                                 // If runtime between strip writes exceeds the 
@@ -53,10 +53,9 @@
 // Pots
 //////////////////////////////
 
-#define BRIGHTNESS_POT_ADMUX_MSK (1 << MUX1)               // PB4 (Refer to table 17-4 in the ATtiny25/45/85 datasheet)
-// #define BRIGHTNESS_POT_ADMUX_MSK (1 << MUX1) | (1 << MUX0)    // PB3 (Refer to table 17-4 in the ATtiny25/45/85 datasheet)
+#define BRIGHTNESS_POT_ADMUX_MSK (1 << MUX1)                  // Potentiometer input | Arduino pin A2
 
-#define INVERT_POT                                         // Uncomment if pot is inverted
+// #define INVERT_POT                                         // Uncomment if pot is inverted
 
 // #define ADC_AVG_SAMPLES XX                                 // Max 255 - Number of samples used to determine the average potentiometer value.
                                                               // Increase this if the LED strip is noisy, especially at lower settings.
@@ -72,7 +71,7 @@
 // Push Button
 //////////////////////////////
 
-#define BTN PB2                                                // Push button pin
+#define BTN PB2                                                // Push button pin | Arduino Pin 10
 
 #define BTN_DEBOUNCE_TIME 10                                   // ms - Time to wait for button to debounce. Increasing this will reduce false trigger due to
                                                                // bouncing, but add a slight delay to color toggling.
