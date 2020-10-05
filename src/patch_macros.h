@@ -138,9 +138,7 @@
  * Description:
  *      Scrolls the RGB spectrum with the potentiometer
  */
-#define PATCH_RGB_POT_CTRL(BRIGHTNESS) \
-        uint8_t dial = pot_avg(25); \
-        strip_scroll_rgb(dial * 3, BRIGHTNESS);
+#define PATCH_RGB_POT_CTRL(BRIGHTNESS) strip_scroll_rgb(pot() * 3, BRIGHTNESS)
 
 /* PATCH_ANIMATION_RAINBOW
  * ------------------------
