@@ -44,7 +44,7 @@ ISR(TIMER0_OVF_vect)
  * Description:
  *      Resets the the timer.
  */
-void inline reset_timer()
+void reset_timer()
 {
         TCNT0 = 0;
         timer_counter = 0;
@@ -56,7 +56,7 @@ void inline reset_timer()
  *      Returns the number of miliseconds that have passed 
  *      since the timer has been reset
  */
-unsigned long inline ms_passed()
+unsigned long ms_passed()
 {
         return timer_counter / TMR_COUNTS_PER_MS;
 }

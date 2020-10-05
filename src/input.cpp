@@ -33,7 +33,7 @@
  *      Returns the average ADC reading from n samples
  */
 
-uint8_t inline adc_avg(uint8_t samples)
+uint8_t adc_avg(uint8_t samples)
 {
         uint8_t _ADCSRA = ADCSRA;
         ADCSRA &= ~(1 << ADATE); // Temporarily disable auto triggering
@@ -62,7 +62,7 @@ uint8_t inline adc_avg(uint8_t samples)
  *      value.
  */
 
-uint8_t inline pot()
+uint8_t pot()
 {
         uint8_t ret;
 
@@ -99,7 +99,7 @@ uint8_t inline pot()
  *      This is practical if average potentiometer readings
  *      are certainly required and are not simply an option.
  */
-uint8_t inline pot_avg(uint8_t samples) {
+uint8_t pot_avg(uint8_t samples) {
         uint8_t ret = adc_avg(samples);
 
 #ifdef INVERT_POT

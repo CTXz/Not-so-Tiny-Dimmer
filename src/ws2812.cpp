@@ -85,7 +85,7 @@ static uint8_t _sreg_prev, _maskhi, _masklo;
  *      Prepares for a data transmission to the WS2812 strip.
  *      Always call this function before calling ws2812_tx_byte()!
  */
-void inline ws2812_prep_tx()
+void ws2812_prep_tx()
 {
         _masklo = ~WS2812_DIN_MSK & PORTB;
         _maskhi = WS2812_DIN_MSK | PORTB;
@@ -99,7 +99,7 @@ void inline ws2812_prep_tx()
  * Description:
  *      Waits for the WS2812 to reset.
  */
-void inline ws2812_wait_rst()
+void ws2812_wait_rst()
 {
 #if defined(WS2812_RESET_TIME) && WS2812_RESET_TIME > 0
         _delay_us(WS2812_RESET_TIME);
@@ -114,7 +114,7 @@ void inline ws2812_wait_rst()
  *      and re-enabling interrupts. Always call this function
  *      after data transmission is complete!
  */
-void inline ws2812_end_tx()
+void ws2812_end_tx()
 {
         SREG=_sreg_prev;
         ws2812_wait_rst();

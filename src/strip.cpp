@@ -34,6 +34,8 @@
 
 #if STRIP_TYPE == WS2812
 
+const RGB_t off = {0, 0, 0};
+
 uint16_t eeprom_strip_size EEMEM = 0;
 uint16_t strip_size;
 
@@ -51,10 +53,10 @@ uint16_t strip_size;
  *      longer than 5 seconds.
  */
 void strip_calibrate()
-{        
+{
         substrpbuf buf;
         buf.n_substrps = 3;
-        buf.substrps = malloc(sizeof(substrp) * 3);
+        buf.substrps = (substrp *)malloc(sizeof(substrp) * 3);
 
         buf.substrps[0].length = 0;
         buf.substrps[0].rgb[R] = 255;
@@ -95,12 +97,12 @@ void strip_calibrate()
                         
                         // Blink strip
                         for (uint8_t i = 0; i < 3; i++) {
-                                strip_apply_all((RGB_t){0, 0, 0});
+                                strip_apply_all((RGB_ptr_t) off);
                                 _delay_ms(200);
                                 strip_apply_substrpbuf(buf);
                                 _delay_ms(200);
                         }
-                        strip_apply_all((RGB_t){0, 0, 0});
+                        strip_apply_all((RGB_ptr_t) off);
                         _delay_ms(200);
 
                         return;
@@ -132,7 +134,7 @@ void strip_calibrate()
  * Description:
  *      Sets all rgb objects in an RGB buffer to black (0, 0, 0).
  */
-void inline zero_RGBbuf(RGBbuf buf, uint16_t size)
+void zero_RGBbuf(RGBbuf buf, uint16_t size)
 {
         memset(buf, 0, size * sizeof(RGB_t));
 }
@@ -146,9 +148,9 @@ void inline zero_RGBbuf(RGBbuf buf, uint16_t size)
  * Description:
  *      Allocates a new RGB buffer.
  */
-RGBbuf inline init_RGBbuf(uint16_t size)
+RGBbuf init_RGBbuf(uint16_t size)
 {
-        RGBbuf ret = malloc(size * sizeof(RGB_t));
+        RGBbuf ret = (RGBbuf)malloc(size * sizeof(RGB_t));
         zero_RGBbuf(ret, size);
         return ret;
 }
@@ -164,7 +166,7 @@ RGBbuf inline init_RGBbuf(uint16_t size)
  *      Copies values from the source RGB object to
  *      the destination RGB object.
  */
-void inline rgb_cpy(RGB_ptr_t dst, RGB_t src)
+void rgb_cpy(RGB_ptr_t dst, RGB_t src)
 {
         dst[R] = src[R];
         dst[G] = src[G];
@@ -180,7 +182,7 @@ void inline rgb_cpy(RGB_ptr_t dst, RGB_t src)
  *      Applies a brightness (0 = 0%, 255 = 100%) to the provided
  *      RGB object.
  */
-void inline rgb_apply_brightness(RGB_ptr_t rgb, uint8_t brightness)
+void rgb_apply_brightness(RGB_ptr_t rgb, uint8_t brightness)
 {
         if (brightness < 255) {
                 rgb[R] = round(((double)brightness/255) * (double)rgb[R]);
@@ -198,7 +200,7 @@ void inline rgb_apply_brightness(RGB_ptr_t rgb, uint8_t brightness)
  *      Applies a brightness (0 = 0%, 255 = 100%) to the provided
  *      substrip buffer.
  */
-void inline substripbuf_apply_brightness(substrpbuf *substrpbuf, uint8_t brightness)
+void substripbuf_apply_brightness(substrpbuf *substrpbuf, uint8_t brightness)
 {
         if (brightness < 255) {
                 for (uint16_t i = 0; i < substrpbuf->n_substrps; i++) 
@@ -214,7 +216,7 @@ void inline substripbuf_apply_brightness(substrpbuf *substrpbuf, uint8_t brightn
  * Description:
  *      Apples rgb fading to the provided rgb object.
  */
-void inline rgb_apply_fade(RGB_ptr_t rgb, uint8_t step_size)
+void rgb_apply_fade(RGB_ptr_t rgb, uint8_t step_size)
 {
         bool r2g;
 
@@ -282,9 +284,9 @@ void inline rgb_apply_fade(RGB_ptr_t rgb, uint8_t step_size)
  * Description:
  *      Creates a deep copy of a substrip object.
  */
-void inline substripbuf_cpy(substrpbuf *dst, substrpbuf *src)
+void substripbuf_cpy(substrpbuf *dst, substrpbuf *src)
 {
-        dst->substrps = malloc(sizeof(substrp) * src->n_substrps);
+        dst->substrps = (substrp *)malloc(sizeof(substrp) * src->n_substrps);
         dst->n_substrps = src->n_substrps;
         memcpy(dst->substrps, src->substrps, sizeof(substrp) * dst->n_substrps);
 }
@@ -296,7 +298,7 @@ void inline substripbuf_cpy(substrpbuf *dst, substrpbuf *src)
  * Description:
  *      Frees a substrip buffer.
  */
-void inline substrpbuf_free(substrpbuf *substrpbuf)
+void substrpbuf_free(substrpbuf *substrpbuf)
 {
         free(substrpbuf->substrps);
 }
@@ -308,7 +310,7 @@ void inline substrpbuf_free(substrpbuf *substrpbuf)
  * Description:
  *      Initializes a pixel buffer.
  */
-void inline pxbuf_init(pxbuf *buf)
+void pxbuf_init(pxbuf *buf)
 {
         buf->buf = NULL;
         buf->size = 0;
@@ -323,10 +325,10 @@ void inline pxbuf_init(pxbuf *buf)
  * Description:
  *      Adds/Allocates a pixel in the pixel buffer.
  */
-void inline pxbuf_insert(pxbuf *buf, uint16_t pos, RGB_t rgb)
+void pxbuf_insert(pxbuf *buf, uint16_t pos, RGB_t rgb)
 {
         if (buf->size == 0) {
-                buf->buf = malloc(sizeof(pxl));
+                buf->buf = (pxl *)malloc(sizeof(pxl));
                 buf->buf[0].pos = pos;
                 rgb_cpy(buf->buf[0].rgb, rgb);
                 buf->size++;
@@ -344,7 +346,7 @@ void inline pxbuf_insert(pxbuf *buf, uint16_t pos, RGB_t rgb)
                 // Not the last pixel in the pxbuf, insert and shift array!
                 if (buf->buf[i].pos > pos) {
                         buf->size++;
-                        buf->buf = realloc(buf->buf, sizeof(pxl) * buf->size);
+                        buf->buf = (pxl *)realloc(buf->buf, sizeof(pxl) * buf->size);
 
                         for (uint16_t j = buf->size-1; j > i; j--) {
                                 pxl* prev_px = &(buf->buf[j-1]);
@@ -361,12 +363,12 @@ void inline pxbuf_insert(pxbuf *buf, uint16_t pos, RGB_t rgb)
 
         // Last pixel in the pxbuf, simply append it!
         buf->size++;
-        buf->buf = realloc(buf->buf, sizeof(pxl) * buf->size);
+        buf->buf = (pxl *)realloc(buf->buf, sizeof(pxl) * buf->size);
         buf->buf[buf->size-1].pos = pos;
         rgb_cpy(buf->buf[buf->size-1].rgb, rgb);
 }
 
-bool inline pxbuf_exists(pxbuf *buf, uint16_t pos)
+bool pxbuf_exists(pxbuf *buf, uint16_t pos)
 {
         for (uint16_t i = 0; i < buf->size; i++) {
                 if (buf->buf[i].pos == pos)
@@ -386,7 +388,7 @@ bool inline pxbuf_exists(pxbuf *buf, uint16_t pos)
  * Description:
  *      Deletes the pixel object stored at the provided index (NOT POSITION!).
  */
-void inline pxbuf_remove(pxbuf *buf, uint16_t index)
+void pxbuf_remove(pxbuf *buf, uint16_t index)
 {
         buf->size--;
         
@@ -400,7 +402,7 @@ void inline pxbuf_remove(pxbuf *buf, uint16_t index)
                 buf->buf[i] = buf->buf[i+1];               
         }
 
-        buf->buf = realloc(buf->buf, sizeof(pxl) * buf->size);
+        buf->buf = (pxl *)realloc(buf->buf, sizeof(pxl) * buf->size);
 }
 
 /* pxbuf_remove_at
@@ -414,7 +416,7 @@ void inline pxbuf_remove(pxbuf *buf, uint16_t index)
  * Description:
  *      Deletes the pixel object assigned to the position.
  */
-bool inline pxbuf_remove_at(pxbuf *buf, uint16_t pos)
+bool pxbuf_remove_at(pxbuf *buf, uint16_t pos)
 {
         for (uint16_t i = 0; i < buf->size; i++)
         {
@@ -444,7 +446,7 @@ bool inline pxbuf_remove_at(pxbuf *buf, uint16_t pos)
  * Description:
  *      Applies a RGB value across the entire LED strip.
  */
-void inline strip_apply_all(RGB_ptr_t rgb)
+void strip_apply_all(RGB_ptr_t rgb)
 {
 #if STRIP_TYPE == WS2812
         ws2812_prep_tx();
@@ -470,7 +472,7 @@ void inline strip_apply_all(RGB_ptr_t rgb)
  * Description:
  *      Applies a strip object across the LED strip.
  */
-void inline strip_apply_substrpbuf(substrpbuf substrpbuf)
+void strip_apply_substrpbuf(substrpbuf substrpbuf)
 {
         ws2812_prep_tx();
         for (uint16_t i = 0; i < substrpbuf.n_substrps; i++) {
@@ -490,7 +492,7 @@ void inline strip_apply_substrpbuf(substrpbuf substrpbuf)
  * Description:
  *      Applies a RGB buffer with the strip size across the LED strip.
  */
-void inline strip_apply_RGBbuf(RGBbuf RGBbuf)
+void strip_apply_RGBbuf(RGBbuf RGBbuf)
 {
         ws2812_prep_tx();
         for (uint8_t i = 0; i < strip_size; i++) {
@@ -509,11 +511,11 @@ void inline strip_apply_RGBbuf(RGBbuf RGBbuf)
  * Description:
  *      Evenly distributes an array of rgb values across the LED strip.
  */
-void inline strip_distribute_rgb(RGB_t rgb[], uint16_t size)
+void strip_distribute_rgb(RGB_t rgb[], uint16_t size)
 {
         substrpbuf substrpbuf;
         substrpbuf.n_substrps = size;
-        substrpbuf.substrps = malloc(sizeof(substrp) * size);
+        substrpbuf.substrps = (substrp *)malloc(sizeof(substrp) * size);
 
         for (uint16_t i = 0; i < size; i++) {
                 substrpbuf.substrps[i].length = strip_size/size;
@@ -541,7 +543,7 @@ void inline strip_distribute_rgb(RGB_t rgb[], uint16_t size)
  * Description:
  *      "Breathes" the provided RGB value across the entire strip.
  */
-bool inline strip_breathe(RGB_ptr_t rgb, uint8_t step_size)
+bool strip_breathe(RGB_ptr_t rgb, uint8_t step_size)
 {
         static bool inc = true;
         static uint8_t brightness = 0;
@@ -592,7 +594,7 @@ bool inline strip_breathe(RGB_ptr_t rgb, uint8_t step_size)
  * Description:
  *      "Breathes" the provided RGB values across the entire strip.
  */
-void inline strip_breathe_array(RGB_t rgb[], uint8_t size, uint8_t step_size)
+void strip_breathe_array(RGB_t rgb[], uint8_t size, uint8_t step_size)
 {
         static uint8_t i = 0;
 
@@ -609,7 +611,7 @@ void inline strip_breathe_array(RGB_t rgb[], uint8_t size, uint8_t step_size)
  * Description:
  *      Gradiently fades all LEDs simultaneously trough the RGB spectrum.
  */
-void inline strip_rainbow(uint8_t step_size, uint16_t delay, uint8_t brightness)
+void strip_rainbow(uint8_t step_size, uint16_t delay, uint8_t brightness)
 {
         static RGB_t rgb = {255, 0, 0};
 
@@ -639,7 +641,7 @@ void inline strip_rainbow(uint8_t step_size, uint16_t delay, uint8_t brightness)
  *      Sets the rgb strip to a value on a RGB wheel.
  */
 
-void inline strip_scroll_rgb(uint16_t val, uint8_t brightness) {
+void strip_scroll_rgb(uint16_t val, uint8_t brightness) {
         RGB_t rgb;
 
         val %= 765;
@@ -673,7 +675,7 @@ void inline strip_scroll_rgb(uint16_t val, uint8_t brightness) {
  *      Due to the rather poor randomness of rand(), the outcomes tend
  *      to be similar.
  */
-void inline strip_breathe_random(uint8_t step_size)
+void strip_breathe_random(uint8_t step_size)
 {
         static RGB_t rgb;
 
@@ -698,7 +700,7 @@ void inline strip_breathe_random(uint8_t step_size)
  * Description:
  *      Gradiently "Breathes" trough the rgb spectrum
  */
-void inline strip_breathe_rainbow(uint8_t breath_step_size, uint8_t rgb_step_size)
+void strip_breathe_rainbow(uint8_t breath_step_size, uint8_t rgb_step_size)
 {
         static RGB_t rgb = {255, 0, 0};
 
@@ -719,7 +721,7 @@ void inline strip_breathe_rainbow(uint8_t breath_step_size, uint8_t rgb_step_siz
  *      changes in step size, and even just additional code can
  *      easily lead to uncomfortable lag.
  */
-void inline strip_rotate_rainbow(uint8_t step_size, uint16_t delay_ms)
+void strip_rotate_rainbow(uint8_t step_size, uint16_t delay_ms)
 {
         static RGB_t rgb = {255, 0 , 0};
         
@@ -750,12 +752,12 @@ void inline strip_rotate_rainbow(uint8_t step_size, uint16_t delay_ms)
  * Description:
  *      Applies a pixel buffer across the LED strip.
  */
-void inline strip_apply_pxbuf(pxbuf *buf)
+void strip_apply_pxbuf(pxbuf *buf)
 {
         uint16_t px_i;
 
         if (buf->size == 0) {
-                strip_apply_all((RGB_t){0, 0, 0});
+                strip_apply_all((RGB_ptr_t) off);
                 return;
         }
 
@@ -790,11 +792,11 @@ void inline strip_apply_pxbuf(pxbuf *buf)
  *      Note that this effect makes use of an RGB buffer and will linearly increase 
  *      memory consumption with strip size. 
  */
-void inline strip_rain(RGB_t rgb, uint16_t max_drops, uint16_t min_t_appart, uint16_t max_t_appart, uint16_t delay)
+void strip_rain(RGB_t rgb, uint16_t max_drops, uint16_t min_t_appart, uint16_t max_t_appart, uint16_t delay)
 {
         static pxbuf pxbuf = {
-                .buf = NULL, 
-                .size = 0
+                .size = 0,
+                .buf = NULL
         };
 
         static uint16_t wait_until = 0;
@@ -842,7 +844,7 @@ void inline strip_rain(RGB_t rgb, uint16_t max_drops, uint16_t min_t_appart, uin
         strip_apply_pxbuf(&pxbuf);
 }
 
-bool inline strip_override(RGB_t rgb, uint16_t delay)
+bool strip_override(RGB_t rgb, uint16_t delay)
 {
 
         static uint16_t pos = 0;
@@ -869,7 +871,7 @@ bool inline strip_override(RGB_t rgb, uint16_t delay)
         return false;
 }
 
-void inline strip_override_array(RGB_t rgb[], uint8_t size, uint16_t delay)
+void strip_override_array(RGB_t rgb[], uint8_t size, uint16_t delay)
 {
         static uint8_t i = 0;
 
@@ -877,7 +879,7 @@ void inline strip_override_array(RGB_t rgb[], uint8_t size, uint16_t delay)
                 i = (i + 1) % size;
 }
 
-void inline strip_override_rainbow(uint16_t delay, uint8_t step_size)
+void strip_override_rainbow(uint16_t delay, uint8_t step_size)
 {
         static RGB_t rgb = {255, 0, 0};
 

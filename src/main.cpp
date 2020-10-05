@@ -20,8 +20,9 @@
    */
 
 
-#if !defined(__AVR_ATtiny25__) && !defined(__AVR_ATtiny45__) && !defined (__AVR_ATtiny85__)
-#error "Only ATtiny25/45/85 boards are supported!"
+#if !defined(__AVR_ATtiny25__) && !defined(__AVR_ATtiny45__) && !defined (__AVR_ATtiny85__) && \
+    !defined(__AVR_ATmega328__) && !defined(__AVR_ATmega328P__)
+#error "Only ATtiny25/45/85 nad ATmega328(P) boards are supported!"
 #endif
 
 #include <stdlib.h>
@@ -166,8 +167,14 @@ int main()
         // Timer 0
 
         TCCR0B |= (1 << CS00);                // No prescaling
+
+#if defined(__AVR_ATmega328__) || defined(__AVR_ATmega328P__)
+        TIMSK0 |= (1 << TOIE0);                // Enable Timer interrupts
+        TIFR0 |= (1 << TOV0);                  // Interrupt on timer overflow
+#else
         TIMSK |= (1 << TOIE0);                // Enable Timer interrupts
         TIFR |= (1 << TOV0);                  // Interrupt on timer overflow
+#endif
 
 #if STRIP_TYPE == NON_ADDR
         DDRB |= (1 << PB0) | (1 << PB1) | (1 << PB4);
