@@ -142,4 +142,4 @@
 #define PATCH_8 PATCH_ANIMATION_RAINBOW_POT_CTRL
 
 // Halves swapping with potentiometer speed control
-#define PATCH_9 PATCH_ANIMATION_SWAP_POT_CTRL(rand() % 256, rand() % 256, rand() % 256, 0, 0, 0)
+#define PATCH_9 PATCH_ANIMATION_SWAP_POT_CTRL((uint8_t) (rand() % 256), (uint8_t) (rand() % 256), (uint8_t) (rand() % 256), 0, 0, 0)
