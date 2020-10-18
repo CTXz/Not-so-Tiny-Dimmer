@@ -43,8 +43,7 @@
 
 #define STRIP_TYPE WS2812
 
-#define WS2812_DIN PXX                          // WS2812 DIN pin
-#define WS2812_DIN_PORT PORTX                   // WS2812 DIN pin bank
+#define WS2812_DIN XX                           // WS2812 DIN pin
 #define WS2812_COLOR_ORDER GRB                  // Order in which color should be parsed to the strip (Most WS2812 strips use BGR)
 #define WS2812_RESET_TIME  50                   // Time required for the WS2812 to reset
                                                 // If runtime between strip writes exceeds the 
@@ -54,11 +53,7 @@
 // Pots
 //////////////////////////////
 
-// Potentiometer input ADMUX mask
-#define BRIGHTNESS_POT_ADMUX_MSK (X << MUX0)|\
-                                 (X << MUX1)|\
-                                 (X << MUX2)|\
-                                 (X << MUX3)
+#define BRIGHTNESS_POT AX                                     // Potentiometer input
 
 // #define INVERT_POT                                         // Uncomment if pot is inverted
 
@@ -76,7 +71,7 @@
 // Push Button
 //////////////////////////////
 
-#define BTN PXX                                                // Push button pin
+#define BTN XX                                                 // Push button pin
 
 #define BTN_DEBOUNCE_TIME 10                                   // ms - Time to wait for button to debounce. Increasing this will reduce false trigger due to
                                                                // bouncing, but add a slight delay to color toggling.

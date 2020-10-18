@@ -19,12 +19,6 @@
    * 
    */
 
-
-#if !defined(__AVR_ATtiny25__) && !defined(__AVR_ATtiny45__) && !defined (__AVR_ATtiny85__) && \
-    !defined(__AVR_ATmega328__) && !defined(__AVR_ATmega328P__)
-#error "Only ATtiny25/45/85 nad ATmega328(P) boards are supported!"
-#endif
-
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
@@ -34,6 +28,10 @@
 #include <avr/interrupt.h>
 #include <avr/eeprom.h>
 #include <util/delay.h>
+
+#ifdef ARDUINO_BUILD
+#include <Arduino.h>
+#endif
 
 #include "config.h"
 #include "input.h"
@@ -155,13 +153,88 @@ void update_strip(uint8_t patch)
 // Main routine
 ////////////////////////
 
+void _main() {
+        DELAY_MS(10);                         // Allow supply voltage to calm down 
+
+        // Calibration
+#if STRIP_TYPE == WS2812
+        strip_size = GET_STRIP_SIZE;
+        if (strip_size == 0)
+                strip_calibrate();
+#endif
+
+        // Patches
+        selected_patch = 0;
+        update_strip(selected_patch);
+        
+        // Main loop
+
+        bool prev_btn_state = BTN_STATE;
+        bool calibrated = false;
+
+        while(true) {
+                bool btn_state = BTN_STATE;
+
+                if (!prev_btn_state && btn_state) { // Button press
+#if defined(BTN_DEBOUNCE_TIME) && BTN_DEBOUNCE_TIME > 0
+                        DELAY_MS(BTN_DEBOUNCE_TIME);
+#endif
+
+#if STRIP_TYPE == WS2812
+                        reset_timer();
+#endif
+                }
+
+#if STRIP_TYPE == WS2812
+                else if (btn_state) {
+                        if (ms_passed() >= 5000) {
+                                strip_calibrate();
+                                calibrated = true;
+                        }
+                        
+                        continue;
+                }
+#endif
+
+                else if (prev_btn_state && !btn_state) { // Button Released
+                        if (calibrated) {
+                                calibrated = false;
+                        } else {
+                                selected_patch = (selected_patch + 1) % NUM_PATCHES;
+                                update_strip(selected_patch);
+                        }
+                }
+
+                prev_btn_state = btn_state;
+                update_strip(selected_patch);
+        }
+}
+
+////////////////////////
+// Initialization
+////////////////////////
+
+#ifdef ARDUINO_BUILD
+void setup() {
+        Serial.begin(9600);
+        pinMode(WS2812_DIN, OUTPUT);
+        pinMode(BTN, INPUT_PULLUP);
+        pinMode(BRIGHTNESS_POT, INPUT);
+}
+
+void loop() {
+        _main();
+}
+
+#else
+
 /* main
  * ----
  * Description:
  *      The dimmer firmware main routine.
  */
 int main()
-{       
+{
         // Initialization
 
         // Timer 0
@@ -233,54 +306,6 @@ int main()
 
         sei();
 
-        // Patches
-        selected_patch = 0;
-        update_strip(selected_patch);
-        
-        // Main loop
-
-        _delay_ms(10);                         // Allow supply voltage to calm down 
-
-#if STRIP_TYPE == WS2812
-        strip_size = GET_STRIP_SIZE;
-        if (strip_size == 0)
-                strip_calibrate();
-#endif
-
-        bool prev_btn_state = BTN_STATE;
-        bool calibrated = false;
-
-        while(true) {
-                bool btn_state = BTN_STATE;
-
-                if (!prev_btn_state && btn_state) { // Button press
-#if defined(BTN_DEBOUNCE_TIME) && BTN_DEBOUNCE_TIME > 0
-                        _delay_ms(BTN_DEBOUNCE_TIME);
-#endif
-#if STRIP_TYPE == WS2812
-                        reset_timer();
-#endif
-                }
-#if STRIP_TYPE == WS2812
-                else if (btn_state) {
-                        if (ms_passed() >= 5000) {
-                                strip_calibrate();
-                                calibrated = true;
-                        }
-                        
-                        continue;
-                }
-#endif
-                else if (prev_btn_state && !btn_state) { // Button Released
-                        if (calibrated) {
-                                calibrated = false;
-                        } else {
-                                selected_patch = (selected_patch + 1) % NUM_PATCHES;
-                                update_strip(selected_patch);
-                        }
-                }
-
-                prev_btn_state = btn_state;
-                update_strip(selected_patch);
-        }
+        _main();
 }
+#endif

@@ -21,6 +21,14 @@
 
 #pragma once
 
+#ifdef ARDUINO_BUILD
+#include <Arduino.h>
+#define DELAY_MS(ms) delay(ms)
+#else
+#include <util/delay.h>
+#define DELAY_MS(ms) _delay_ms(ms)
+#endif
+
 #define TMR_COUNTS_PER_MS 63 // F_CPU - 16Mhz | Prescaler - None
 
 void reset_timer();

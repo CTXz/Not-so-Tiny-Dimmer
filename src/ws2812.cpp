@@ -87,8 +87,8 @@ static uint8_t _sreg_prev, _maskhi, _masklo;
  */
 void ws2812_prep_tx()
 {
-        _masklo = ~WS2812_DIN_MSK & PORTB;
-        _maskhi = WS2812_DIN_MSK | PORTB;
+        _masklo = ~WS2812_DIN_MSK & WS2812_DIN_PORT;
+        _maskhi = WS2812_DIN_MSK | WS2812_DIN_PORT;
 
         _sreg_prev=SREG;
         cli();  
@@ -198,7 +198,7 @@ void ws2812_tx_byte(uint8_t data)
                 "       dec   %0    \n\t"    //  '1' [+4] '0' [+3]
                 "       brne  loop%=\n\t"    //  '1' [+5] '0' [+4]
                 :	"=&d" (ctr)
-                :	"r" (data), "x" ((uint8_t *) &PORTB), "r" (_maskhi), "r" (_masklo)
+                :	"r" (data), "x" ((uint8_t *) &WS2812_DIN_PORT), "r" (_maskhi), "r" (_masklo)
         );
 }
 

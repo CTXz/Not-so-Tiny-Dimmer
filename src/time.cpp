@@ -23,7 +23,17 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
+#ifdef ARDUINO_BUILD
+#include <Arduino.h>
+#endif
+
 #include "time.h"
+
+#ifdef ARDUINO_BUILD
+
+unsigned long start = millis();
+
+#else
 
 // Interrupt controlled
 volatile static unsigned long timer_counter = 0; // Counts number of times TIMER0 has overflown
@@ -39,6 +49,8 @@ ISR(TIMER0_OVF_vect)
         timer_counter++;
 }
 
+#endif
+
 /* reset_timer
  * -----------
  * Description:
@@ -46,8 +58,12 @@ ISR(TIMER0_OVF_vect)
  */
 void reset_timer()
 {
+#ifdef ARDUINO_BUILD
+        start = millis();
+#else
         TCNT0 = 0;
         timer_counter = 0;
+#endif
 }
 
 /* ms_passed
@@ -58,5 +74,9 @@ void reset_timer()
  */
 unsigned long ms_passed()
 {
+#ifdef ARDUINO_BUILD
+        return millis() - start;
+#else
         return timer_counter / TMR_COUNTS_PER_MS;
+#endif
 }

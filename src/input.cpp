@@ -35,10 +35,15 @@
 
 uint8_t adc_avg(uint8_t samples)
 {
+        uint16_t ret = 0;
+
+#ifdef ARDUINO_BUILD
+        for (uint8_t i = 0; i < samples; i++)
+                ret += analogRead(BRIGHTNESS_POT) >> 2;
+#else
         uint8_t _ADCSRA = ADCSRA;
         ADCSRA &= ~(1 << ADATE); // Temporarily disable auto triggering
 
-        uint16_t ret = 0;
         for (uint8_t i = 0; i < samples; i++) {
                 ADCSRA |= (1 << ADSC); // Trigger ADC
                 loop_until_bit_is_clear(ADCSRA, ADSC);
@@ -46,6 +51,7 @@ uint8_t adc_avg(uint8_t samples)
         }
 
         ADCSRA = _ADCSRA; // Restore auto triggering
+#endif
 
         return round((double)ret/samples);
 }
@@ -69,7 +75,13 @@ uint8_t pot()
 #if defined(ADC_AVG_SAMPLES) && ADC_AVG_SAMPLES > 1
         ret = adc_avg(ADC_AVG_SAMPLES);
 #else
+
+#ifdef ARDUINO_BUILD
+        ret = analogRead(BRIGHTNESS_POT) >> 2;
+#else
         ret = ADCH;
+#endif
+
 #endif
 
 #ifdef INVERT_POT

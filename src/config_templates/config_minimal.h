@@ -43,7 +43,8 @@
 
 #define STRIP_TYPE WS2812
 
-#define WS2812_DIN PB0                          // WS2812 DIN pin
+#define WS2812_DIN PXX                          // WS2812 DIN pin
+#define WS2812_DIN_PORT PORTX                   // WS2812 DIN pin bank
 #define WS2812_COLOR_ORDER GRB                  // Order in which color should be parsed to the strip (Most WS2812 strips use BGR)
 #define WS2812_RESET_TIME  50                   // Time required for the WS2812 to reset
                                                 // If runtime between strip writes exceeds the 
@@ -53,9 +54,12 @@
 // Pots
 //////////////////////////////
 
-#define BRIGHTNESS_POT_ADMUX_MSK (1 << MUX1)               // PB4 (Refer to table 17-4 in the ATtiny25/45/85 datasheet)
-// #define BRIGHTNESS_POT_ADMUX_MSK (1 << MUX1) | (1 << MUX0)    // PB3 (Refer to table 17-4 in the ATtiny25/45/85 datasheet)
-
+// Potentiometer input ADMUX mask
+#define BRIGHTNESS_POT_ADMUX_MSK (X << MUX0)|\
+                                 (X << MUX1)|\
+                                 (X << MUX2)|\
+                                 (X << MUX3)
+                                 
 #define ADC_AVG_SAMPLES 255                                   // Max 255 - Number of samples used to determine the average potentiometer value.
                                                               // Increase this if the LED strip is noisy, especially at lower settings.
                                                               // Higher values will reserve more runtime

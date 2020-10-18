@@ -54,9 +54,12 @@
 // Pots
 //////////////////////////////
 
-// #define BRIGHTNESS_POT_ADMUX_MSK (1 << MUX1)               // PB4 (Refer to table 17-4 in the ATtiny25/45/85 datasheet)
-#define BRIGHTNESS_POT_ADMUX_MSK (1 << MUX1) | (1 << MUX0)    // PB3 (Refer to table 17-4 in the ATtiny25/45/85 datasheet)
-
+// Potentiometer input ADMUX mask
+#define BRIGHTNESS_POT_ADMUX_MSK (X << MUX0)|\
+                                 (X << MUX1)|\
+                                 (X << MUX2)|\
+                                 (X << MUX3)
+                                 
 #define ADC_AVG_SAMPLES 255                                   // Max 255 - Number of samples used to determine the average potentiometer value.
                                                               // Increase this if the LED strip is noisy, especially at lower settings.
                                                               // Higher values will reserve more runtime

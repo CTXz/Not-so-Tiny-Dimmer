@@ -25,11 +25,19 @@
 #include <stdint.h>
 #include <math.h>
 
+#ifdef ARDUINO_BUILD
+#include <Arduino.h>
+#endif
+
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
 
+#ifdef ARDUINO_BUILD
+#define BTN_STATE !digitalRead(BTN)
+#else 
 #define BTN_STATE !(PINB & (1 << BTN))
+#endif
 
 uint8_t adc_avg(uint8_t samples);
 uint8_t pot();

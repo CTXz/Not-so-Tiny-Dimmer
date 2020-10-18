@@ -88,7 +88,7 @@ void strip_calibrate()
 
                 if (!prev_btn_state && btn_state) { // Button press
 #if defined(BTN_DEBOUNCE_TIME) && BTN_DEBOUNCE_TIME > 0
-                        _delay_ms(BTN_DEBOUNCE_TIME);
+                        DELAY_MS(BTN_DEBOUNCE_TIME);
 #endif
                         reset_timer();
                 } else if (btn_state && ms_passed() >= 1000) { // Button held for 1 sec 
@@ -98,12 +98,12 @@ void strip_calibrate()
                         // Blink strip
                         for (uint8_t i = 0; i < 3; i++) {
                                 strip_apply_all((RGB_ptr_t) off);
-                                _delay_ms(200);
+                                DELAY_MS(200);
                                 strip_apply_substrpbuf(buf);
-                                _delay_ms(200);
+                                DELAY_MS(200);
                         }
                         strip_apply_all((RGB_ptr_t) off);
-                        _delay_ms(200);
+                        DELAY_MS(200);
 
                         return;
 

@@ -14,7 +14,13 @@
 
 #if STRIP_TYPE == WS2812 
 
+#ifdef ARDUINO_BUILD
+#include <Arduino.h>
+#define WS2812_DIN_MSK (digitalPinToBitMask(WS2812_DIN))
+#define WS2812_DIN_PORT (*portOutputRegister(digitalPinToPort(WS2812_DIN)))
+#else
 #define WS2812_DIN_MSK (1 << WS2812_DIN)
+#endif
 
 void ws2812_prep_tx();
 void ws2812_wait_rst();

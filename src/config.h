@@ -44,6 +44,7 @@
 #define STRIP_TYPE WS2812
 
 #define WS2812_DIN PB0                          // WS2812 DIN pin
+#define WS2812_DIN_PORT PORTB                   // WS2812 DIN pin bank
 #define WS2812_COLOR_ORDER GRB                  // Order in which color should be parsed to the strip (Most WS2812 strips use BGR)
 #define WS2812_RESET_TIME  50                   // Time required for the WS2812 to reset
                                                 // If runtime between strip writes exceeds the 
@@ -54,7 +55,6 @@
 //////////////////////////////
 
 #define BRIGHTNESS_POT_ADMUX_MSK (1 << MUX1)               // PB4 (Refer to table 17-4 in the ATtiny25/45/85 datasheet)
-// #define BRIGHTNESS_POT_ADMUX_MSK (1 << MUX1) | (1 << MUX0)    // PB3 (Refer to table 17-4 in the ATtiny25/45/85 datasheet)
 
 #define INVERT_POT                                         // Uncomment if pot is inverted
 
