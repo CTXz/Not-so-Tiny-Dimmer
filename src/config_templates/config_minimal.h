@@ -51,7 +51,7 @@
                                                 // necessary reset time, this may be set to 0
 
 //////////////////////////////
-// Pots
+// Potentiometer
 //////////////////////////////
 
 // Potentiometer input ADMUX mask

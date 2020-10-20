@@ -27,7 +27,9 @@
 
 #define RGB_ARRAY(...) __VA_ARGS__ 
 
+//////////////////////////////////
 // Static
+//////////////////////////////////
 
 /* PATCH_SET_ALL
  * -------------
@@ -76,7 +78,151 @@
                 rgb_apply_brightness(rgb[i], brightness); \
         strip_distribute_rgb(rgb, sizeof(rgb)/sizeof(RGB_t));
 
+/* PATCH_DIAL_RGB
+ * --------------
+ * Parameters:
+ *      BRIGHTNESS - Brightness of the color spectrum
+ * Description:
+ *      Dials a color within RGB spectrum with the potentiometer
+ */
+#define PATCH_DIAL_RGB(BRIGHTNESS) strip_scroll_rgb(pot() * 3, BRIGHTNESS)
+
+
+/* --------------------------------
+ * CV Controllable
+ * -------------------------------- */
+
+#define PATCH_SET_ALL_GATED(R_HI, G_HI, B_HI, R_LO, G_LO, B_LO, TRIGGER) \
+        RGB_t rgb; \
+        if (cv() >= TRIGGER) { \
+                rgb[R] = R_HI; \
+                rgb[G] = G_HI; \
+                rgb[B] = B_HI; \
+                rgb_apply_brightness(rgb, pot()); \
+        } else { \
+                rgb[R] = R_LO; \
+                rgb[G] = G_LO; \
+                rgb[B] = B_LO; \
+        } \
+        strip_apply_all(rgb);
+
+#define PATCH_SET_ALL_TOGGLE_ON_RISE(R1, G1, B1, R2, G2, B2, TRIGGER) \
+        static bool prev_trigger = false; \
+        static bool toggle = false; \
+        RGB_t rgb; \
+        bool trigger = (cv() >= TRIGGER); \
+        if (!prev_trigger && trigger) \
+                toggle = !toggle; \
+        if (toggle) { \
+                rgb[R] = R1; \
+                rgb[G] = G1; \
+                rgb[B] = B1; \
+                rgb_apply_brightness(rgb, pot()); \
+        } else { \
+                rgb[R] = R2; \
+                rgb[G] = G2; \
+                rgb[B] = B2; \
+        } \
+        strip_apply_all(rgb); \
+        prev_trigger = trigger;
+
+//////////////////////////////////
 // Animations
+//////////////////////////////////
+
+/* --------------------------------
+ * Constant
+ * -------------------------------- */
+
+/* PATCH_ANIMATION_RAINBOW
+ * ------------------------
+ * Parameters:
+ *      STEP_SIZE - Color steps (0 - 255) between each call.
+ *                  A greater value results in faster fading.
+ * Description:
+ *      Gradiently fades all LEDs simultaneously trough the RGB spectrum.
+ *      Supported on non-addressable strips.
+ */
+#define PATCH_ANIMATION_RAINBOW(STEP_SIZE, DELAY, BRIGHTNESS) strip_rainbow(STEP_SIZE, DELAY, BRIGHTNESS)
+
+/* PATCH_ANIMATION_ROTATE_RAINBOW
+ * ------------------------------
+ *  * Parameters:
+ *      STEP_SIZE - Color steps (0 - 255) between each pixel.
+ *      DELAY - Delay between each call in ms
+ * Description:
+ *      Rotates the rgb spectrum across the strip.
+ */
+#define PATCH_ANIMATION_ROTATE_RAINBOW(STEP_SIZE, DELAY) strip_rotate_rainbow(STEP_SIZE, DELAY);
+
+/* PATCH_ANIMATION_SWAP
+ * --------------------
+ * Parameters:
+ *      RFH - Red value (0 - 255) of first strip half
+ *      GFH - Green value (0 - 255) of first strip half
+ *      BFH - Blue value (0 - 255) of first strip half
+ *      RFH - Red value (0 - 255) of second strip half
+ *      GFH - Green value (0 - 255) of second strip half
+ *      BFH - Blue value (0 - 255) of second strip half
+ *      SWAP_TIME - Time (ms) after which the halves get swapped
+ * Description:
+ *      Splits the strip in two halves and continiously swaps their colors.
+ *      Only supported on addressable strips.
+ */
+#define PATCH_ANIMATION_SWAP(RFH, GFH, BFH, RSH, GSH, BSH, SWAP_TIME) \
+        static bool swap = false; \
+        if (ms_passed() >= SWAP_TIME) { \
+                if (swap) { \
+                        PATCH_DISTRIBUTE(RGB_ARRAY({RFH, GFH, BFH}, {RSH, GSH, BSH})); \
+                } else { \
+                        PATCH_DISTRIBUTE(RGB_ARRAY({RSH, GSH, BSH}, {RFH, GFH, BFH})); \
+                } \
+                swap = !swap; \
+                reset_timer(); \
+        }
+
+/* PATCH_ANIMATION_RAIN
+ * --------------------
+ * Parameters:
+ *      _R - Red color value
+ *      _G - Green color value
+ *      _B - Blue color value
+ *      MAX_DROPS - Maximum amount of visible "droplets" at a time
+ *      MIN_T_APPART - Minimum time in ms between drops
+ *      MAX_T_APPART - Maximum time in ms between drops
+ *      DELAY - Delay of droplet fading
+ * Description:
+ *      Creates a rain effect across the strip.
+ *      Note that this effect makes use of an RGB buffer and will linearly increase 
+ *      memory consumption with strip size. 
+ *      Only supported on addressable strips.
+ */
+#define PATCH_ANIMATION_RAIN(_R, _G, _B, MAX_DROPS, MIN_T_APPART, MAX_T_APPART, DELAY) \
+        RGB_t rgb; \
+        rgb[R] = _R; \
+        rgb[G] = _G; \
+        rgb[B] = _B; \
+        strip_rain(rgb, MAX_DROPS, MIN_T_APPART, MAX_T_APPART, DELAY);
+
+#define PATCH_ANIMATION_OVERRIDE_ARR(RGB_ARR, DELAY) \
+        RGB_t rgb[] = { \
+                RGB_ARR \
+        }; \
+        strip_override_array(rgb, sizeof(rgb)/sizeof(RGB_t), DELAY);
+
+#define PATCH_ANIMATION_OVERRIDE_RAND(DELAY) \
+        static RGB_t rgb = {255, 255, 255}; \
+        if (strip_override(rgb, DELAY)) { \
+                rgb[R] = rand() % 256; \
+                rgb[G] = rand() % 256; \
+                rgb[B] = rand() % 256; \
+        }
+
+#define PATCH_ANIMATION_OVERRIDE_RAINBOW(DELAY, STEP_SIZE) strip_override_rainbow(DELAY, STEP_SIZE);
+
+/* --------------------------------
+ * Potentiometer Controllable
+ * -------------------------------- */
 
 /* PATCH_ANIMATION_BREATHE_POT_CTRL
  * --------------------------------
@@ -132,27 +278,6 @@
         }; \
         strip_breathe_array(rgb, sizeof(rgb)/sizeof(RGB_t), pot());
 
-
-/* PATCH_RGB_POT_CTRL
- * ----------------
- * Parameters:
- *      BRIGHTNESS - Brightness of the color spectrum
- * Description:
- *      Scrolls the RGB spectrum with the potentiometer
- */
-#define PATCH_RGB_POT_CTRL(BRIGHTNESS) strip_scroll_rgb(pot() * 3, BRIGHTNESS)
-
-/* PATCH_ANIMATION_RAINBOW
- * ------------------------
- * Parameters:
- *      STEP_SIZE - Color steps (0 - 255) between each call.
- *                  A greater value results in faster fading.
- * Description:
- *      Gradiently fades all LEDs simultaneously trough the RGB spectrum.
- *      Supported on non-addressable strips.
- */
-#define PATCH_ANIMATION_RAINBOW(STEP_SIZE, DELAY, BRIGHTNESS) strip_rainbow(STEP_SIZE, DELAY, BRIGHTNESS)
-
 /* PATCH_ANIMATION_RAINBOW_POT_CTRL
  * ---------------------------------
  * Description:
@@ -161,32 +286,6 @@
  *      Supported on non-addressable strips.
  */
 #define PATCH_ANIMATION_RAINBOW_POT_CTRL strip_rainbow(pot() >> 6, (255 - pot()) >> 3, 255)
-
-/* PATCH_ANIMATION_SWAP
- * --------------------
- * Parameters:
- *      RFH - Red value (0 - 255) of first strip half
- *      GFH - Green value (0 - 255) of first strip half
- *      BFH - Blue value (0 - 255) of first strip half
- *      RFH - Red value (0 - 255) of second strip half
- *      GFH - Green value (0 - 255) of second strip half
- *      BFH - Blue value (0 - 255) of second strip half
- *      SWAP_TIME - Time (ms) after which the halves get swapped
- * Description:
- *      Splits the strip in two halves and continiously swaps their colors.
- *      Only supported on addressable strips.
- */
-#define PATCH_ANIMATION_SWAP(RFH, GFH, BFH, RSH, GSH, BSH, SWAP_TIME) \
-        static bool swap = false; \
-        if (ms_passed() >= SWAP_TIME) { \
-                if (swap) { \
-                        PATCH_DISTRIBUTE(RGB_ARRAY({RFH, GFH, BFH}, {RSH, GSH, BSH})); \
-                } else { \
-                        PATCH_DISTRIBUTE(RGB_ARRAY({RSH, GSH, BSH}, {RFH, GFH, BFH})); \
-                } \
-                swap = !swap; \
-                reset_timer(); \
-        }
 
 /* PATCH_ANIMATION_SWAP_POT_CTRL
  * -----------------------------
@@ -226,42 +325,9 @@
  *      STEP_SIZE - Color steps (0 - 255) between each pixel.
  *      DELAY - Delay between each call in ms
  * Description:
- *      Rotates the rgb spectrum across the strip.
- */
-#define PATCH_ANIMATION_ROTATE_RAINBOW(STEP_SIZE, DELAY) strip_rotate_rainbow(STEP_SIZE, DELAY);
-
-/* PATCH_ANIMATION_ROTATE_RAINBOW
- * ------------------------------
- *  * Parameters:
- *      STEP_SIZE - Color steps (0 - 255) between each pixel.
- *      DELAY - Delay between each call in ms
- * Description:
  *      Rotates the rgb spectrum across the strip. The speed can be adjusted by the potentiometer.
  */
 #define PATCH_ANIMATION_ROTATE_RAINBOW_POT_CTRL(STEP_SIZE) strip_rotate_rainbow(STEP_SIZE, 31 - (pot() >> 3) + 5);
-
-/* PATCH_ANIMATION_RAIN
- * --------------------
- * Parameters:
- *      _R - Red color value
- *      _G - Green color value
- *      _B - Blue color value
- *      MAX_DROPS - Maximum amount of visible "droplets" at a time
- *      MIN_T_APPART - Minimum time in ms between drops
- *      MAX_T_APPART - Maximum time in ms between drops
- *      DELAY - Delay of droplet fading
- * Description:
- *      Creates a rain effect across the strip.
- *      Note that this effect makes use of an RGB buffer and will linearly increase 
- *      memory consumption with strip size. 
- *      Only supported on addressable strips.
- */
-#define PATCH_ANIMATION_RAIN(_R, _G, _B, MAX_DROPS, MIN_T_APPART, MAX_T_APPART, DELAY) \
-        RGB_t rgb; \
-        rgb[R] = _R; \
-        rgb[G] = _G; \
-        rgb[B] = _B; \
-        strip_rain(rgb, MAX_DROPS, MIN_T_APPART, MAX_T_APPART, DELAY);
 
 /* PATCH_ANIMATION_RAIN_POT_CTRL
  * -----------------------------
@@ -287,25 +353,11 @@
                 delay = 10; \
         strip_rain(rgb, (pot_read * strip_size) / 255, 255 - pot_read + 5, 510 - (pot_read << 1) + 5, delay);
 
-#define PATCH_ANIMATION_OVERRIDE_ARR(RGB_ARR, DELAY) \
-        RGB_t rgb[] = { \
-                RGB_ARR \
-        }; \
-        strip_override_array(rgb, sizeof(rgb)/sizeof(RGB_t), DELAY);
-
 #define PATCH_ANIMATION_OVERRIDE_ARR_POT_CTRL(RGB_ARR) \
         RGB_t rgb[] = { \
                 RGB_ARR \
         }; \
         strip_override_array(rgb, sizeof(rgb)/sizeof(RGB_t), 255 - pot() + 5);
-        
-#define PATCH_ANIMATION_OVERRIDE_RAND(DELAY) \
-        static RGB_t rgb = {255, 255, 255}; \
-        if (strip_override(rgb, DELAY)) { \
-                rgb[R] = rand() % 256; \
-                rgb[G] = rand() % 256; \
-                rgb[B] = rand() % 256; \
-        }
 
 #define PATCH_ANIMATION_OVERRIDE_RAND_POT_CTRL \
         static RGB_t rgb = {255, 255, 255}; \
@@ -315,7 +367,64 @@
                 rgb[B] = rand() % 256; \
         }
 
-#define PATCH_ANIMATION_OVERRIDE_RAINBOW(DELAY, STEP_SIZE) strip_override_rainbow(DELAY, STEP_SIZE);
-
 #define PATCH_ANIMATION_OVERRIDE_RAINBOW_POT_CTRL(STEP_SIZE) strip_override_rainbow(255 - pot(), STEP_SIZE);
 
+/* --------------------------------
+ * CV Controllable
+ * -------------------------------- */
+
+#define PATCH_ANIMATION_SWAP_ON_RISE(RFH, GFH, BFH, RSH, GSH, BSH, TRIGGER) \
+        static bool prev_trigger = false; \
+        static bool swap = false; \
+        bool trigger = (cv() >= TRIGGER); \
+        if (!prev_trigger && trigger) \
+                swap = !swap; \
+        if (swap) { \
+                RGB_t rgb[] = { \
+                        {RFH, GFH, BFH}, {RSH, GSH, BSH} \
+                }; \
+                strip_distribute_rgb(rgb, sizeof(rgb)/sizeof(RGB_t)); \
+        } else { \
+                RGB_t rgb[] = { \
+                        {RSH, GSH, BSH}, {RFH, GFH, BFH} \
+                }; \
+                strip_distribute_rgb(rgb, sizeof(rgb)/sizeof(RGB_t)); \
+        } \
+        prev_trigger = trigger;
+
+#define PATCH_ANIMATION_MOVE_DIV_ON_RISE(_R, _G, _B, DIV_SIZE, TRIGGER) \
+        static int remaining = strip_size - DIV_SIZE; \
+        static bool prev_trigger = false; \
+        static substrpbuf buf = {3, NULL}; \
+        if (!buf.substrps) { \
+                buf.substrps = (substrp *) malloc(sizeof(substrp) * 3); \
+                buf.substrps[0].length = 0; \
+                buf.substrps[0].rgb[R] = 0; \
+                buf.substrps[0].rgb[G] = 0; \
+                buf.substrps[0].rgb[B] = 0; \
+                buf.substrps[1].length = DIV_SIZE; \
+                buf.substrps[1].rgb[R] = _R; \
+                buf.substrps[1].rgb[G] = _G; \
+                buf.substrps[1].rgb[B] = _B; \
+                buf.substrps[2].length = (uint16_t) remaining; \
+                buf.substrps[2].rgb[R] = 0; \
+                buf.substrps[2].rgb[G] = 0; \
+                buf.substrps[2].rgb[B] = 0; \
+        } \
+        if (remaining <= -DIV_SIZE) { \
+                Serial.println(remaining); \
+                remaining = strip_size - DIV_SIZE; \
+                buf.substrps[0].length = 0; \
+                buf.substrps[2].length = (uint16_t) remaining; \
+        } \
+        strip_apply_substrpbuf(buf); \
+        bool trigger = (cv() >= TRIGGER); \
+        if (!prev_trigger && trigger) { \
+                buf.substrps[0].length += DIV_SIZE; \
+                remaining -= DIV_SIZE; \
+                buf.substrps[2].length = (remaining > 0) ? (uint16_t) remaining : 0; \
+        } \
+        prev_trigger = trigger;
+        
+
+        

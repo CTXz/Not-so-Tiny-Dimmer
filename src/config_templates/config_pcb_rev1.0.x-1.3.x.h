@@ -51,7 +51,7 @@
                                                 // necessary reset time, this may be set to 0
 
 //////////////////////////////
-// Pots
+// Potentiometer
 //////////////////////////////
 
 #define BRIGHTNESS_POT_ADMUX_MSK (1 << MUX1)               // PB4 (Refer to table 17-4 in the ATtiny25/45/85 datasheet)

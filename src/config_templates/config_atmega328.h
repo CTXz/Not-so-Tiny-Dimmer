@@ -51,7 +51,7 @@
                                                 // necessary reset time, this may be set to 0
 
 //////////////////////////////
-// Pots
+// Potentiometer
 //////////////////////////////
 
 // Potentiometer input ADMUX mask
@@ -71,6 +71,15 @@
                                                               // Set to 0 or comment out to disable
 
 // #define POT_UPPER_BOUND XX                                 // Max 255 - Any potentiometer value lower or equal to the lower bound will be registered as 255 
+
+//////////////////////////////
+// CV Input
+//////////////////////////////
+
+#define CV_INPUT_ADMUX_MSK (X << MUX0)|\
+                           (X << MUX1)|\
+                           (X << MUX2)|\
+                           (X << MUX3)
 
 //////////////////////////////
 // Push Button

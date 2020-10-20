@@ -50,10 +50,10 @@
                                                 // necessary reset time, this may be set to 0
 
 //////////////////////////////
-// Pots
+// Potentiometer
 //////////////////////////////
 
-#define BRIGHTNESS_POT AX                                     // Potentiometer input
+#define BRIGHTNESS_POT AX                                     // Potentiometer input analog pin
 
 // #define INVERT_POT                                         // Uncomment if pot is inverted
 
@@ -66,6 +66,12 @@
                                                               // Set to 0 or comment out to disable
 
 // #define POT_UPPER_BOUND XX                                 // Max 255 - Any potentiometer value lower or equal to the lower bound will be registered as 255 
+
+//////////////////////////////
+// CV Input
+//////////////////////////////
+
+#define CV_INPUT AX                                            // CV input analog pin
 
 //////////////////////////////
 // Push Button

@@ -21,11 +21,23 @@
 #include "config.h"
 #include "input.h"
 
-// Pots
+// Analog To Digital Converter
+
+/* adc_clear_mux_bits
+ * ------------------
+ * Description:
+ *      Clears the ADMUX registers MUX (ls 4) bits
+ *      so that the a new ADC channel can be selected
+ */
+void adc_clear_mux_bits()
+{
+        ADMUX &= ~(1 << MUX0| 1 << MUX1 | 1 << MUX2 | 1 << MUX3);
+}
 
 /* adc_avg
  * -------
  * Parameters:
+ *      adc - ADMUX mask for AVR native builds, ADC pin for Arduino builds 
  *      num_samples - Number of ADC samples to be averaged (max 255)
  * Returns:
  *      Average 8-bit ADC reading
@@ -33,16 +45,16 @@
  *      Returns the average ADC reading from n samples
  */
 
-uint8_t adc_avg(uint8_t samples)
+uint8_t adc_avg(uint8_t adc, uint8_t samples)
 {
         uint16_t ret = 0;
 
 #ifdef ARDUINO_BUILD
         for (uint8_t i = 0; i < samples; i++)
-                ret += analogRead(BRIGHTNESS_POT) >> 2;
+                ret += analogRead(adc) >> 2;
 #else
-        uint8_t _ADCSRA = ADCSRA;
-        ADCSRA &= ~(1 << ADATE); // Temporarily disable auto triggering
+        adc_clear_mux_bits();
+        ADMUX |= adc;
 
         for (uint8_t i = 0; i < samples; i++) {
                 ADCSRA |= (1 << ADSC); // Trigger ADC
@@ -50,11 +62,12 @@ uint8_t adc_avg(uint8_t samples)
                 ret += ADCH;
         }
 
-        ADCSRA = _ADCSRA; // Restore auto triggering
 #endif
 
         return round((double)ret/samples);
 }
+
+// Potentiometer
 
 /* pot()
  * -----
@@ -73,12 +86,16 @@ uint8_t pot()
         uint8_t ret;
 
 #if defined(ADC_AVG_SAMPLES) && ADC_AVG_SAMPLES > 1
-        ret = adc_avg(ADC_AVG_SAMPLES);
+        ret = adc_avg(BRIGHTNESS_POT_ADMUX_MSK, ADC_AVG_SAMPLES);
 #else
 
 #ifdef ARDUINO_BUILD
         ret = analogRead(BRIGHTNESS_POT) >> 2;
 #else
+        adc_clear_mux_bits();
+        ADMUX |= BRIGHTNESS_POT_ADMUX_MSK;
+        ADCSRA |= (1 << ADSC); // Trigger ADC
+        loop_until_bit_is_clear(ADCSRA, ADSC);
         ret = ADCH;
 #endif
 
@@ -112,7 +129,11 @@ uint8_t pot()
  *      are certainly required and are not simply an option.
  */
 uint8_t pot_avg(uint8_t samples) {
-        uint8_t ret = adc_avg(samples);
+#ifdef ARDUINO_BUILD
+        uint8_t ret = adc_avg(BRIGHTNESS_POT, samples);
+#else
+        uint8_t ret = adc_avg(BRIGHTNESS_POT_ADMUX_MSK, samples);
+#endif
 
 #ifdef INVERT_POT
         ret = ~ret;
@@ -130,3 +151,18 @@ uint8_t pot_avg(uint8_t samples) {
 
         return ret;    
 }
+
+#if defined(CV_INPUT_ADMUX_MSK) || defined(CV_INPUT)
+uint8_t cv()
+{
+#ifdef ARDUINO
+        return analogRead(CV_INPUT) >> 2;
+#else
+        adc_clear_mux_bits();
+        ADMUX |= CV_INPUT_ADMUX_MSK;
+        ADCSRA |= (1 << ADSC); // Trigger ADC
+        loop_until_bit_is_clear(ADCSRA, ADSC);
+        return ADCH;
+#endif
+}
+#endif
