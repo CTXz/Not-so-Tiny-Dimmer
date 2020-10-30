@@ -532,6 +532,56 @@ void strip_distribute_rgb(RGB_t rgb[], uint16_t size)
 
 #endif
 
+bool rgb_apply_brightness_fade(RGB_ptr_t rgb_in, RGB_ptr_t rgb_out, uint16_t step_size, bool start)
+{
+        static bool inc = true;
+        static int brightness = 0;
+
+        if (start) {
+                inc = true;
+                brightness = 0;
+        }
+
+        rgb_cpy(rgb_out, rgb_in);
+
+        if (inc) {
+                brightness += step_size;
+                if (brightness >= 255) {
+                        brightness = 255;
+                        inc = false;
+                }
+                inc = brightness < 255;
+        } else { 
+                brightness -= step_size;
+                if (brightness < 0) {
+                        brightness = 0;
+                }
+                inc = brightness == 0;
+        }
+
+        rgb_apply_brightness(rgb_out, brightness);
+        return (brightness == 0);
+}
+
+bool strip_fade(RGB_ptr_t rgb, uint16_t delay_ms, uint8_t step_size, bool start)
+{
+        static RGB_t rgb_out;
+
+        if (ms_passed() <= delay_ms)
+                return false;
+
+        bool ret;
+        if (start)
+                ret = rgb_apply_brightness_fade(rgb, rgb_out, step_size, true);
+        else
+                ret = rgb_apply_brightness_fade(rgb, rgb_out, step_size, false);
+        
+        strip_apply_all(rgb_out);
+        reset_timer();
+
+        return ret;
+}
+
 /* strip_breathe
  * -------------
  * Parameters:

@@ -43,8 +43,7 @@
 
 #define STRIP_TYPE WS2812
 
-#define WS2812_DIN PB0                          // WS2812 DIN pin
-#define WS2812_DIN_PORT PORTB                   // WS2812 DIN pin bank
+#define WS2812_DIN 7                           // WS2812 DIN pin
 #define WS2812_COLOR_ORDER GRB                  // Order in which color should be parsed to the strip (Most WS2812 strips use BGR)
 #define WS2812_RESET_TIME  50                   // Time required for the WS2812 to reset
                                                 // If runtime between strip writes exceeds the 
@@ -54,9 +53,9 @@
 // Potentiometer
 //////////////////////////////
 
-#define BRIGHTNESS_POT_ADMUX_MSK (1 << MUX1)               // PB4 (Refer to table 17-4 in the ATtiny25/45/85 datasheet)
+#define BRIGHTNESS_POT A1                                     // Potentiometer input analog pin
 
-#define INVERT_POT                                         // Uncomment if pot is inverted
+// #define INVERT_POT                                         // Uncomment if pot is inverted
 
 // #define ADC_AVG_SAMPLES XX                                 // Max 255 - Number of samples used to determine the average potentiometer value.
                                                               // Increase this if the LED strip is noisy, especially at lower settings.
@@ -69,10 +68,16 @@
 // #define POT_UPPER_BOUND XX                                 // Max 255 - Any potentiometer value lower or equal to the lower bound will be registered as 255 
 
 //////////////////////////////
+// CV Input
+//////////////////////////////
+
+#define CV_INPUT A0                                            // CV input analog pin
+
+//////////////////////////////
 // Push Button
 //////////////////////////////
 
-#define BTN PB2                                                // Push button pin
+#define BTN 6                                                 // Push button pin
 
 #define BTN_DEBOUNCE_TIME 10                                   // ms - Time to wait for button to debounce. Increasing this will reduce false trigger due to
                                                                // bouncing, but add a slight delay to color toggling.
@@ -85,10 +90,10 @@
 // For a list of available patches, please refer to the
 // patch_macros.h header
 
-#define NUM_PATCHES 10 // Max 10 (To increase, add cases to update_strip() in main.c)
+#define NUM_PATCHES 1 // Max 10 (To increase, add cases to update_strip() in main.c)
 
 // Plain white
-#define PATCH_0 PATCH_SET_ALL(255, 255, 255)
+#define PATCH_0 PATCH_ANIMATION_FADE_ON_RISE(255, 0, 0, 0, 255)
 
 // First strip half white, second off 
 #define PATCH_1 PATCH_DISTRIBUTE ( \

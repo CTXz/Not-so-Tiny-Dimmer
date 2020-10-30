@@ -220,6 +220,10 @@
 
 #define PATCH_ANIMATION_OVERRIDE_RAINBOW(DELAY, STEP_SIZE) strip_override_rainbow(DELAY, STEP_SIZE);
 
+#define PATCH_ANIMATION_FADE(R, G, B, DELAY_MS, STEP_SIZE) \
+        RGB_t rgb = {R, G, B}; \
+        strip_fade(rgb, DELAY_MS, STEP_SIZE, false);
+
 /* --------------------------------
  * Potentiometer Controllable
  * -------------------------------- */
@@ -425,6 +429,19 @@
                 buf.substrps[2].length = (remaining > 0) ? (uint16_t) remaining : 0; \
         } \
         prev_trigger = trigger;
-        
 
-        
+#define PATCH_ANIMATION_FADE_ON_RISE(_R, _G, _B, DELAY_MS, TRIGGER) \
+        static bool prev_trigger = false; \
+        static bool fade = true; \
+        static RGB_t rgb = {_R, _G, _B}; \
+        bool trigger = (cv() >= TRIGGER); \
+        uint8_t steps = pot(); \
+        if (!steps) \
+                steps = 1; \
+        if (!prev_trigger && trigger) { \
+                fade = strip_fade(rgb, 1, steps, true); \
+        } else if (!fade) { \
+                fade = strip_fade(rgb, 1, steps, false); \
+        } \
+        prev_trigger = trigger;
+
