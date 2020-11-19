@@ -586,6 +586,7 @@ bool strip_fade(RGB_ptr_t rgb, uint16_t delay_ms, uint8_t step_size, bool start)
  * -------------
  * Parameters:
  *      rgb - RGB value to be "breathed"
+ *      dealy_ms - Delay in ms between each step
  *      step_size - Color steps during breath
  * Returns:
  *      True - Breath completed
@@ -593,46 +594,18 @@ bool strip_fade(RGB_ptr_t rgb, uint16_t delay_ms, uint8_t step_size, bool start)
  * Description:
  *      "Breathes" the provided RGB value across the entire strip.
  */
-bool strip_breathe(RGB_ptr_t rgb, uint8_t step_size)
+bool strip_breathe(RGB_ptr_t rgb, uint16_t delay_ms, uint8_t step_size)
 {
-        static bool inc = true;
-        static uint8_t brightness = 0;
+        static bool done = false;
 
-        RGB_t rgbcpy;
-
-        if (step_size == 0)
-                step_size = 1;
-        
-        rgb_cpy(rgbcpy, rgb);
-        rgb_apply_brightness(rgbcpy, brightness);
-        strip_apply_all(rgbcpy);
-
-        if (brightness == 0 && ms_passed() < 2000)
+        if (done && ms_passed() < 2000)
                 return false;
+        else if (ms_passed() >= 2000)
+                done = false;
 
-        uint8_t prev_brightness = brightness;
+        done = strip_fade(rgb, delay_ms, step_size, false);
 
-        if (inc) {
-                brightness += step_size;
-                
-                if (prev_brightness > brightness)
-                        brightness = 255;
-                
-                inc = (brightness < 255);
-        } else {
-                brightness -= step_size;
-
-                if (prev_brightness < brightness)
-                        brightness = 0;
-        }
-        
-        if (brightness == 0) {
-                reset_timer();
-                inc = true;
-                return true;
-        }
-
-        return false;
+        return done;
 }
 
 /* strip_breathe_array
@@ -640,15 +613,16 @@ bool strip_breathe(RGB_ptr_t rgb, uint8_t step_size)
  * Parameters:
  *      rgb - Arrat of RGB values to be "breathed"
  *      size - Size of the RGB array
+ *      dealy_ms - Delay in ms between each step
  *      step_size - Color steps during breath
  * Description:
  *      "Breathes" the provided RGB values across the entire strip.
  */
-void strip_breathe_array(RGB_t rgb[], uint8_t size, uint8_t step_size)
+void strip_breathe_array(RGB_t rgb[], uint8_t size, uint16_t delay_ms, uint8_t step_size)
 {
         static uint8_t i = 0;
 
-        if(strip_breathe(rgb[i], step_size))
+        if(strip_breathe(rgb[i], delay_ms, step_size))
                 i = (i + 1) % size;
 }
 
@@ -725,7 +699,7 @@ void strip_scroll_rgb(uint16_t val, uint8_t brightness) {
  *      Due to the rather poor randomness of rand(), the outcomes tend
  *      to be similar.
  */
-void strip_breathe_random(uint8_t step_size)
+void strip_breathe_random(uint16_t delay_ms, uint8_t step_size)
 {
         static RGB_t rgb;
 
@@ -735,7 +709,7 @@ void strip_breathe_random(uint8_t step_size)
                 rgb[B] = 255;
         }
         
-        if (strip_breathe(rgb, step_size)) {
+        if (strip_breathe(rgb, delay_ms, step_size)) {
                 rgb[R] = (rand() % 256);
                 rgb[G] = (rand() % 256);
                 rgb[B] = (rand() % 256);
@@ -750,11 +724,11 @@ void strip_breathe_random(uint8_t step_size)
  * Description:
  *      Gradiently "Breathes" trough the rgb spectrum
  */
-void strip_breathe_rainbow(uint8_t breath_step_size, uint8_t rgb_step_size)
+void strip_breathe_rainbow(uint16_t delay_ms, uint8_t breath_step_size, uint8_t rgb_step_size)
 {
         static RGB_t rgb = {255, 0, 0};
 
-        if (strip_breathe(rgb, breath_step_size))
+        if (strip_breathe(rgb, delay_ms, breath_step_size))
                 rgb_apply_fade(rgb, rgb_step_size);
 }
 

@@ -224,63 +224,71 @@
         RGB_t rgb = {R, G, B}; \
         strip_fade(rgb, DELAY_MS, STEP_SIZE, false);
 
-/* --------------------------------
- * Potentiometer Controllable
- * -------------------------------- */
-
-/* PATCH_ANIMATION_BREATHE_POT_CTRL
+/* PATCH_ANIMATION_BREATHE
  * --------------------------------
  * Parameters:
  *      R - Red value (0 - 255)
  *      G - Green value (0 - 255)
  *      B - Blue value (0 - 255)
+ *      DELAY_MS - Delay between each change in brightness
+ *      STEP_SIZE - Brightness steps
+
  * Description:
  *      "Breathes" the provided RGB value across the entire strip.
- *      The duration of the "breath" can be altered by the potentiometer.
- *      Supported on non-addressable strips.
  */
-#define PATCH_ANIMATION_BREATHE_POT_CTRL(R, G, B) \
+#define PATCH_ANIMATION_BREATHE(R, G, B, STEP_SIZE) \
         RGB_t rgb = {R, G, B}; \
-        strip_breathe(rgb, pot())
+        strip_breathe(rgb, DELAY_MS, STEP_SIZE)
 
-/* PATCH_ANIMATION_BREATHE_RAND_POT_CTRL
+/* PATCH_ANIMATION_BREATHE_RAND
  * -------------------------------------
+ * Parameters:
+ *      STEP_SIZE - Brightness steps
+ *      DELAY_MS - Delay between each change in brightness
+ *
  * Description:
  *      "Breathes" random RGB values across the entire strip.
- *      The duration of the "breath" can be altered by the potentiometer.
  *      Due to the rather poor randomness of rand(), the outcomes tend
  *      to be similar.
  *      Supported on non-addressable strips.
  */
-#define PATCH_ANIMATION_BREATHE_RAND_POT_CTRL strip_breathe_random(pot())
+#define PATCH_ANIMATION_BREATHE_RAND(DELAY_MS, STEP_SIZE) strip_breathe_random(DELAY_MS, STEP_SIZE)
 
-/* PATCH_ANIMATION_BREATHE_RAINBOW_POT_CTRL
+/* PATCH_ANIMATION_BREATHE_RAINBOW
  * ----------------------------------------
  * Parameters:
- *      RGB_STEP_SIZE - Color steps after every "breath".
- *                      A greater step size means the color difference 
- *                      between each breath becomes more noticeable. 
+ *      BREATH_STEP_SIZE - Brightness steps
+ *      RGB_STEP_SIZE    - Color steps after every "breath".
+ *                         A greater step size means the color difference 
+ *                         between each breath becomes more noticeable. 
+ *      DELAY_MS         - Delay between each change in brightness
+ * 
  * Description:
  *      Gradiently "Breathes" trough the rgb spectrum.
- *      The duration of the "breath" can be altered by the potentiometer.
  */
-#define PATCH_ANIMATION_BREATHE_RAINBOW_POT_CTRL(RGB_STEP_SIZE) strip_breathe_rainbow(pot(), RGB_STEP_SIZE)
+#define PATCH_ANIMATION_BREATHE_RAINBOW(DELAY_MS, BREATH_STEP_SIZE, RGB_STEP_SIZE) strip_breathe_rainbow(DELAY_MS, BREATH_STEP_SIZE, RGB_STEP_SIZE)
 
 /* PATCH_ANIMATION_BREATHE_ARR_POT_CTRL
  * ------------------------------------
  * Parameters:
- *      RGB_ARR - An RGB_ARRAY() enclosed array of literal RGB arrays.
- *                Ex. RGB_ARRAY({255, 255, 255}, {0, 1, 2}, ...)
+ *      RGB_ARR   - An RGB_ARRAY() enclosed array of literal RGB arrays.
+ *                  Ex. RGB_ARRAY({255, 255, 255}, {0, 1, 2}, ...)
+ *      DELAY_MS  - Delay between each change in brightness
+ *      STEP_SIZE - Brightness steps
+ * 
  * Description:
  *      Gradiently "Breathes" trough the RGB array.
- *      The duration of the "breath" can be altered by the potentiometer.
  *      Supported on non-addressable strips.
  */
-#define PATCH_ANIMATION_BREATHE_ARR_POT_CTRL(RGB_ARR) \
+#define PATCH_ANIMATION_BREATHE_ARR(RGB_ARR, DELAY_MS, STEP_SIZE) \
         RGB_t rgb[] = { \
                 RGB_ARR \
         }; \
-        strip_breathe_array(rgb, sizeof(rgb)/sizeof(RGB_t), pot());
+        strip_breathe_array(rgb, sizeof(rgb)/sizeof(RGB_t), DELAY_MS, STEP_SIZE);
+
+/* --------------------------------
+ * Potentiometer Controllable
+ * -------------------------------- */
 
 /* PATCH_ANIMATION_RAINBOW_POT_CTRL
  * ---------------------------------
