@@ -91,22 +91,24 @@ void strip_calibrate()
                         DELAY_MS(BTN_DEBOUNCE_TIME);
 #endif
                         reset_timer();
-                } else if (btn_state && ms_passed() >= 1000) { // Button held for 1 sec 
-                        strip_size = buf.substrps[0].length + 1;
-                        SET_STRIP_SIZE(strip_size);
-                        
-                        // Blink strip
-                        for (uint8_t i = 0; i < 3; i++) {
+                } else if (btn_state) {
+                        if (ms_passed() >= 1000) { // Button held for 1 sec 
+                                strip_size = buf.substrps[0].length + 1;
+                                SET_STRIP_SIZE(strip_size);
+                                
+                                // Blink strip
+                                for (uint8_t i = 0; i < 3; i++) {
+                                        strip_apply_all((RGB_ptr_t) off);
+                                        DELAY_MS(200);
+                                        strip_apply_substrpbuf(buf);
+                                        DELAY_MS(200);
+                                }
                                 strip_apply_all((RGB_ptr_t) off);
                                 DELAY_MS(200);
-                                strip_apply_substrpbuf(buf);
-                                DELAY_MS(200);
+
+                                return;
                         }
-                        strip_apply_all((RGB_ptr_t) off);
-                        DELAY_MS(200);
-
-                        return;
-
+                        continue;
                 } else if (prev_btn_state && !btn_state) { // Button Released
                         buf.substrps[0].length++;
                         buf.substrps[2].length--;
