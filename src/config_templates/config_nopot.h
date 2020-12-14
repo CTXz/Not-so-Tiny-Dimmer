@@ -15,7 +15,7 @@
    * along with this program.  If not, see <https://www.gnu.org/licenses/>.
    * 
    * Author: Patrick Pedersen <ctx.xda@gmail.com>
-   * Description: Minimal configuration file for the Not-so-Tiny dimmer firmware.
+   * Description: Potentiometer-less configuration file for the Not-so-Tiny dimmer firmware.
    * 
    */
 
@@ -55,24 +55,13 @@
 //////////////////////////////
 
 // Potentiometer input ADMUX mask
-#define BRIGHTNESS_POT_ADMUX_MSK (X << MUX0)|\
-                                 (X << MUX1)|\
-                                 (X << MUX2)|\
-                                 (X << MUX3)
-                                 
-#define ADC_AVG_SAMPLES 255                                   // Max 255 - Number of samples used to determine the average potentiometer value.
-                                                              // Increase this if the LED strip is noisy, especially at lower settings.
-                                                              // Higher values will reserve more runtime
-                                                              // Set to <= 1 or comment out to disable
-
-// #define POT_LOWER_BOUND 0                                  // Max 255 - Any potentiometer value lower or equal to the lower bound will disable the strip
-                                                              // Set to 0 or comment out to disable
+#define BRIGHTNESS_POT_MISSING                  // No potentiometer
 
 //////////////////////////////
 // Push Button
 //////////////////////////////
 
-#define BTN PXX                                                // Push button pin
+#define BTN PB2                                                // Push button pin
 
 #define BTN_DEBOUNCE_TIME 100                                  // ms - Time to wait for button to debounce. Increasing this will reduce false trigger due to
                                                                // bouncing, but add a slight delay to color toggling.

@@ -294,7 +294,9 @@ int main()
         ADMUX |= (1 << REFS0);  // Set reference to AVcc
 #endif
 
+#ifndef BRIGHTNESS_POT_MISSING
         ADMUX |= BRIGHTNESS_POT_ADMUX_MSK;    // Set MUX to Brightness potentiometer pin
+#endif
 
         ADCSRA = 
                 (1 << ADEN)  |                // Enable ADC

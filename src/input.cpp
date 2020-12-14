@@ -83,6 +83,7 @@ uint8_t adc_avg(uint8_t adc, uint8_t samples)
 
 uint8_t pot()
 {
+#ifndef BRIGHTNESS_POT_MISSING
         uint8_t ret;
 
 #if defined(ADC_AVG_SAMPLES) && ADC_AVG_SAMPLES > 1
@@ -116,6 +117,9 @@ uint8_t pot()
 #endif
 
         return ret;
+#else
+        return 255;
+#endif
 }
 
 /* pot_avg()
@@ -129,6 +133,7 @@ uint8_t pot()
  *      are certainly required and are not simply an option.
  */
 uint8_t pot_avg(uint8_t samples) {
+#ifndef BRIGHTNESS_POT_MISSING
 #ifdef ARDUINO_BUILD
         uint8_t ret = adc_avg(BRIGHTNESS_POT, samples);
 #else
@@ -150,6 +155,9 @@ uint8_t pot_avg(uint8_t samples) {
 #endif
 
         return ret;    
+#else
+        return 255;
+#endif
 }
 
 #if defined(CV_INPUT_ADMUX_MSK) || defined(CV_INPUT)
