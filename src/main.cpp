@@ -185,7 +185,7 @@ void _main() {
 #endif
                 }
 
-#if STRIP_TYPE == WS2812
+#if STRIP_TYPE == WS2812 && !defined(STRIP_SIZE)
                 else if (btn_state) {
                         if (ms_passed() >= 5000) {
                                 strip_calibrate();

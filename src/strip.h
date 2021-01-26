@@ -39,12 +39,17 @@
 
 #if STRIP_TYPE == WS2812
 
-extern uint16_t eeprom_strip_size EEMEM;
-extern uint16_t strip_size;
+        extern uint16_t eeprom_strip_size EEMEM;
+        extern uint16_t strip_size;
 
-#define SET_STRIP_SIZE(size) eeprom_update_word(&eeprom_strip_size, size)
-#define GET_STRIP_SIZE (eeprom_read_word(&eeprom_strip_size))
-
+        #define SET_STRIP_SIZE(size) eeprom_update_word(&eeprom_strip_size, size)
+        
+        #ifdef STRIP_SIZE
+                #define GET_STRIP_SIZE STRIP_SIZE
+        #else
+                #define GET_STRIP_SIZE (eeprom_read_word(&eeprom_strip_size))
+        #endif
+        
         #if WS2812_COLOR_ORDER == RGB
                 #define WS2812_WIRING_RGB_0 0
                 #define WS2812_WIRING_RGB_1 1
@@ -64,7 +69,9 @@ extern uint16_t strip_size;
         #else
                 #error "No color order specified! Please set the WS2812_COLOR_ORDER directive in the config file!"
         #endif
+
 #else
+
         #if NON_ADDR_STRIP_R == PB0
                 #define NON_ADDR_STRIP_R_OCR OCR0A
         #elif NON_ADDR_STRIP_R == PB1
@@ -94,6 +101,7 @@ extern uint16_t strip_size;
         #else
                 #error "Blue LED pin does not support PWM! Please use PB0, PB1 or PB4!"
         #endif
+
 #endif
 
 ////////////////////////
