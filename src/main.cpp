@@ -219,7 +219,9 @@ void setup() {
         Serial.begin(9600);
         pinMode(WS2812_DIN, OUTPUT);
         pinMode(BTN, INPUT_PULLUP);
+#ifndef BRIGHTNESS_POT_MISSING
         pinMode(BRIGHTNESS_POT, INPUT);
+#endif
 }
 
 void loop() {
