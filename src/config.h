@@ -43,7 +43,8 @@
 
 #define STRIP_TYPE WS2812
 
-#define WS2812_DIN 7                           // WS2812 DIN pin
+#define WS2812_DIN PB0                          // WS2812 DIN pin
+#define WS2812_DIN_PORT PORTB                   // WS2812 DIN pin bank
 #define WS2812_COLOR_ORDER GRB                  // Order in which color should be parsed to the strip (Most WS2812 strips use BGR)
 #define WS2812_RESET_TIME  50                   // Time required for the WS2812 to reset
                                                 // If runtime between strip writes exceeds the 
@@ -53,9 +54,9 @@
 // Potentiometer
 //////////////////////////////
 
-#define BRIGHTNESS_POT A1                                     // Potentiometer input analog pin
+#define BRIGHTNESS_POT_ADMUX_MSK (1 << MUX1)               // PB4 (Refer to table 17-4 in the ATtiny25/45/85 datasheet)
 
-// #define INVERT_POT                                         // Uncomment if pot is inverted
+#define INVERT_POT                                         // Uncomment if pot is inverted
 
 // #define ADC_AVG_SAMPLES XX                                 // Max 255 - Number of samples used to determine the average potentiometer value.
                                                               // Increase this if the LED strip is noisy, especially at lower settings.
@@ -68,83 +69,67 @@
 // #define POT_UPPER_BOUND XX                                 // Max 255 - Any potentiometer value lower or equal to the lower bound will be registered as 255 
 
 //////////////////////////////
-// CV Input
-//////////////////////////////
-
-#define CV_INPUT A0                                            // CV input analog pin
-
-//////////////////////////////
 // Push Button
 //////////////////////////////
 
-#define BTN 6                                                 // Push button pin
+#define BTN PB2                                                // Push button pin
 
 #define BTN_DEBOUNCE_TIME 10                                   // ms - Time to wait for button to debounce. Increasing this will reduce false trigger due to
                                                                // bouncing, but add a slight delay to color toggling.
                                                                // Set to 0 or comment out to disable
-                                                
+                                                                                                              
 ////////////////////////
 // Patches
 ////////////////////////
 
 // For a list of available patches, please refer to the
 // patch_macros.h header
+#define HALF 209
+#define STRIP_SIZE 300
 
-#define NUM_PATCHES 1 // Max 10 (To increase, add cases to update_strip() in main.c)
+#define NUM_PATCHES 20 // Max 10 (To increase, add cases to update_strip() in main.c)
 
-// Plain white
-#define PATCH_0 PATCH_ANIMATION_FADE_ON_RISE(255, 0, 0, 0, 255)
+#define PATCH_0 PATCH_DIAL_RGB(255)
 
-// First strip half white, second off 
-#define PATCH_1 PATCH_DISTRIBUTE ( \
-        RGB_ARRAY (                \
-                {255, 255, 255},   \
-                {0, 0, 0}          \
-        )                          \
-)
+// Orange
+#define PATCH_1 PATCH_SET_ALL(255, 25, 0)
 
-// First strip half off, second white 
-#define PATCH_2 PATCH_DISTRIBUTE ( \
-        RGB_ARRAY (                \
-                {0, 0, 0},         \
-                {255, 255, 255}    \
-        )                          \
-)
+// Jungle green
+#define PATCH_2 PATCH_SET_ALL(50, 255, 50)
 
-// First strip half pink, second cyan
-#define PATCH_3 PATCH_DISTRIBUTE ( \
-        RGB_ARRAY (                \
-                {10, 255, 202},    \
-                {255, 20, 127}     \
-        )                          \
-)
+// Lime green
+#define PATCH_3 PATCH_SET_ALL(206, 255, 20)
+
+// Rosy pink
+#define PATCH_4 PATCH_SET_ALL(255, 75, 75)
 
 // First strip half purple, second beige
-#define PATCH_4 PATCH_DISTRIBUTE ( \
-        RGB_ARRAY (                \
-                {255, 74,  33},    \
-                {151, 0, 255}      \
-        )                          \
-)
+#define PATCH_5 PATCH_SPLIT (255, 74,  33, 151, 0, 255, HALF)
 
-// Cyan white rain effect with potentiometer intensity control
-#define PATCH_5 \
-        if (rand() % 2) { \
-                PATCH_ANIMATION_RAIN_POT_CTRL(0, 255, 255) \
-        } else { \
-                PATCH_ANIMATION_RAIN_POT_CTRL(255, 0, 255) \
-        } \
+// First strip second beige, half purple
+#define PATCH_6 PATCH_SPLIT (151, 0, 255, 255, 74,  33, HALF)
 
-#define PATCH_6 PATCH_ANIMATION_OVERRIDE_ARR_POT_CTRL ( \
-        RGB_ARRAY (                                     \
-                {10, 255, 202},                         \
-                {255, 20, 127}                          \
-        )                                               \
-)
-// Rotating rainbow animation
-#define PATCH_7 PATCH_ANIMATION_ROTATE_RAINBOW_POT_CTRL(10)
+// // Arizona
+#define PATCH_7 PATCH_SPLIT (255, 75, 75, 126, 200, 69, HALF)
 
-#define PATCH_8 PATCH_ANIMATION_RAINBOW_POT_CTRL
+#define PATCH_8 PATCH_SPLIT (126, 200, 69, 255, 75, 75, HALF)
 
-// Halves swapping with potentiometer speed control
-#define PATCH_9 PATCH_ANIMATION_SWAP_POT_CTRL((uint8_t) (rand() % 256), (uint8_t) (rand() % 256), (uint8_t) (rand() % 256), 0, 0, 0)
+// // Peach blossom
+#define PATCH_9 PATCH_SPLIT (200, 59, 44, 100, 150, 20, HALF)
+
+#define PATCH_10 PATCH_SPLIT (100, 150, 20, 200, 59, 44, HALF)
+
+// Gold Cyan
+#define PATCH_11 PATCH_SPLIT (19, 150, 56, 255, 100, 0, HALF)
+
+#define PATCH_12 PATCH_SPLIT (255, 100, 0, 19, 150, 56, HALF)
+
+#define PATCH_13 PATCH_ANIMATION_ROTATE_RAINBOW_POT_CTRL(10)
+
+#define PATCH_14 PATCH_ANIMATION_RAINBOW_POT_CTRL
+
+#define PATCH_15 PATCH_ANIMATION_SWAP_POT_CTRL(255, 255, 255, 0, 0, 0, HALF)
+#define PATCH_16 PATCH_ANIMATION_SWAP_POT_CTRL(255, 0, 0, 0, 0, 0, HALF)
+#define PATCH_17 PATCH_ANIMATION_SWAP_POT_CTRL(255, 0, 0, 0, 0, 255, HALF)
+#define PATCH_18 PATCH_ANIMATION_SWAP_POT_CTRL(0, 0, 255, 0, 0, 0, HALF)
+#define PATCH_19 PATCH_ANIMATION_SWAP_POT_CTRL(100, 0, 255, 0, 0, 0, HALF)

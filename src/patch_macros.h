@@ -41,25 +41,11 @@
  *      Sets the entire LED strip to one color.
  *      Supported on non-addressable strips.
  */
-#define PATCH_SET_ALL(R, G, B) \
-        RGB_t rgb = {R, G, B}; \
-        rgb_apply_brightness(rgb, pot()); \
-        strip_apply_all(rgb);
+#define PATCH_SET_ALL(R, G, B) patch_set_all(R, G, B)
 
-#define PATCH_SPLIT(R1, G1, B1, R2, G2, B2, SPLIT) \
-        static substrpbuf buf = {2, NULL}; \
-        if (!buf.substrps) \
-                buf.substrps = (substrp *)malloc(sizeof(substrp) * 2); \
-        buf.substrps[0].length = SPLIT; \
-        buf.substrps[0].rgb[R] = R1; \
-        buf.substrps[0].rgb[G] = G1; \
-        buf.substrps[0].rgb[B] = B1; \
-        buf.substrps[1].length = strip_size - SPLIT; \
-        buf.substrps[1].rgb[R] = R2; \
-        buf.substrps[1].rgb[G] = G2; \
-        buf.substrps[1].rgb[B] = B2; \
-        substripbuf_apply_brightness(&buf, pot()); \
-        strip_apply_substrpbuf(buf);
+#define PATCH_SPLIT(R1, G1, B1, R2, G2, B2, SPLIT) patch_split(R1, G1, B1, R2, G2, B2, SPLIT);
+
+#define PATCH_SPLIT_FIXED(R1, G1, B1, R2, G2, B2, SPLIT) patch_split_mixed(R1, G1, B1, R2, G2, B2, SPLIT);
 
 /* PATCH_DISTRIBUTE
  * ----------------
@@ -153,7 +139,7 @@
  * Description:
  *      Rotates the rgb spectrum across the strip.
  */
-#define PATCH_ANIMATION_ROTATE_RAINBOW(STEP_SIZE, DELAY) strip_rotate_rainbow(STEP_SIZE, DELAY);
+#define PATCH_ANIMATION_ROTATE_RAINBOW_POT_CTRL(STEP_SIZE) strip_rotate_rainbow(STEP_SIZE, 31 - (pot() >> 3) + 5);
 
 /* PATCH_ANIMATION_SWAP
  * --------------------
@@ -299,33 +285,13 @@
  */
 #define PATCH_ANIMATION_RAINBOW_POT_CTRL strip_rainbow(pot() >> 6, (255 - pot()) >> 3, 255)
 
-/* PATCH_ANIMATION_SWAP_POT_CTRL
- * -----------------------------
- * Parameters:
- *      RFH - Red value (0 - 255) of first strip half
- *      GFH - Green value (0 - 255) of first strip half
- *      BFH - Blue value (0 - 255) of first strip half
- *      RFH - Red value (0 - 255) of second strip half
- *      GFH - Green value (0 - 255) of second strip half
- *      BFH - Blue value (0 - 255) of second strip half
- * Description:
- *      Splits the strip in two halves and continiously swaps their colors.
- *      The swap time can be altered by the potentiometer.
- *      Only supported on addressable strips.
- */
-#define PATCH_ANIMATION_SWAP_POT_CTRL(RFH, GFH, BFH, RSH, GSH, BSH) \
+#define PATCH_ANIMATION_SWAP_POT_CTRL(RFH, GFH, BFH, RSH, GSH, BSH, SPLIT) \
         static bool swap = false; \
         if (ms_passed() >= (uint16_t)(1020 - (pot() << 2) + 100)) { \
                 if (swap) { \
-                        RGB_t rgb[] = { \
-                                {RFH, GFH, BFH}, {RSH, GSH, BSH} \
-                        }; \
-                        strip_distribute_rgb(rgb, sizeof(rgb)/sizeof(RGB_t)); \
+                        PATCH_SPLIT_FIXED(RFH, GFH, BFH, RSH, GSH, BSH, SPLIT) \
                 } else { \
-                        RGB_t rgb[] = { \
-                                {RSH, GSH, BSH}, {RFH, GFH, BFH} \
-                        }; \
-                        strip_distribute_rgb(rgb, sizeof(rgb)/sizeof(RGB_t)); \
+                        PATCH_SPLIT_FIXED(RSH, GSH, BSH, RFH, GFH, BFH, SPLIT) \
                 } \
                 swap = !swap; \
                 reset_timer(); \

@@ -208,6 +208,10 @@ typedef struct pxbuf {
         pxl* buf;
 } pxbuf;
 
+void patch_set_all(uint8_t r, uint8_t g, uint8_t b);
+void patch_split(uint8_t R1, uint8_t G1, uint8_t B1, uint8_t R2, uint8_t G2, uint8_t B2, uint16_t SPLIT);
+void patch_split_mixed(uint8_t R1, uint8_t G1, uint8_t B1, uint8_t R2, uint8_t G2, uint8_t B2, uint16_t SPLIT);
+
 void rgb_apply_brightness(RGB_t rgb, uint8_t brightness);
 void substripbuf_apply_brightness(substrpbuf *strp, uint8_t brightness);
 

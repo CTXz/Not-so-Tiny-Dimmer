@@ -39,6 +39,48 @@ const RGB_t off = {0, 0, 0};
 uint16_t eeprom_strip_size EEMEM = 0;
 uint16_t strip_size;
 
+// FIXME
+
+void patch_set_all(uint8_t r, uint8_t g, uint8_t b) {
+        RGB_t rgb;
+        rgb[R] = r;
+        rgb[G] = g;
+        rgb[B] = b;
+        rgb_apply_brightness(rgb, pot());
+        strip_apply_all(rgb);
+}
+
+void patch_split(uint8_t R1, uint8_t G1, uint8_t B1, uint8_t R2, uint8_t G2, uint8_t B2, uint16_t SPLIT) {
+        static substrpbuf buf = {2, NULL};
+        if (!buf.substrps)
+                buf.substrps = (substrp *)malloc(sizeof(substrp) * 2);
+        buf.substrps[0].length = SPLIT;
+        buf.substrps[0].rgb[R] = R1;
+        buf.substrps[0].rgb[G] = G1;
+        buf.substrps[0].rgb[B] = B1;
+        buf.substrps[1].length = strip_size - SPLIT;
+        buf.substrps[1].rgb[R] = R2;
+        buf.substrps[1].rgb[G] = G2;
+        buf.substrps[1].rgb[B] = B2;
+        substripbuf_apply_brightness(&buf, pot());
+        strip_apply_substrpbuf(buf);
+}
+
+void patch_split_mixed(uint8_t R1, uint8_t G1, uint8_t B1, uint8_t R2, uint8_t G2, uint8_t B2, uint16_t SPLIT) {
+        static substrpbuf buf = {2, NULL};
+        if (!buf.substrps)
+                buf.substrps = (substrp *)malloc(sizeof(substrp) * 2);
+        buf.substrps[0].length = SPLIT;
+        buf.substrps[0].rgb[R] = R1;
+        buf.substrps[0].rgb[G] = G1;
+        buf.substrps[0].rgb[B] = B1;
+        buf.substrps[1].length = strip_size - SPLIT;
+        buf.substrps[1].rgb[R] = R2;
+        buf.substrps[1].rgb[G] = G2;
+        buf.substrps[1].rgb[B] = B2;
+        strip_apply_substrpbuf(buf);
+}
+
 /* strip_calibrate
  * -------
  * Description:
