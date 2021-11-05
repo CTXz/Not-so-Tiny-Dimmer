@@ -46,7 +46,13 @@ void patch_set_all(uint8_t r, uint8_t g, uint8_t b) {
         rgb[R] = r;
         rgb[G] = g;
         rgb[B] = b;
-        rgb_apply_brightness(rgb, pot());
+
+        uint8_t br = pot();
+        
+        if (!br && GATE_STATE)
+                br = 255;
+                
+        rgb_apply_brightness(rgb, br);
         strip_apply_all(rgb);
 }
 
@@ -62,7 +68,13 @@ void patch_split(uint8_t R1, uint8_t G1, uint8_t B1, uint8_t R2, uint8_t G2, uin
         buf.substrps[1].rgb[R] = R2;
         buf.substrps[1].rgb[G] = G2;
         buf.substrps[1].rgb[B] = B2;
-        substripbuf_apply_brightness(&buf, pot());
+
+        uint8_t br = pot();
+        
+        if (!br && GATE_STATE)
+                br = 255;
+
+        substripbuf_apply_brightness(&buf, br);
         strip_apply_substrpbuf(buf);
 }
 

@@ -287,7 +287,19 @@
 
 #define PATCH_ANIMATION_SWAP_POT_CTRL(RFH, GFH, BFH, RSH, GSH, BSH, SPLIT) \
         static bool swap = false; \
-        if (ms_passed() >= (uint16_t)(1020 - (pot() << 2) + 100)) { \
+        static bool prev_gate = GATE_STATE; \
+        uint8_t read = pot(); \
+        if (!read) { \
+                if (!prev_gate && GATE_STATE) { \
+                        if (swap) { \
+                                PATCH_SPLIT_FIXED(RFH, GFH, BFH, RSH, GSH, BSH, SPLIT) \
+                        } else { \
+                                PATCH_SPLIT_FIXED(RSH, GSH, BSH, RFH, GFH, BFH, SPLIT) \
+                        } \
+                        swap = !swap; \
+                } \
+        } \
+        else if (ms_passed() >= (uint16_t)(1020 - (pot() << 2) + 100)) { \
                 if (swap) { \
                         PATCH_SPLIT_FIXED(RFH, GFH, BFH, RSH, GSH, BSH, SPLIT) \
                 } else { \
@@ -295,7 +307,8 @@
                 } \
                 swap = !swap; \
                 reset_timer(); \
-        }
+        } \
+        prev_gate = GATE_STATE;
 
 /* PATCH_ANIMATION_ROTATE_RAINBOW
  * ------------------------------

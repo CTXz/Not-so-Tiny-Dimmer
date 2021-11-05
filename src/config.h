@@ -77,7 +77,13 @@
 #define BTN_DEBOUNCE_TIME 10                                   // ms - Time to wait for button to debounce. Increasing this will reduce false trigger due to
                                                                // bouncing, but add a slight delay to color toggling.
                                                                // Set to 0 or comment out to disable
-                                                                                                              
+
+//////////////////////////////
+// GATE
+//////////////////////////////
+
+#define GATE PB3
+
 ////////////////////////
 // Patches
 ////////////////////////
@@ -87,49 +93,55 @@
 #define HALF 209
 #define STRIP_SIZE 300
 
-#define NUM_PATCHES 20 // Max 10 (To increase, add cases to update_strip() in main.c)
+#define NUM_PATCHES 22 // Max 10 (To increase, add cases to update_strip() in main.c)
 
 #define PATCH_0 PATCH_DIAL_RGB(255)
 
+// Red
+#define PATCH_1 PATCH_SET_ALL(255, 0, 0)
+
+// White
+#define PATCH_2 PATCH_SET_ALL(255, 255, 255)
+
 // Orange
-#define PATCH_1 PATCH_SET_ALL(255, 25, 0)
+#define PATCH_3 PATCH_SET_ALL(255, 25, 0)
 
 // Jungle green
-#define PATCH_2 PATCH_SET_ALL(50, 255, 50)
+#define PATCH_4 PATCH_SET_ALL(50, 255, 50)
 
 // Lime green
-#define PATCH_3 PATCH_SET_ALL(206, 255, 20)
+#define PATCH_5 PATCH_SET_ALL(206, 255, 20)
 
 // Rosy pink
-#define PATCH_4 PATCH_SET_ALL(255, 75, 75)
+#define PATCH_6 PATCH_SET_ALL(255, 75, 75)
 
 // First strip half purple, second beige
-#define PATCH_5 PATCH_SPLIT (255, 74,  33, 151, 0, 255, HALF)
+#define PATCH_7 PATCH_SPLIT (255, 74,  33, 151, 0, 255, HALF)
 
 // First strip second beige, half purple
-#define PATCH_6 PATCH_SPLIT (151, 0, 255, 255, 74,  33, HALF)
+#define PATCH_8 PATCH_SPLIT (151, 0, 255, 255, 74,  33, HALF)
 
 // // Arizona
-#define PATCH_7 PATCH_SPLIT (255, 75, 75, 126, 200, 69, HALF)
+#define PATCH_9 PATCH_SPLIT (255, 75, 75, 126, 200, 69, HALF)
 
-#define PATCH_8 PATCH_SPLIT (126, 200, 69, 255, 75, 75, HALF)
+#define PATCH_10 PATCH_SPLIT (126, 200, 69, 255, 75, 75, HALF)
 
 // // Peach blossom
-#define PATCH_9 PATCH_SPLIT (200, 59, 44, 100, 150, 20, HALF)
+#define PATCH_11 PATCH_SPLIT (200, 59, 44, 100, 150, 20, HALF)
 
-#define PATCH_10 PATCH_SPLIT (100, 150, 20, 200, 59, 44, HALF)
+#define PATCH_12 PATCH_SPLIT (100, 150, 20, 200, 59, 44, HALF)
 
 // Gold Cyan
-#define PATCH_11 PATCH_SPLIT (19, 150, 56, 255, 100, 0, HALF)
+#define PATCH_13 PATCH_SPLIT (19, 150, 56, 255, 100, 0, HALF)
 
-#define PATCH_12 PATCH_SPLIT (255, 100, 0, 19, 150, 56, HALF)
+#define PATCH_14 PATCH_SPLIT (255, 100, 0, 19, 150, 56, HALF)
 
-#define PATCH_13 PATCH_ANIMATION_ROTATE_RAINBOW_POT_CTRL(10)
+#define PATCH_15 PATCH_ANIMATION_ROTATE_RAINBOW_POT_CTRL(10)
 
-#define PATCH_14 PATCH_ANIMATION_RAINBOW_POT_CTRL
+#define PATCH_16 PATCH_ANIMATION_RAINBOW_POT_CTRL
 
-#define PATCH_15 PATCH_ANIMATION_SWAP_POT_CTRL(255, 255, 255, 0, 0, 0, HALF)
-#define PATCH_16 PATCH_ANIMATION_SWAP_POT_CTRL(255, 0, 0, 0, 0, 0, HALF)
-#define PATCH_17 PATCH_ANIMATION_SWAP_POT_CTRL(255, 0, 0, 0, 0, 255, HALF)
-#define PATCH_18 PATCH_ANIMATION_SWAP_POT_CTRL(0, 0, 255, 0, 0, 0, HALF)
-#define PATCH_19 PATCH_ANIMATION_SWAP_POT_CTRL(100, 0, 255, 0, 0, 0, HALF)
+#define PATCH_17 PATCH_ANIMATION_SWAP_POT_CTRL(255, 255, 255, 0, 0, 0, HALF)
+#define PATCH_18 PATCH_ANIMATION_SWAP_POT_CTRL(255, 0, 0, 0, 0, 0, HALF)
+#define PATCH_19 PATCH_ANIMATION_SWAP_POT_CTRL(255, 0, 0, 0, 0, 255, HALF)
+#define PATCH_20 PATCH_ANIMATION_SWAP_POT_CTRL(0, 0, 255, 0, 0, 0, HALF)
+#define PATCH_21 PATCH_ANIMATION_SWAP_POT_CTRL(100, 0, 255, 0, 0, 0, HALF)

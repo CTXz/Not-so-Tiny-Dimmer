@@ -329,6 +329,8 @@ int main()
         DDRB &= ~(1 << BTN);                  // Set button pin to input
         PORTB |= (1 << BTN);                  // Enable internal pull-up on Button pin
 
+        DDRB &= ~(1 << GATE);                  // Set GATE jack to input
+
         // ADC
         ADMUX = (1 << ADLAR); // Reduce ADC input to 8-bit value (0-255)
 

@@ -39,6 +39,12 @@
 #define BTN_STATE !(PINB & (1 << BTN))
 #endif
 
+#ifdef ARDUINO_BUILD
+#define GATE_STATE !digitalRead(GATE)
+#else 
+#define GATE_STATE (PINB & (1 << GATE))
+#endif
+
 uint8_t adc_avg(uint8_t adc, uint8_t samples);
 uint8_t pot();
 uint8_t pot_avg(uint8_t samples);
