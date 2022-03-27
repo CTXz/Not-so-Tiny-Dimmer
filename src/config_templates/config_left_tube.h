@@ -63,7 +63,7 @@
                                                               // Higher values will reserve more runtime
                                                               // Set to <= 1 or comment out to disable
 
-#define POT_LOWER_BOUND 2                                 // Max 255 - Any potentiometer value lower or equal to the lower bound will be registered as 0
+// #define POT_LOWER_BOUND XX                                 // Max 255 - Any potentiometer value lower or equal to the lower bound will be registered as 0
                                                               // Set to 0 or comment out to disable
 
 // #define POT_UPPER_BOUND XX                                 // Max 255 - Any potentiometer value lower or equal to the lower bound will be registered as 255 
@@ -72,9 +72,9 @@
 // Push Button
 //////////////////////////////
 
-#define BTN PB3                                                // Push button pin
+#define BTN PB2                                                // Push button pin
 
-#define BTN_DEBOUNCE_TIME 50                                   // ms - Time to wait for button to debounce. Increasing this will reduce false trigger due to
+#define BTN_DEBOUNCE_TIME 10                                   // ms - Time to wait for button to debounce. Increasing this will reduce false trigger due to
                                                                // bouncing, but add a slight delay to color toggling.
                                                                // Set to 0 or comment out to disable
 
@@ -82,7 +82,7 @@
 // GATE
 //////////////////////////////
 
-#define GATE PB2
+#define GATE PB3
 
 ////////////////////////
 // Patches
@@ -90,7 +90,7 @@
 
 // For a list of available patches, please refer to the
 // patch_macros.h header
-#define STRIP_SIZE 70
+#define STRIP_SIZE 68
 #define HALF STRIP_SIZE/2
 
 #define NUM_PATCHES 18 // Max 10 (To increase, add cases to update_strip() in main.c)
@@ -142,3 +142,4 @@
 #define PATCH_16 PATCH_ANIMATION_ROTATE_RAINBOW_POT_CTRL(5)
 
 #define PATCH_17 PATCH_ANIMATION_RAINBOW_POT_CTRL
+

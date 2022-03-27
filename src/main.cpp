@@ -175,14 +175,14 @@ void update_strip(uint8_t patch)
                         PATCH_17;
                         break;
                 }
-                case 18 : {
-                        PATCH_18;
-                        break;
-                }
-                case 19 : {
-                        PATCH_19;
-                        break;
-                }
+                // case 18 : {
+                //         PATCH_18;
+                //         break;
+                // }
+                // case 19 : {
+                //         PATCH_19;
+                //         break;
+                // }
                 default: {
                         break;
                 }

@@ -90,7 +90,7 @@
 
 // For a list of available patches, please refer to the
 // patch_macros.h header
-#define STRIP_SIZE 70
+#define STRIP_SIZE 68
 #define HALF STRIP_SIZE/2
 
 #define NUM_PATCHES 18 // Max 10 (To increase, add cases to update_strip() in main.c)
