@@ -54,16 +54,16 @@
 // Potentiometer
 //////////////////////////////
 
-#define BRIGHTNESS_POT_ADMUX_MSK (1 << MUX1)               // PB4 (Refer to table 17-4 in the ATtiny25/45/85 datasheet)
+#define BRIGHTNESS_POT_ADMUX_MSK (1 << MUX0 | 1 << MUX1)      // PB3 (Refer to table 17-4 in the ATtiny25/45/85 datasheet)
 
-#define INVERT_POT                                         // Uncomment if pot is inverted
+// #define INVERT_POT                                            // Uncomment if pot is inverted
 
 // #define ADC_AVG_SAMPLES XX                                 // Max 255 - Number of samples used to determine the average potentiometer value.
                                                               // Increase this if the LED strip is noisy, especially at lower settings.
                                                               // Higher values will reserve more runtime
                                                               // Set to <= 1 or comment out to disable
 
-#define POT_LOWER_BOUND 2                                 // Max 255 - Any potentiometer value lower or equal to the lower bound will be registered as 0
+// #define POT_LOWER_BOUND 0                                     // Max 255 - Any potentiometer value lower or equal to the lower bound will be registered as 0
                                                               // Set to 0 or comment out to disable
 
 // #define POT_UPPER_BOUND XX                                 // Max 255 - Any potentiometer value lower or equal to the lower bound will be registered as 255 
@@ -72,9 +72,9 @@
 // Push Button
 //////////////////////////////
 
-#define BTN PB3                                                // Push button pin
+#define BTN PB2                                                // Push button pin
 
-#define BTN_DEBOUNCE_TIME 50                                   // ms - Time to wait for button to debounce. Increasing this will reduce false trigger due to
+#define BTN_DEBOUNCE_TIME 10                                   // ms - Time to wait for button to debounce. Increasing this will reduce false trigger due to
                                                                // bouncing, but add a slight delay to color toggling.
                                                                // Set to 0 or comment out to disable
 
@@ -82,7 +82,7 @@
 // GATE
 //////////////////////////////
 
-#define GATE PB2
+#define GATE PB1
 
 ////////////////////////
 // Patches
