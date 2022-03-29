@@ -54,9 +54,9 @@
 // Potentiometer
 //////////////////////////////
 
-#define BRIGHTNESS_POT_ADMUX_MSK (1 << MUX0 | 1 << MUX1)      // PB3 (Refer to table 17-4 in the ATtiny25/45/85 datasheet)
+#define BRIGHTNESS_POT_ADMUX_MSK (1 << MUX1)                  // PB4 (Refer to table 17-4 in the ATtiny25/45/85 datasheet)
 
-// #define INVERT_POT                                            // Uncomment if pot is inverted
+// #define INVERT_POT                                         // Uncomment if pot is inverted
 
 // #define ADC_AVG_SAMPLES XX                                 // Max 255 - Number of samples used to determine the average potentiometer value.
                                                               // Increase this if the LED strip is noisy, especially at lower settings.
@@ -72,7 +72,7 @@
 // Push Button
 //////////////////////////////
 
-#define BTN PB2                                                // Push button pin
+#define BTN PB1                                                // Push button pin
 
 #define BTN_DEBOUNCE_TIME 10                                   // ms - Time to wait for button to debounce. Increasing this will reduce false trigger due to
                                                                // bouncing, but add a slight delay to color toggling.
@@ -82,7 +82,7 @@
 // GATE
 //////////////////////////////
 
-#define GATE PB1
+#define GATE PB3
 
 ////////////////////////
 // Patches
