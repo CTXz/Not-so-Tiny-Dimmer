@@ -56,7 +56,7 @@
 
 #define BRIGHTNESS_POT_ADMUX_MSK (1 << MUX1)                  // PB4 (Refer to table 17-4 in the ATtiny25/45/85 datasheet)
 
-// #define INVERT_POT                                         // Uncomment if pot is inverted
+#define INVERT_POT                                         // Uncomment if pot is inverted
 
 // #define ADC_AVG_SAMPLES XX                                 // Max 255 - Number of samples used to determine the average potentiometer value.
                                                               // Increase this if the LED strip is noisy, especially at lower settings.
@@ -72,7 +72,7 @@
 // Push Button
 //////////////////////////////
 
-#define BTN PB1                                                // Push button pin
+#define BTN PB2                                                // Push button pin
 
 #define BTN_DEBOUNCE_TIME 10                                   // ms - Time to wait for button to debounce. Increasing this will reduce false trigger due to
                                                                // bouncing, but add a slight delay to color toggling.
@@ -90,18 +90,18 @@
 
 // For a list of available patches, please refer to the
 // patch_macros.h header
-#define STRIP_SIZE 70
+#define STRIP_SIZE 84
 #define HALF STRIP_SIZE/2
 
 #define NUM_PATCHES 18 // Max 10 (To increase, add cases to update_strip() in main.c)
 
-#define PATCH_0 PATCH_DIAL_RGB(255)
+// White
+#define PATCH_0 PATCH_SET_ALL(255, 255, 255)
+
+#define PATCH_1 PATCH_DIAL_RGB(255)
 
 // Red
-#define PATCH_1 PATCH_SET_ALL(255, 0, 0)
-
-// White
-#define PATCH_2 PATCH_SET_ALL(255, 255, 255)
+#define PATCH_2 PATCH_SET_ALL(255, 0, 0)
 
 // Orange
 #define PATCH_3 PATCH_SET_ALL(255, 25, 0)
