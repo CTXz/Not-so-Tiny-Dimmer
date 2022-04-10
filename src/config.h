@@ -54,7 +54,7 @@
 // Potentiometer
 //////////////////////////////
 
-#define BRIGHTNESS_POT_ADMUX_MSK (1 << MUX1)                  // PB4 (Refer to table 17-4 in the ATtiny25/45/85 datasheet)
+#define BRIGHTNESS_POT_ADMUX_MSK (1 << MUX1)               // PB4 (Refer to table 17-4 in the ATtiny25/45/85 datasheet)
 
 // #define INVERT_POT                                         // Uncomment if pot is inverted
 
@@ -63,7 +63,7 @@
                                                               // Higher values will reserve more runtime
                                                               // Set to <= 1 or comment out to disable
 
-// #define POT_LOWER_BOUND 0                                     // Max 255 - Any potentiometer value lower or equal to the lower bound will be registered as 0
+// #define POT_LOWER_BOUND XX                                 // Max 255 - Any potentiometer value lower or equal to the lower bound will be registered as 0
                                                               // Set to 0 or comment out to disable
 
 // #define POT_UPPER_BOUND XX                                 // Max 255 - Any potentiometer value lower or equal to the lower bound will be registered as 255 
@@ -90,7 +90,7 @@
 
 // For a list of available patches, please refer to the
 // patch_macros.h header
-#define STRIP_SIZE 84
+#define STRIP_SIZE 29
 #define HALF STRIP_SIZE/2
 
 #define NUM_PATCHES 18 // Max 10 (To increase, add cases to update_strip() in main.c)
