@@ -153,6 +153,8 @@ void update_strip(uint8_t patch)
 // Main routine
 ////////////////////////
 
+uint8_t eeprom_patch EEMEM = 0;
+
 void _main() {
         DELAY_MS(10);                         // Allow supply voltage to calm down 
 
@@ -163,8 +165,14 @@ void _main() {
                 strip_calibrate();
 #endif
 
+        selected_patch =  eeprom_read_byte(&eeprom_patch);
+
+        if (++selected_patch == 3)
+                selected_patch = 0;
+                
+        eeprom_update_byte(&eeprom_patch, selected_patch);
+
         // Patches
-        selected_patch = 0;
         update_strip(selected_patch);
         
         // Main loop

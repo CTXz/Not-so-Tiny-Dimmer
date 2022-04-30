@@ -339,7 +339,7 @@
  * Description:
  *      Rotates the rgb spectrum across the strip. The speed can be adjusted by the potentiometer.
  */
-#define PATCH_ANIMATION_ROTATE_RAINBOW_POT_CTRL(STEP_SIZE) strip_rotate_rainbow(STEP_SIZE, 31 - (pot() >> 3) + 5);
+#define PATCH_ANIMATION_ROTATE_RAINBOW_POT_CTRL(STEP_SIZE) strip_rotate_rainbow(STEP_SIZE, 50);
 
 /* PATCH_ANIMATION_RAIN_POT_CTRL
  * -----------------------------
@@ -355,7 +355,7 @@
  *      Only supported on addressable strips.
  */
 #define PATCH_ANIMATION_RAIN_POT_CTRL(_R, _G, _B) \
-        uint8_t pot_read = pot(); \
+        uint8_t pot_read = 170; \
         RGB_t rgb; \
         rgb[R] = _R; \
         rgb[G] = _G; \
