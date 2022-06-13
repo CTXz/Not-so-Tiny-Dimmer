@@ -156,66 +156,6 @@ void update_strip(uint8_t patch)
 uint8_t eeprom_patch EEMEM = 0;
 
 void _main() {
-        DELAY_MS(10);                         // Allow supply voltage to calm down 
-
-        // Calibration
-#if STRIP_TYPE == WS2812
-        strip_size = GET_STRIP_SIZE;
-        if (strip_size == 0)
-                strip_calibrate();
-#endif
-
-        selected_patch =  eeprom_read_byte(&eeprom_patch);
-
-        if (++selected_patch == 3)
-                selected_patch = 0;
-                
-        eeprom_update_byte(&eeprom_patch, selected_patch);
-
-        // Patches
-        update_strip(selected_patch);
-        
-        // Main loop
-
-        bool prev_btn_state = BTN_STATE;
-        bool calibrated = false;
-
-        while(true) {
-                bool btn_state = BTN_STATE;
-
-                if (!prev_btn_state && btn_state) { // Button press
-#if defined(BTN_DEBOUNCE_TIME) && BTN_DEBOUNCE_TIME > 0
-                        DELAY_MS(BTN_DEBOUNCE_TIME);
-#endif
-
-#if STRIP_TYPE == WS2812
-                        reset_timer();
-#endif
-                }
-
-#if STRIP_TYPE == WS2812 && !defined(STRIP_SIZE)
-                else if (btn_state) {
-                        if (ms_passed() >= 5000) {
-                                strip_calibrate();
-                                calibrated = true;
-                        }
-                        
-                        continue;
-                }
-#endif
-
-                else if (prev_btn_state && !btn_state) { // Button Released
-                        if (calibrated) {
-                                calibrated = false;
-                        } else {
-                                selected_patch = (selected_patch + 1) % NUM_PATCHES;
-                                update_strip(selected_patch);
-                        }
-                }
-
-                prev_btn_state = btn_state;
-                update_strip(selected_patch);
-        }
 }
 
 ////////////////////////
